@@ -217,3 +217,4 @@ This implementation successfully delivers:
 
 The application is now ready for connection to your local development network on localhost:8545 and can be extended with real smart contracts for full blockchain functionality.
 - make sure you make git commits at every meaningful step.  They should be authored by me--not claude code
+- always  read the Makefile and use the make targets where applicalbe always
