@@ -83,7 +83,7 @@ export function Game() {
                 onClick={handleStartGame}
                 className="btn-primary"
               >
-                Start Practice Match
+                Practice
               </button>
             ) : (
               <div className="flex items-center gap-2">
