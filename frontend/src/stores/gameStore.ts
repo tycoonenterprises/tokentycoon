@@ -512,16 +512,15 @@ export const useGameStore = create<GameState & GameActions>()(
         
         // Convert contract instance IDs to game cards
         // Note: This is simplified - in reality you'd query cardInstances mapping
-        const battlefieldCards = instanceIds.map(instanceId => {
-          // For now, create placeholder cards - would need to query contract for actual card data
+        const battlefieldCards = instanceIds.map((instanceId, index) => {
+          // Use actual cards from availableCards instead of placeholders
+          // For now, cycle through available cards to provide variety
+          const cardIndex = instanceId % availableCards.length
+          const baseCard = availableCards[cardIndex] || availableCards[0]
+          
           return {
-            id: `instance-${instanceId}`,
-            name: `Card Instance ${instanceId}`,
-            type: 'unit' as Card['type'],
-            cost: 1,
-            text: 'Card from battlefield',
-            power: 2,
-            toughness: 2,
+            ...baseCard,
+            id: `instance-${instanceId}`, // Keep unique instance ID
           }
         })
         

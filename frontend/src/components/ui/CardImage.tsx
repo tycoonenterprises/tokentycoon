@@ -20,6 +20,7 @@ function getCardImagePath(cardName: string): string {
 export function CardImage({ card, className = '', fallbackIcon = '🃏' }: CardImageProps) {
   const [imageError, setImageError] = React.useState(false)
   const imagePath = getCardImagePath(card.name)
+  
 
   // Reset error state when card changes
   React.useEffect(() => {
