@@ -1,15 +1,34 @@
 import { useGameStore, type Card } from '@/stores/gameStore'
 import { useState } from 'react'
+import { useDraggable } from '@dnd-kit/core'
+import { useDragContext } from '@/lib/contexts/DragContext'
 
 interface CardProps {
   card: Card
   playerId: string
   onPlay: (cardId: string) => void
-  canPlay: boolean
 }
 
-function GameCard({ card, playerId, onPlay, canPlay }: CardProps) {
+function GameCard({ card, playerId, onPlay }: CardProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const { getCardPlayabilityClass, isCardPlayable, startDrag } = useDragContext()
+  
+  const canPlay = isCardPlayable(card)
+  const playabilityClass = getCardPlayabilityClass(card)
+  
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    isDragging,
+  } = useDraggable({
+    id: card.id,
+    disabled: !canPlay,
+    data: {
+      card,
+      playerId,
+    },
+  })
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -31,15 +50,21 @@ function GameCard({ card, playerId, onPlay, canPlay }: CardProps) {
     }
   }
 
+  const handleDragStart = () => {
+    startDrag(card)
+  }
+
   return (
     <div
-      className={`relative w-32 h-44 card cursor-pointer transition-all duration-200 ${
-        isHovered ? 'transform -translate-y-2 scale-105' : ''
-      } ${getTypeColor(card.type)} ${
-        canPlay ? 'hover:shadow-lg opacity-100' : 'opacity-60 cursor-not-allowed'
-      }`}
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      className={`relative w-32 h-44 card transition-all duration-200 ${
+        isHovered && !isDragging ? 'transform -translate-y-2 scale-105' : ''
+      } ${isDragging ? 'card-dragging' : ''} ${getTypeColor(card.type)} ${playabilityClass}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onDragStart={handleDragStart}
       onClick={() => canPlay && onPlay(card.id)}
     >
       {/* Card Header */}
@@ -49,9 +74,9 @@ function GameCard({ card, playerId, onPlay, canPlay }: CardProps) {
             <span className="mr-1">{getTypeIcon(card.type)}</span>
             {card.type.toUpperCase()}
           </div>
-          {card.cost.gas && (
+          {card.cost > 0 && (
             <div className="bg-eth-secondary text-xs px-2 py-1 rounded-full font-bold">
-              {card.cost.gas}
+              {card.cost}
             </div>
           )}
         </div>
@@ -84,7 +109,7 @@ function GameCard({ card, playerId, onPlay, canPlay }: CardProps) {
           <div className="text-sm">
             <div className="font-bold text-white mb-1">{card.name}</div>
             <div className="text-eth-secondary text-xs mb-2">
-              {card.type.toUpperCase()} - Cost: {card.cost.gas || 0}
+              {card.type.toUpperCase()} - Cost: {card.cost}
             </div>
             <div className="text-gray-300 text-xs leading-relaxed">
               {card.text}
@@ -118,11 +143,7 @@ export function Hand({ playerId }: HandProps) {
     }
   }
 
-  const canPlayCard = (card: Card) => {
-    return canPlayCards && 
-           card.cost.gas !== undefined && 
-           player.gas >= card.cost.gas
-  }
+  // Playability is now handled by DragContext
 
   if (!player.hand.length) {
     return (
@@ -156,7 +177,6 @@ export function Hand({ playerId }: HandProps) {
               card={card}
               playerId={playerId}
               onPlay={handlePlayCard}
-              canPlay={canPlayCard(card)}
             />
           ))}
         </div>

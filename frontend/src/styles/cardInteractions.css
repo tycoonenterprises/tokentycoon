@@ -1,0 +1,218 @@
+/* Card Interaction Styles */
+
+/* Card playability states */
+.card-playable {
+  @apply ring-2 ring-eth-success/50 shadow-lg shadow-eth-success/20 cursor-grab;
+  transition: all 0.2s ease-in-out;
+}
+
+.card-playable:hover {
+  @apply ring-eth-success shadow-xl shadow-eth-success/30 scale-105;
+}
+
+.card-not-playable {
+  @apply opacity-60 cursor-not-allowed grayscale;
+}
+
+.card-insufficient-gas {
+  @apply ring-2 ring-eth-danger/50 opacity-70 cursor-not-allowed;
+}
+
+.card-wrong-phase {
+  @apply ring-2 ring-yellow-500/50 opacity-70 cursor-not-allowed;
+}
+
+.card-not-your-turn {
+  @apply opacity-50 cursor-not-allowed grayscale;
+}
+
+/* Drag states */
+.card-dragging {
+  @apply scale-110 rotate-3 shadow-2xl z-50;
+  transform-origin: center;
+  transition: transform 0.1s ease-out;
+}
+
+.card-drag-overlay {
+  @apply scale-105 shadow-2xl;
+  pointer-events: none;
+}
+
+/* Drop zone states */
+.drop-zone {
+  @apply border-2 border-dashed border-transparent rounded-xl;
+  transition: all 0.2s ease-in-out;
+  min-height: 120px;
+}
+
+.drop-zone-valid {
+  @apply border-eth-success bg-eth-success/10;
+  animation: pulse-valid 1.5s infinite;
+}
+
+.drop-zone-invalid {
+  @apply border-eth-danger bg-eth-danger/10;
+  animation: shake 0.5s ease-in-out;
+}
+
+.drop-zone-neutral {
+  @apply border-gray-500 bg-gray-500/5;
+}
+
+.drop-zone-active {
+  @apply scale-102;
+  animation: glow 2s infinite;
+}
+
+/* Animations */
+@keyframes pulse-valid {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(98, 126, 234, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(98, 126, 234, 0.8);
+  }
+}
+
+@keyframes dropToZone {
+  0% {
+    transform: scale(1.1) rotate(3deg);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes playEffect {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+/* Card play effects */
+.card-dropping {
+  animation: dropToZone 0.3s ease-out;
+}
+
+.card-played {
+  animation: playEffect 0.5s ease-out;
+}
+
+/* Phase indicator enhancements */
+.phase-indicator {
+  @apply text-sm font-medium px-3 py-1 rounded-full;
+  transition: all 0.2s ease-in-out;
+}
+
+.phase-draw {
+  @apply bg-blue-500/20 text-blue-300 border border-blue-500/50;
+}
+
+.phase-main {
+  @apply bg-eth-success/20 text-eth-success border border-eth-success/50;
+}
+
+.phase-combat {
+  @apply bg-eth-danger/20 text-eth-danger border border-eth-danger/50;
+}
+
+.phase-end {
+  @apply bg-gray-500/20 text-gray-300 border border-gray-500/50;
+}
+
+/* Playability tooltips */
+.playability-tooltip {
+  @apply absolute z-50 px-2 py-1 text-xs bg-gray-800 text-white rounded shadow-lg;
+  @apply opacity-0 transition-opacity duration-200 pointer-events-none;
+  transform: translateY(-100%) translateX(-50%);
+  left: 50%;
+  bottom: 100%;
+  margin-bottom: 4px;
+}
+
+.card-container:hover .playability-tooltip {
+  @apply opacity-100;
+}
+
+/* Game board zones */
+.board-zone {
+  @apply min-h-32 p-4 rounded-xl border-2 border-gray-700;
+  transition: all 0.2s ease-in-out;
+}
+
+.board-zone-player {
+  @apply bg-gradient-to-t from-eth-primary/10 to-transparent;
+}
+
+.board-zone-opponent {
+  @apply bg-gradient-to-b from-eth-danger/10 to-transparent;
+}
+
+/* Hand zone */
+.hand-zone {
+  @apply flex gap-2 p-4 min-h-24;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Responsive card sizing */
+@media (max-width: 768px) {
+  .card-playable:hover {
+    @apply scale-102;
+  }
+  
+  .card-dragging {
+    @apply scale-105 rotate-1;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .card-playable {
+    @apply ring-4;
+  }
+  
+  .drop-zone-valid {
+    @apply border-4;
+  }
+  
+  .drop-zone-invalid {
+    @apply border-4;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .card-playable,
+  .card-dragging,
+  .drop-zone,
+  .drop-zone-active {
+    transition: none;
+    animation: none;
+  }
+}
