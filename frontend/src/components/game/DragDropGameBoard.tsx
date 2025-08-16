@@ -874,6 +874,12 @@ export function DragDropGameBoard() {
       />
       
 
+      {/* Player's wallet controls (middle right) - moved higher */}
+      <div className="fixed bottom-1/3 right-4 z-10 flex flex-col gap-3">
+        <HotWallet playerId={currentViewingPlayer} />
+        <ColdStorage playerId={currentViewingPlayer} />
+      </div>
+
       {/* Draw Card button - always visible on the left side */}
       <div className="fixed bottom-40 left-4 z-20">
         <button
@@ -903,40 +909,34 @@ export function DragDropGameBoard() {
         </button>
       </div>
 
-      {/* End Turn button - always visible on the right side */}
+      {/* End Turn button - same size as Draw Card button */}
       <div className="fixed bottom-40 right-4 z-20">
         <button
           type="button"
           onClick={handleEndTurn}
           disabled={isEndingTurn || !canPlayCards || needsToDraw}
-          className={`px-8 py-5 rounded-xl
-                   text-white font-bold text-lg
+          className={`px-10 py-6 rounded-xl
+                   text-white font-bold text-xl
                    transform transition-all duration-300
                    flex items-center justify-center gap-3
                    shadow-lg
                    ${canPlayCards && !needsToDraw && !isEndingTurn
-                     ? 'bg-gradient-to-r from-red-600 to-red-700 hover:scale-105 glow-pulse-red cursor-pointer'
+                     ? 'bg-gradient-to-r from-red-600 to-red-700 hover:scale-110 glow-pulse-red cursor-pointer'
                      : 'bg-gray-700 opacity-60 cursor-not-allowed'
                    }`}
         >
           {isEndingTurn ? (
             <>
-              <span className="animate-spin text-xl">⏳</span>
+              <span className="animate-spin text-2xl">⏳</span>
               <span>Ending Turn...</span>
             </>
           ) : (
             <>
-              <span className="text-xl">⏸️</span>
-              <span>End Turn</span>
+              <span className="text-2xl">⏸️</span>
+              <span className="text-xl">End Turn</span>
             </>
           )}
         </button>
-      </div>
-
-      {/* Player's wallet controls (lower right) */}
-      <div className="fixed bottom-4 right-4 z-10 flex flex-col gap-3">
-        <HotWallet playerId={currentViewingPlayer} />
-        <ColdStorage playerId={currentViewingPlayer} />
       </div>
 
     </div>
