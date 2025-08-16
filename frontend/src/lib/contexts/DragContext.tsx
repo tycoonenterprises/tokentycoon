@@ -6,6 +6,7 @@ import type { DropValidation, DropZone } from '@/lib/utils/dropZoneValidation'
 import { canPlayCard } from '@/lib/utils/cardPlayability'
 import { validateDrop } from '@/lib/utils/dropZoneValidation'
 import { useGameStore } from '@/stores/gameStore'
+import { useWallets } from '@privy-io/react-auth'
 
 interface DragContextType {
   // Current drag state
@@ -44,11 +45,18 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     isGameActive,
     needsToDraw,
   } = useGameStore()
-
+  
+  const { wallets } = useWallets()
+  
   const isDragging = draggedCard !== null
 
-  // Get current player's state (assuming player1 for now)
-  const currentPlayer = 'player1' // TODO: Get from auth/user context
+  // Get current viewing player by comparing wallet address (same logic as DragDropGameBoard)
+  const privyWallet = wallets.find(w => w.walletClientType === 'privy')
+  const userAddress = privyWallet?.address
+  const player1 = players.player1
+  const player2 = players.player2
+  const isViewingPlayer1 = userAddress?.toLowerCase() === player1.id?.toLowerCase()
+  const currentPlayer = isViewingPlayer1 ? 'player1' : 'player2'
   const playerState = players[currentPlayer as keyof typeof players]
 
   const startDrag = useCallback((card: Card) => {
