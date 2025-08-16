@@ -19,6 +19,43 @@
         { "name": "Diamond Hands", "count": 5 },
         { "name": "Dune Research", "count": 5 }
       ]
+    },
+    {
+      "name": "Control & Disruption",
+      "description": "A defensive strategy focused on stable ETH generation, protected storage, and disrupting opponents while building card advantage.",
+      "cards": [
+        { "name": "Base", "count": 4 },
+        { "name": "Arbitrum", "count": 4 },
+        { "name": "Multi-sig Wallet", "count": 4 },
+        { "name": "Cold Storage", "count": 3 },
+        { "name": "Audit", "count": 3 },
+        { "name": "Uniswap", "count": 4 },
+        { "name": "Curve", "count": 3 },
+        { "name": "Protocol Hack", "count": 4 },
+        { "name": "Re-entrant Attack", "count": 3 },
+        { "name": "Read a Whitepaper", "count": 2 },
+        { "name": "DeFi Llama Research", "count": 2 },
+        { "name": "Gas War", "count": 2 },
+        { "name": "Invalid OP-Code", "count": 2 }
+      ]
+    },
+    {
+      "name": "Aggressive DeFi",
+      "description": "A fast-paced strategy focused on explosive ETH generation through high-yield DeFi protocols and risky but rewarding plays.",
+      "cards": [
+        { "name": "Yield Farm", "count": 4 },
+        { "name": "Jupiter", "count": 4 },
+        { "name": "Algorithmic Stablecoin", "count": 4 },
+        { "name": "Balancer", "count": 4 },
+        { "name": "Polygon", "count": 4 },
+        { "name": "Optimisim", "count": 2 },
+        { "name": "Wallet", "count": 4 },
+        { "name": "Validator Node", "count": 2 },
+        { "name": "Flash Loan", "count": 3 },
+        { "name": "Pump and Dump", "count": 3 },
+        { "name": "Vitalik Tweet", "count": 3 },
+        { "name": "Memecoin Launch", "count": 3 }
+      ]
     }
   ]
 }
