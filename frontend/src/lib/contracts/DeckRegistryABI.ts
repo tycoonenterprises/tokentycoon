@@ -1,13 +1,19 @@
-// Auto-generated ABI for CardRegistry
-export const CardRegistryABI = [
+// Auto-generated ABI for DeckRegistry
+export const DeckRegistryABI = [
   {
     "type": "constructor",
-    "inputs": [],
+    "inputs": [
+      {
+        "name": "_cardRegistry",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
     "stateMutability": "nonpayable"
   },
   {
     "type": "function",
-    "name": "addCard",
+    "name": "addDeck",
     "inputs": [
       {
         "name": "_name",
@@ -20,29 +26,14 @@ export const CardRegistryABI = [
         "internalType": "string"
       },
       {
-        "name": "_cost",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_cardType",
-        "type": "uint8",
-        "internalType": "enum CardRegistry.CardType"
-      },
-      {
-        "name": "_abilityNames",
+        "name": "_cardNames",
         "type": "string[]",
         "internalType": "string[]"
       },
       {
-        "name": "_abilityKeys",
-        "type": "string[][]",
-        "internalType": "string[][]"
-      },
-      {
-        "name": "_abilityValues",
-        "type": "string[][]",
-        "internalType": "string[][]"
+        "name": "_cardCounts",
+        "type": "uint256[]",
+        "internalType": "uint256[]"
       }
     ],
     "outputs": [
@@ -56,41 +47,20 @@ export const CardRegistryABI = [
   },
   {
     "type": "function",
-    "name": "addCardSimple",
-    "inputs": [
-      {
-        "name": "_name",
-        "type": "string",
-        "internalType": "string"
-      },
-      {
-        "name": "_description",
-        "type": "string",
-        "internalType": "string"
-      },
-      {
-        "name": "_cost",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "_cardType",
-        "type": "uint8",
-        "internalType": "enum CardRegistry.CardType"
-      }
-    ],
+    "name": "cardRegistry",
+    "inputs": [],
     "outputs": [
       {
         "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
+        "type": "address",
+        "internalType": "contract CardRegistry"
       }
     ],
-    "stateMutability": "nonpayable"
+    "stateMutability": "view"
   },
   {
     "type": "function",
-    "name": "cardById",
+    "name": "deckById",
     "inputs": [
       {
         "name": "",
@@ -115,21 +85,16 @@ export const CardRegistryABI = [
         "internalType": "string"
       },
       {
-        "name": "cost",
+        "name": "totalCards",
         "type": "uint256",
         "internalType": "uint256"
-      },
-      {
-        "name": "cardType",
-        "type": "uint8",
-        "internalType": "enum CardRegistry.CardType"
       }
     ],
     "stateMutability": "view"
   },
   {
     "type": "function",
-    "name": "cardIdByName",
+    "name": "deckIdByName",
     "inputs": [
       {
         "name": "",
@@ -148,7 +113,7 @@ export const CardRegistryABI = [
   },
   {
     "type": "function",
-    "name": "cards",
+    "name": "decks",
     "inputs": [
       {
         "name": "",
@@ -173,27 +138,41 @@ export const CardRegistryABI = [
         "internalType": "string"
       },
       {
-        "name": "cost",
+        "name": "totalCards",
         "type": "uint256",
         "internalType": "uint256"
-      },
-      {
-        "name": "cardType",
-        "type": "uint8",
-        "internalType": "enum CardRegistry.CardType"
       }
     ],
     "stateMutability": "view"
   },
   {
     "type": "function",
-    "name": "getAllCards",
+    "name": "expandDeck",
+    "inputs": [
+      {
+        "name": "_deckId",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256[]",
+        "internalType": "uint256[]"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getAllDecks",
     "inputs": [],
     "outputs": [
       {
         "name": "",
         "type": "tuple[]",
-        "internalType": "struct CardRegistry.Card[]",
+        "internalType": "struct DeckRegistry.Deck[]",
         "components": [
           {
             "name": "id",
@@ -211,43 +190,26 @@ export const CardRegistryABI = [
             "internalType": "string"
           },
           {
-            "name": "cost",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "cardType",
-            "type": "uint8",
-            "internalType": "enum CardRegistry.CardType"
-          },
-          {
-            "name": "abilities",
+            "name": "cards",
             "type": "tuple[]",
-            "internalType": "struct CardRegistry.Ability[]",
+            "internalType": "struct DeckRegistry.CardCount[]",
             "components": [
               {
-                "name": "name",
-                "type": "string",
-                "internalType": "string"
+                "name": "cardId",
+                "type": "uint256",
+                "internalType": "uint256"
               },
               {
-                "name": "options",
-                "type": "tuple[]",
-                "internalType": "struct CardRegistry.AbilityOption[]",
-                "components": [
-                  {
-                    "name": "key",
-                    "type": "string",
-                    "internalType": "string"
-                  },
-                  {
-                    "name": "value",
-                    "type": "string",
-                    "internalType": "string"
-                  }
-                ]
+                "name": "count",
+                "type": "uint256",
+                "internalType": "uint256"
               }
             ]
+          },
+          {
+            "name": "totalCards",
+            "type": "uint256",
+            "internalType": "uint256"
           }
         ]
       }
@@ -256,10 +218,10 @@ export const CardRegistryABI = [
   },
   {
     "type": "function",
-    "name": "getCard",
+    "name": "getDeck",
     "inputs": [
       {
-        "name": "_cardId",
+        "name": "_deckId",
         "type": "uint256",
         "internalType": "uint256"
       }
@@ -268,7 +230,7 @@ export const CardRegistryABI = [
       {
         "name": "",
         "type": "tuple",
-        "internalType": "struct CardRegistry.Card",
+        "internalType": "struct DeckRegistry.Deck",
         "components": [
           {
             "name": "id",
@@ -286,43 +248,26 @@ export const CardRegistryABI = [
             "internalType": "string"
           },
           {
-            "name": "cost",
+            "name": "cards",
+            "type": "tuple[]",
+            "internalType": "struct DeckRegistry.CardCount[]",
+            "components": [
+              {
+                "name": "cardId",
+                "type": "uint256",
+                "internalType": "uint256"
+              },
+              {
+                "name": "count",
+                "type": "uint256",
+                "internalType": "uint256"
+              }
+            ]
+          },
+          {
+            "name": "totalCards",
             "type": "uint256",
             "internalType": "uint256"
-          },
-          {
-            "name": "cardType",
-            "type": "uint8",
-            "internalType": "enum CardRegistry.CardType"
-          },
-          {
-            "name": "abilities",
-            "type": "tuple[]",
-            "internalType": "struct CardRegistry.Ability[]",
-            "components": [
-              {
-                "name": "name",
-                "type": "string",
-                "internalType": "string"
-              },
-              {
-                "name": "options",
-                "type": "tuple[]",
-                "internalType": "struct CardRegistry.AbilityOption[]",
-                "components": [
-                  {
-                    "name": "key",
-                    "type": "string",
-                    "internalType": "string"
-                  },
-                  {
-                    "name": "value",
-                    "type": "string",
-                    "internalType": "string"
-                  }
-                ]
-              }
-            ]
           }
         ]
       }
@@ -331,50 +276,7 @@ export const CardRegistryABI = [
   },
   {
     "type": "function",
-    "name": "getCardAbilities",
-    "inputs": [
-      {
-        "name": "_cardId",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "tuple[]",
-        "internalType": "struct CardRegistry.Ability[]",
-        "components": [
-          {
-            "name": "name",
-            "type": "string",
-            "internalType": "string"
-          },
-          {
-            "name": "options",
-            "type": "tuple[]",
-            "internalType": "struct CardRegistry.AbilityOption[]",
-            "components": [
-              {
-                "name": "key",
-                "type": "string",
-                "internalType": "string"
-              },
-              {
-                "name": "value",
-                "type": "string",
-                "internalType": "string"
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getCardByName",
+    "name": "getDeckByName",
     "inputs": [
       {
         "name": "_name",
@@ -386,7 +288,7 @@ export const CardRegistryABI = [
       {
         "name": "",
         "type": "tuple",
-        "internalType": "struct CardRegistry.Card",
+        "internalType": "struct DeckRegistry.Deck",
         "components": [
           {
             "name": "id",
@@ -404,43 +306,26 @@ export const CardRegistryABI = [
             "internalType": "string"
           },
           {
-            "name": "cost",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "cardType",
-            "type": "uint8",
-            "internalType": "enum CardRegistry.CardType"
-          },
-          {
-            "name": "abilities",
+            "name": "cards",
             "type": "tuple[]",
-            "internalType": "struct CardRegistry.Ability[]",
+            "internalType": "struct DeckRegistry.CardCount[]",
             "components": [
               {
-                "name": "name",
-                "type": "string",
-                "internalType": "string"
+                "name": "cardId",
+                "type": "uint256",
+                "internalType": "uint256"
               },
               {
-                "name": "options",
-                "type": "tuple[]",
-                "internalType": "struct CardRegistry.AbilityOption[]",
-                "components": [
-                  {
-                    "name": "key",
-                    "type": "string",
-                    "internalType": "string"
-                  },
-                  {
-                    "name": "value",
-                    "type": "string",
-                    "internalType": "string"
-                  }
-                ]
+                "name": "count",
+                "type": "uint256",
+                "internalType": "uint256"
               }
             ]
+          },
+          {
+            "name": "totalCards",
+            "type": "uint256",
+            "internalType": "uint256"
           }
         ]
       }
@@ -449,7 +334,7 @@ export const CardRegistryABI = [
   },
   {
     "type": "function",
-    "name": "getCardCount",
+    "name": "getDeckCount",
     "inputs": [],
     "outputs": [
       {
@@ -459,19 +344,6 @@ export const CardRegistryABI = [
       }
     ],
     "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "getCardTypes",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "string[]",
-        "internalType": "string[]"
-      }
-    ],
-    "stateMutability": "pure"
   },
   {
     "type": "function",
@@ -495,7 +367,7 @@ export const CardRegistryABI = [
   },
   {
     "type": "function",
-    "name": "nextCardId",
+    "name": "nextDeckId",
     "inputs": [],
     "outputs": [
       {
@@ -521,10 +393,10 @@ export const CardRegistryABI = [
   },
   {
     "type": "event",
-    "name": "CardAdded",
+    "name": "DeckAdded",
     "inputs": [
       {
-        "name": "cardId",
+        "name": "deckId",
         "type": "uint256",
         "indexed": true,
         "internalType": "uint256"
@@ -536,17 +408,17 @@ export const CardRegistryABI = [
         "internalType": "string"
       },
       {
-        "name": "cardType",
-        "type": "uint8",
+        "name": "totalCards",
+        "type": "uint256",
         "indexed": false,
-        "internalType": "enum CardRegistry.CardType"
+        "internalType": "uint256"
       }
     ],
     "anonymous": false
   },
   {
     "type": "event",
-    "name": "CardsInitialized",
+    "name": "DecksInitialized",
     "inputs": [
       {
         "name": "count",
@@ -559,17 +431,22 @@ export const CardRegistryABI = [
   },
   {
     "type": "error",
-    "name": "AlreadyInitialized",
+    "name": "CardRegistryNotSet",
     "inputs": []
   },
   {
     "type": "error",
-    "name": "CardNotFound",
+    "name": "DeckNotFound",
     "inputs": []
   },
   {
     "type": "error",
-    "name": "DuplicateCardName",
+    "name": "DuplicateDeckName",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidCardName",
     "inputs": []
   },
   {

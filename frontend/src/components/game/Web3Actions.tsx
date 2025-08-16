@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { usePrivy } from '@privy-io/react-auth'
 import { useBalance, useAccount } from 'wagmi'
-import { mockContract, getMockContractState } from '@/lib/contracts/mockContract'
+import { useCardRegistry } from '@/lib/hooks/useCardRegistry'
+import { useDeckRegistry } from '@/lib/hooks/useDeckRegistry'
+import { useGameEngine } from '@/lib/hooks/useGameEngine'
 
 interface ActionButtonProps {
   onClick: () => void
@@ -39,9 +41,13 @@ export function Web3Actions() {
   const { address, isConnected, chain } = useAccount()
   const { data: balance } = useBalance({ address })
   
+  // Real contract hooks
+  const { cards, cardCount, isInitialized: cardsInitialized, isLoadingCards } = useCardRegistry()
+  const { decks, deckCount, isInitialized: decksInitialized, isLoadingDecks } = useDeckRegistry()
+  const { sessionCount, availableGames, myGames } = useGameEngine()
+  
   const [isSigningMessage, setIsSigningMessage] = useState(false)
   const [isSendingTx, setIsSendingTx] = useState(false)
-  const [isMinting, setIsMinting] = useState(false)
   const [isQueryingContract, setIsQueryingContract] = useState(false)
   
   const [signedMessage, setSignedMessage] = useState<string>('')
@@ -88,26 +94,6 @@ export function Web3Actions() {
     }
   }
 
-  const handleMintCards = async () => {
-    if (!address) return
-    
-    setIsMinting(true)
-    setError('')
-    
-    try {
-      // Use mock contract for local development
-      const tokenIds = await mockContract.mintStarterPack(address)
-      console.log('Minted cards with token IDs:', tokenIds)
-      
-      // Update contract data display
-      await handleQueryContract()
-    } catch (err: any) {
-      setError(`Card minting failed: ${err.message}`)
-    } finally {
-      setIsMinting(false)
-    }
-  }
-
   const handleQueryContract = async () => {
     if (!address) return
     
@@ -115,16 +101,23 @@ export function Web3Actions() {
     setError('')
     
     try {
-      // Query mock contract data
-      const balance = await mockContract.balanceOf(address)
-      const totalSupply = await mockContract.totalSupply()
-      const userCards = await mockContract.getAllCardsForOwner(address)
-      
+      // Query real contract data
       setContractData({
-        balance,
-        totalSupply,
-        userCards,
-        contractState: getMockContractState()
+        cardRegistry: {
+          totalCards: cardCount || 0,
+          isInitialized: cardsInitialized || false,
+          cards: cards || []
+        },
+        deckRegistry: {
+          totalDecks: deckCount || 0,
+          isInitialized: decksInitialized || false,
+          decks: decks || []
+        },
+        gameEngine: {
+          totalSessions: sessionCount || 0,
+          availableGames: availableGames || [],
+          myGames: myGames || []
+        }
       })
     } catch (err: any) {
       setError(`Contract query failed: ${err.message}`)
@@ -232,39 +225,74 @@ export function Web3Actions() {
           )}
         </div>
 
-        {/* Card Contract */}
+        {/* Real Contract Data */}
         <div className="card p-4">
-          <h4 className="font-medium text-white mb-3">NFT Cards (Mock)</h4>
+          <h4 className="font-medium text-white mb-3">Smart Contract Registry</h4>
           <div className="space-y-2">
-            <ActionButton
-              onClick={handleMintCards}
-              loading={isMinting}
-            >
-              Mint Starter Pack (5 Cards)
-            </ActionButton>
-            
             <ActionButton
               onClick={handleQueryContract}
               loading={isQueryingContract}
-              className="btn-secondary"
+              className="btn-primary"
             >
-              Query Card Balance
+              Query Contract Data
             </ActionButton>
           </div>
           
           {contractData && (
             <div className="mt-3 p-3 bg-gray-800 rounded text-xs">
-              <div className="text-white font-medium mb-2">Contract Data:</div>
-              <div className="space-y-1 text-gray-300">
-                <div>Your Cards: {contractData.balance}</div>
-                <div>Total Supply: {contractData.totalSupply}</div>
-                <div>Your Card Collection:</div>
-                <div className="pl-2 space-y-1 max-h-32 overflow-y-auto">
-                  {contractData.userCards.map((card: any) => (
-                    <div key={card.tokenId} className="text-xs">
-                      #{card.tokenId}: {card.name} ({card.cardType})
-                    </div>
-                  ))}
+              <div className="text-white font-medium mb-2">Live Contract Data:</div>
+              <div className="space-y-3 text-gray-300">
+                
+                {/* Card Registry */}
+                <div>
+                  <div className="text-eth-primary font-medium">📋 Card Registry:</div>
+                  <div className="pl-2 space-y-1">
+                    <div>Total Cards: {contractData.cardRegistry.totalCards}</div>
+                    <div>Initialized: {contractData.cardRegistry.isInitialized ? '✅' : '❌'}</div>
+                    {contractData.cardRegistry.cards.length > 0 && (
+                      <div className="space-y-1 mt-2">
+                        <div>Available Cards:</div>
+                        <div className="pl-2 space-y-1 max-h-20 overflow-y-auto">
+                          {contractData.cardRegistry.cards.map((card: any, idx: number) => (
+                            <div key={idx} className="text-xs">
+                              {card.name} (Type: {card.cardType}, Cost: {card.cost})
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Deck Registry */}
+                <div>
+                  <div className="text-eth-secondary font-medium">🃏 Deck Registry:</div>
+                  <div className="pl-2 space-y-1">
+                    <div>Total Decks: {contractData.deckRegistry.totalDecks}</div>
+                    <div>Initialized: {contractData.deckRegistry.isInitialized ? '✅' : '❌'}</div>
+                    {contractData.deckRegistry.decks.length > 0 && (
+                      <div className="space-y-1 mt-2">
+                        <div>Available Decks:</div>
+                        <div className="pl-2 space-y-1 max-h-20 overflow-y-auto">
+                          {contractData.deckRegistry.decks.map((deck: any, idx: number) => (
+                            <div key={idx} className="text-xs">
+                              {deck.name}: {deck.description}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Game Engine */}
+                <div>
+                  <div className="text-eth-success font-medium">🎮 Game Engine:</div>
+                  <div className="pl-2 space-y-1">
+                    <div>Total Sessions: {contractData.gameEngine.totalSessions}</div>
+                    <div>Available Games: {contractData.gameEngine.availableGames.length}</div>
+                    <div>My Games: {contractData.gameEngine.myGames.length}</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -277,35 +305,44 @@ export function Web3Actions() {
           <div className="text-sm space-y-2">
             <div className="flex items-center">
               <div className="w-2 h-2 bg-eth-success rounded-full mr-2"></div>
-              <span className="text-gray-300">Local Network Active</span>
+              <span className="text-gray-300">Local Anvil Network (Chain ID: 31337)</span>
             </div>
             <div className="flex items-center">
               <div className="w-2 h-2 bg-eth-success rounded-full mr-2"></div>
-              <span className="text-gray-300">Mock Contracts Loaded</span>
+              <span className="text-gray-300">Smart Contracts Deployed</span>
+            </div>
+            <div className="flex items-center">
+              <div className={`w-2 h-2 rounded-full mr-2 ${cardsInitialized ? 'bg-eth-success' : 'bg-gray-500'}`}></div>
+              <span className="text-gray-300">Cards Initialized: {cardsInitialized ? 'Yes' : 'Loading...'}</span>
+            </div>
+            <div className="flex items-center">
+              <div className={`w-2 h-2 rounded-full mr-2 ${decksInitialized ? 'bg-eth-success' : 'bg-gray-500'}`}></div>
+              <span className="text-gray-300">Decks Initialized: {decksInitialized ? 'Yes' : 'Loading...'}</span>
             </div>
             <div className="text-xs text-gray-400 mt-2">
-              💡 This is using mock data for local development.
-              Deploy real contracts to localhost:8545 for full integration.
+              🎉 Using real smart contracts deployed to localhost:8545!
+              <br />
+              All card and game data is stored on the blockchain.
             </div>
           </div>
         </div>
 
-        {/* Development Tools */}
+        {/* Contract Addresses */}
         <div className="card p-4">
-          <h4 className="font-medium text-white mb-3">Development Tools</h4>
-          <div className="space-y-2">
-            <button
-              onClick={() => mockContract.reset()}
-              className="btn-secondary w-full text-sm"
-            >
-              Reset Mock Contract State
-            </button>
-            <button
-              onClick={() => console.log('Contract State:', getMockContractState())}
-              className="btn-secondary w-full text-sm"
-            >
-              Log Contract State to Console
-            </button>
+          <h4 className="font-medium text-white mb-3">Contract Addresses</h4>
+          <div className="space-y-2 text-xs font-mono">
+            <div>
+              <span className="text-gray-400">CardRegistry:</span>
+              <div className="text-eth-primary break-all">0x5FbDB2315678afecb367f032d93F642f64180aa3</div>
+            </div>
+            <div>
+              <span className="text-gray-400">DeckRegistry:</span>
+              <div className="text-eth-secondary break-all">0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512</div>
+            </div>
+            <div>
+              <span className="text-gray-400">GameEngine:</span>
+              <div className="text-eth-success break-all">0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0</div>
+            </div>
           </div>
         </div>
       </div>
