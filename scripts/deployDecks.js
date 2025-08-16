@@ -42,6 +42,8 @@ const deckRegistryAbi = parseAbi([
 ]);
 
 async function deployDecks() {
+  const startTime = Date.now();
+  console.log('🎴 Starting deck deployment...\n');
   console.log('Setting up clients...');
   
   // Setup account
@@ -80,12 +82,28 @@ async function deployDecks() {
   const decksPath = join(__dirname, '..', 'data', 'decks.json');
   const decksData = JSON.parse(readFileSync(decksPath, 'utf8'));
   
-  console.log(`Loading ${decksData.decks.length} decks from decks.json...`);
+  const totalDecks = decksData.decks.length;
+  console.log(`\n📦 Loading ${totalDecks} decks from decks.json...\n`);
   
-  // Deploy each deck
-  for (const deck of decksData.decks) {
-    console.log(`\nAdding deck: ${deck.name}`);
-    console.log(`  Description: ${deck.description}`);
+  // Function to update progress bar
+  function updateProgress(current, total, message) {
+    const percentage = Math.round((current / total) * 100);
+    const barLength = 30;
+    const filledLength = Math.round((current / total) * barLength);
+    const bar = '█'.repeat(filledLength) + '░'.repeat(barLength - filledLength);
+    
+    // Clear current line and write progress
+    process.stdout.write(`\r[${bar}] ${percentage}% (${current}/${total}) - ${message}`);
+  }
+  
+  console.log('⚡ Sending all deck transactions in parallel...\n');
+  
+  const transactions = [];
+  const failedDecks = [];
+  
+  // Create all transactions at once
+  const deckPromises = decksData.decks.map(async (deck, index) => {
+    updateProgress(index + 1, totalDecks, `Preparing: ${deck.name}`);
     
     // Prepare card names and counts arrays
     const cardNames = [];
@@ -95,8 +113,6 @@ async function deployDecks() {
       cardNames.push(card.name);
       cardCounts.push(BigInt(card.count));
     }
-    
-    console.log(`  Cards: ${deck.cards.map(c => `${c.count}x ${c.name}`).join(', ')}`);
     
     try {
       const hash = await walletClient.writeContract({
@@ -111,18 +127,50 @@ async function deployDecks() {
         ],
       });
       
-      console.log(`  Transaction hash: ${hash}`);
-      
-      // Wait for transaction
-      await publicClient.waitForTransactionReceipt({ hash });
-      console.log(`  ✓ Deck added successfully`);
+      return { hash, deck: deck.name, success: true };
     } catch (error) {
-      console.error(`  ✗ Failed to add deck: ${error.message}`);
+      console.error(`\n❌ Failed to send tx for ${deck.name}: ${error.message}`);
+      failedDecks.push(`${deck.name} (${error.message})`);
+      return { deck: deck.name, success: false, error: error.message };
     }
+  });
+  
+  // Wait for all transactions to be sent
+  const txResults = await Promise.all(deckPromises);
+  const successfulTxs = txResults.filter(r => r.success);
+  
+  console.log('\n\n⏳ Waiting for all transactions to be confirmed...\n');
+  
+  // Now wait for all successful transactions to be confirmed
+  let confirmedCount = 0;
+  const confirmationPromises = successfulTxs.map(async (tx) => {
+    try {
+      await publicClient.waitForTransactionReceipt({ hash: tx.hash });
+      confirmedCount++;
+      updateProgress(confirmedCount, successfulTxs.length, `Confirmed: ${tx.deck}`);
+      return true;
+    } catch (error) {
+      console.error(`\n❌ Failed to confirm ${tx.deck}: ${error.message}`);
+      failedDecks.push(`${tx.deck} (confirmation failed)`);
+      return false;
+    }
+  });
+  
+  const confirmationResults = await Promise.all(confirmationPromises);
+  const successCount = confirmationResults.filter(r => r).length;
+  
+  // Complete progress bar
+  updateProgress(successfulTxs.length, successfulTxs.length, 'All transactions processed!');
+  console.log('\n');
+  
+  // Show results
+  if (failedDecks.length > 0) {
+    console.log(`\n⚠️  Failed to add ${failedDecks.length} decks:`);
+    failedDecks.forEach(deck => console.log(`   - ${deck}`));
   }
   
   // Mark as initialized
-  console.log('\nMarking registry as initialized...');
+  process.stdout.write('\n📝 Marking registry as initialized...');
   const initHash = await walletClient.writeContract({
     address: DECK_REGISTRY_ADDRESS,
     abi: deckRegistryAbi,
@@ -130,7 +178,7 @@ async function deployDecks() {
   });
   
   await publicClient.waitForTransactionReceipt({ hash: initHash });
-  console.log('✓ Registry marked as initialized');
+  console.log(' ✓');
   
   // Get final deck count
   const deckCount = await publicClient.readContract({
@@ -139,7 +187,12 @@ async function deployDecks() {
     functionName: 'getDeckCount',
   });
   
-  console.log(`\n✅ Successfully deployed ${deckCount} decks!`);
+  const endTime = Date.now();
+  const totalTime = ((endTime - startTime) / 1000).toFixed(2);
+  
+  console.log(`\n✅ Successfully deployed ${successCount}/${totalDecks} decks in ${totalTime} seconds!`);
+  console.log(`   Total decks in registry: ${deckCount}`);
+  console.log(`   Average time per deck: ${(totalTime / successCount).toFixed(2)}s`);
 }
 
 // Run deployment

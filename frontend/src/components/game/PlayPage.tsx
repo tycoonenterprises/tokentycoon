@@ -263,9 +263,9 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl bg-gray-900 rounded-lg">
+      <div className="w-full max-w-4xl max-h-[90vh] bg-gray-900 rounded-lg flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-gray-700">
+        <div className="p-6 border-b border-gray-700 flex-shrink-0">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-white">
               {view === 'menu' && '🎮 Play Onchain'}
@@ -283,7 +283,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 flex-1 overflow-hidden">
           {view === 'menu' && (
             <div className="space-y-4">
               {/* Wallet Status */}
@@ -346,8 +346,8 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
           )}
 
           {view === 'create' && (
-            <div className="space-y-6">
-              <div>
+            <div className="flex flex-col h-full space-y-6 max-h-[calc(90vh-12rem)]">
+              <div className="flex-1 min-h-0">
                 <h3 className="text-lg font-semibold text-white mb-4">Select Your Deck</h3>
                 {isLoadingDecks ? (
                   <div className="flex items-center justify-center py-8">
@@ -358,7 +358,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
                     No decks available. Please deploy decks to the contract first.
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto custom-scrollbar pr-2">
                     {availableDecks.map(deck => (
                       <div
                         key={deck.id}
@@ -377,7 +377,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
                 )}
               </div>
 
-              <div className="flex justify-between">
+              <div className="flex justify-between flex-shrink-0">
                 <button
                   onClick={() => setView('menu')}
                   className="btn-secondary"
@@ -397,14 +397,14 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
           )}
 
           {view === 'join' && (
-            <div className="space-y-6">
-              {/* Deck Selection - Always show at the top */}
-              <div>
+            <div className="flex flex-col h-full space-y-4 max-h-[calc(90vh-12rem)]">
+              {/* Deck Selection - Scrollable */}
+              <div className="flex-shrink-0">
                 <h4 className="text-lg font-semibold text-white mb-3">Select Your Deck</h4>
                 {availableDecks.length === 0 ? (
                   <div className="text-gray-400 text-sm">Loading decks...</div>
                 ) : (
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-2 gap-3 max-h-48 overflow-y-auto custom-scrollbar pr-2">
                     {availableDecks.map(deck => (
                       <div
                         key={deck.id}
@@ -423,8 +423,9 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
                 )}
               </div>
 
-              <div>
-                <div className="flex items-center justify-between mb-4">
+              {/* Games List - Scrollable */}
+              <div className="flex-1 flex flex-col min-h-0">
+                <div className="flex items-center justify-between mb-4 flex-shrink-0">
                   <h3 className="text-lg font-semibold text-white">Available Games</h3>
                   <button
                     onClick={loadAvailableGames}
@@ -443,7 +444,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
                     No games available. Try creating one!
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-3 overflow-y-auto custom-scrollbar pr-2 flex-1">
                     {availableGames.filter(g => g.status === 'waiting').map(game => (
                       <div
                         key={game.gameId}

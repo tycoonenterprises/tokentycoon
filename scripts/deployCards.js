@@ -52,6 +52,8 @@ const CardTypes = {
 };
 
 async function deployCards() {
+  const startTime = Date.now();
+  console.log('🚀 Starting card deployment...\n');
   console.log('Setting up clients...');
   
   // Setup account
@@ -91,26 +93,28 @@ async function deployCards() {
   const cardsData = JSON.parse(readFileSync(cardsPath, 'utf8'));
   
   const totalCards = cardsData.cards.length;
-  console.log(`\nLoading ${totalCards} cards from cards.json...\n`);
+  console.log(`\n📦 Loading ${totalCards} cards from cards.json...\n`);
   
   // Function to update progress bar
-  function updateProgress(current, total, cardName) {
+  function updateProgress(current, total, message) {
     const percentage = Math.round((current / total) * 100);
     const barLength = 30;
     const filledLength = Math.round((current / total) * barLength);
     const bar = '█'.repeat(filledLength) + '░'.repeat(barLength - filledLength);
     
     // Clear current line and write progress
-    process.stdout.write(`\r[${bar}] ${percentage}% (${current}/${total}) - ${cardName}`);
+    process.stdout.write(`\r[${bar}] ${percentage}% (${current}/${total}) - ${message}`);
   }
   
-  let successCount = 0;
-  let failedCards = [];
+  console.log('⚡ Sending all card transactions rapidly...\n');
   
-  // Deploy each card
+  const transactions = [];
+  const failedCards = [];
+  
+  // Send all transactions without waiting
   for (let i = 0; i < cardsData.cards.length; i++) {
     const card = cardsData.cards[i];
-    updateProgress(i + 1, totalCards, `Adding: ${card.name}`);
+    updateProgress(i + 1, totalCards, `Sending: ${card.name}`);
     
     // Prepare abilities data
     const abilityNames = [];
@@ -145,9 +149,10 @@ async function deployCards() {
     }
     
     try {
+      let hash;
       // If card has abilities, use addCard; otherwise use addCardSimple
       if (abilityNames.length > 0) {
-        const hash = await walletClient.writeContract({
+        hash = await walletClient.writeContract({
           address: CARD_REGISTRY_ADDRESS,
           abi: cardRegistryAbi,
           functionName: 'addCard',
@@ -161,12 +166,8 @@ async function deployCards() {
             abilityValues
           ],
         });
-        
-        // Wait for transaction
-        await publicClient.waitForTransactionReceipt({ hash });
-        successCount++;
       } else {
-        const hash = await walletClient.writeContract({
+        hash = await walletClient.writeContract({
           address: CARD_REGISTRY_ADDRESS,
           abi: cardRegistryAbi,
           functionName: 'addCardSimple',
@@ -177,18 +178,40 @@ async function deployCards() {
             CardTypes[card.cardType]
           ],
         });
-        
-        // Wait for transaction
-        await publicClient.waitForTransactionReceipt({ hash });
-        successCount++;
       }
+      
+      transactions.push({ hash, card: card.name });
+      
     } catch (error) {
-      failedCards.push(`${card.name} (${error.message})`);
+      console.error(`\n❌ Failed to send tx for ${card.name}: ${error.message?.substring(0, 100)}`);
+      failedCards.push(`${card.name}`);
     }
   }
   
   // Complete progress bar
-  updateProgress(totalCards, totalCards, 'Complete!');
+  updateProgress(totalCards, totalCards, 'All transactions sent!');
+  console.log('\n');
+  
+  console.log(`\n⏳ Waiting for ${transactions.length} transactions to be confirmed...\n`);
+  
+  // Now wait for all transactions to be confirmed
+  let confirmedCount = 0;
+  const confirmationPromises = transactions.map(async (tx) => {
+    try {
+      await publicClient.waitForTransactionReceipt({ hash: tx.hash });
+      confirmedCount++;
+      updateProgress(confirmedCount, transactions.length, `Confirmed: ${tx.card}`);
+      return true;
+    } catch (error) {
+      console.error(`\n❌ Failed to confirm ${tx.card}: ${error.message?.substring(0, 100)}`);
+      failedCards.push(`${tx.card} (confirmation failed)`);
+      return false;
+    }
+  });
+  
+  const confirmationResults = await Promise.all(confirmationPromises);
+  const successCount = confirmationResults.filter(r => r).length;
+  
   console.log('\n');
   
   // Show results
@@ -198,15 +221,19 @@ async function deployCards() {
   }
   
   // Mark as initialized
-  process.stdout.write('Marking registry as initialized...');
-  const initHash = await walletClient.writeContract({
-    address: CARD_REGISTRY_ADDRESS,
-    abi: cardRegistryAbi,
-    functionName: 'markInitialized',
-  });
-  
-  await publicClient.waitForTransactionReceipt({ hash: initHash });
-  console.log(' ✓');
+  process.stdout.write('\n📝 Marking registry as initialized...');
+  try {
+    const initHash = await walletClient.writeContract({
+      address: CARD_REGISTRY_ADDRESS,
+      abi: cardRegistryAbi,
+      functionName: 'markInitialized',
+    });
+    
+    await publicClient.waitForTransactionReceipt({ hash: initHash });
+    console.log(' ✓');
+  } catch (error) {
+    console.log(' ❌ Failed to mark as initialized');
+  }
   
   // Get final card count
   const cardCount = await publicClient.readContract({
@@ -215,8 +242,14 @@ async function deployCards() {
     functionName: 'getCardCount',
   });
   
-  console.log(`\n✅ Successfully deployed ${successCount}/${totalCards} cards!`);
+  const endTime = Date.now();
+  const totalTime = ((endTime - startTime) / 1000).toFixed(2);
+  
+  console.log(`\n✅ Successfully deployed ${successCount}/${totalCards} cards in ${totalTime} seconds!`);
   console.log(`   Total cards in registry: ${cardCount}`);
+  if (successCount > 0) {
+    console.log(`   Average time per card: ${(totalTime / successCount).toFixed(2)}s`);
+  }
 }
 
 // Run deployment

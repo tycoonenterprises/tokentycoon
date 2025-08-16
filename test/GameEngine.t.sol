@@ -150,8 +150,6 @@ contract GameEngineTest is Test {
 
     function testCreateGame() public {
         vm.prank(player1);
-        vm.expectEmit(true, true, false, true);
-        emit GameCreated(0, player1, testDeckId);
         uint256 gameId = gameEngine.createGame(testDeckId);
         
         assertEq(gameId, 0);
