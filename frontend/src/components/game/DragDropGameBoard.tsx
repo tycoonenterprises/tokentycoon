@@ -254,14 +254,15 @@ export function DragDropGameBoard() {
   }
 
   return (
-    <DndContext
-      collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="flex-1 p-6 bg-gradient-to-b from-gray-800 to-eth-dark">
-        <div className="max-w-6xl mx-auto h-full">
-          <div className="h-full flex flex-col gap-6">
+    <div className="relative">
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex-1 p-6 bg-gradient-to-b from-gray-800 to-eth-dark">
+          <div className="max-w-6xl mx-auto h-full">
+            <div className="h-full flex flex-col gap-6">
             {/* Opponent Board - Not droppable for now */}
             <DropZone
               id={`${currentViewingPlayer === 'player1' ? 'player2' : 'player1'}-board`}
@@ -376,29 +377,30 @@ export function DragDropGameBoard() {
                     🔄 {activePlayer !== currentViewingPlayer ? 'Not your turn' : 'Wrong phase'} - Use "Switch Player" or "Next Phase" to continue
                   </div>
                 )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Drag Overlay */}
-      <DragOverlay>
-        {activeId && draggedCard ? (
-          <div className="w-32 h-44 card border-eth-primary shadow-2xl opacity-90 transform rotate-12">
-            <div className="p-2 border-b border-gray-600">
-              <div className="text-xs text-center text-white font-bold">
-                {draggedCard.name}
+        {/* Drag Overlay */}
+        <DragOverlay>
+          {activeId && draggedCard ? (
+            <div className="w-32 h-44 card border-eth-primary shadow-2xl opacity-90 transform rotate-12">
+              <div className="p-2 border-b border-gray-600">
+                <div className="text-xs text-center text-white font-bold">
+                  {draggedCard.name}
+                </div>
+              </div>
+              <div className="p-2 flex-1 flex items-center justify-center">
+                <div className="text-2xl">🃏</div>
               </div>
             </div>
-            <div className="p-2 flex-1 flex items-center justify-center">
-              <div className="text-2xl">🃏</div>
-            </div>
-          </div>
-        ) : null}
-      </DragOverlay>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
 
-      {/* Game UI Elements */}
+      {/* Game UI Elements - Outside DndContext to avoid interference */}
       {/* Player's deck (lower left) */}
       <DeckElement 
         playerId={currentViewingPlayer}
@@ -426,6 +428,6 @@ export function DragDropGameBoard() {
           <ColdStorage playerId={currentViewingPlayer === 'player1' ? 'player2' : 'player1'} />
         </div>
       )}
-    </DndContext>
+    </div>
   )
 }
