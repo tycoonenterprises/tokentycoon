@@ -27,6 +27,8 @@ contract GameEngine {
         uint256[] battlefield;    // Card instance IDs on battlefield
         uint256 deckIndex;        // Current position in deck for drawing
         uint256 eth;              // ETH resources
+        uint256 coldStorage;      // ETH in cold storage
+        uint256 coldStorageWithdrawnThisTurn; // ETH withdrawn from cold storage this turn
     }
     
     struct Game {
@@ -51,6 +53,10 @@ contract GameEngine {
         address player2;
         uint256 player1ETH;
         uint256 player2ETH;
+        uint256 player1ColdStorage;
+        uint256 player2ColdStorage;
+        uint256 player1ColdStorageWithdrawnThisTurn;
+        uint256 player2ColdStorageWithdrawnThisTurn;
         uint256 player1HandSize;
         uint256 player2HandSize;
         uint256 player1BattlefieldSize;
@@ -79,6 +85,8 @@ contract GameEngine {
     uint256 public constant MAX_HAND_SIZE = 10;
     uint256 public constant INITIAL_ETH = 3;
     uint256 public constant ETH_PER_TURN = 1;
+    uint256 public constant WIN_CONDITION_ETH = 20;
+    uint256 public constant MAX_COLD_STORAGE_WITHDRAWAL_PER_TURN = 1;
     
     event GameCreated(uint256 indexed gameId, address indexed creator, uint256 deckId);
     event GameJoined(uint256 indexed gameId, address indexed player, uint256 deckId);
@@ -90,6 +98,9 @@ contract GameEngine {
     event ResourcesGained(uint256 indexed gameId, address indexed player, uint256 amount);
     event UpkeepTriggered(uint256 indexed gameId, uint256 cardInstanceId, string abilityName);
     event ETHStaked(uint256 indexed gameId, address indexed player, uint256 cardInstanceId, uint256 amount);
+    event ColdStorageDeposit(uint256 indexed gameId, address indexed player, uint256 amount, uint256 totalColdStorage);
+    event ColdStorageWithdrawal(uint256 indexed gameId, address indexed player, uint256 amount, uint256 totalColdStorage);
+    event GameFinished(uint256 indexed gameId, address indexed winner, string reason);
     
     error GameNotFound();
     error GameAlreadyStarted();
@@ -103,11 +114,15 @@ contract GameEngine {
     error GameNotStarted();
     error InsufficientResources();
     error CardNotInHand();
-    error GameFinished();
+    error GameIsFinished();
     error InvalidStakeAmount();
     error CardNotOnBattlefield();
     error NotDeFiCard();
     error NotCardOwner();
+    error InsufficientETH();
+    error InsufficientColdStorage();
+    error ExceedsWithdrawalLimit();
+    error GameNotActive();
     
     constructor(address _cardRegistry, address _deckRegistry) {
         cardRegistry = CardRegistry(_cardRegistry);
@@ -195,6 +210,9 @@ contract GameEngine {
     function _startTurn(Game storage game, PlayerState storage playerState, bool isFirstTurn) private {
         emit TurnStarted(game.gameId, playerState.player, game.turnNumber);
         
+        // Reset cold storage withdrawal limit for new turn
+        playerState.coldStorageWithdrawnThisTurn = 0;
+        
         // DRAW PHASE - Skip draw on very first turn of the game
         if (!isFirstTurn) {
             if (playerState.hand.length < MAX_HAND_SIZE && playerState.deckIndex < playerState.deck.length) {
@@ -270,7 +288,7 @@ contract GameEngine {
         Game storage game = games[_gameId];
         
         if (!game.isStarted) revert GameNotStarted();
-        if (game.isFinished) revert GameFinished();
+        if (game.isFinished) revert GameIsFinished();
         if (_amount == 0) revert InvalidStakeAmount();
         
         CardInstance storage instance = cardInstances[_instanceId];
@@ -315,7 +333,7 @@ contract GameEngine {
         Game storage game = games[_gameId];
         
         if (!game.isStarted) revert GameNotStarted();
-        if (game.isFinished) revert GameFinished();
+        if (game.isFinished) revert GameIsFinished();
         if (game.needsToDraw) revert("Must draw card to start turn first");
         
         PlayerState storage playerState;
@@ -393,7 +411,7 @@ contract GameEngine {
         Game storage game = games[_gameId];
         
         if (!game.isStarted) revert GameNotStarted();
-        if (game.isFinished) revert GameFinished();
+        if (game.isFinished) revert GameIsFinished();
         if (game.needsToDraw) revert("Must draw card to start turn first");
         
         // Verify it's the current player ending their turn
@@ -416,7 +434,7 @@ contract GameEngine {
         Game storage game = games[_gameId];
         
         if (!game.isStarted) revert GameNotStarted();
-        if (game.isFinished) revert GameFinished();
+        if (game.isFinished) revert GameIsFinished();
         if (!game.needsToDraw) revert("Turn already started");
         
         // Verify it's the current player starting their turn
@@ -432,6 +450,82 @@ contract GameEngine {
         
         // Turn is now officially started
         game.needsToDraw = false;
+    }
+    
+    // ========== COLD STORAGE FUNCTIONS ==========
+    
+    function depositToColdStorage(uint256 _gameId, uint256 _amount) external {
+        Game storage game = games[_gameId];
+        
+        if (!game.isStarted || game.isFinished) {
+            revert GameNotActive();
+        }
+        
+        if (msg.sender != game.player1 && msg.sender != game.player2) {
+            revert NotInGame();
+        }
+        
+        // Must be caller's turn
+        address currentPlayer = game.currentTurn == 0 ? game.player1 : game.player2;
+        if (msg.sender != currentPlayer) {
+            revert NotYourTurn();
+        }
+        
+        PlayerState storage playerState = msg.sender == game.player1 ? game.player1State : game.player2State;
+        
+        // Check if player has enough ETH
+        if (playerState.eth < _amount) {
+            revert InsufficientETH();
+        }
+        
+        // Transfer ETH from hot wallet to cold storage
+        playerState.eth -= _amount;
+        playerState.coldStorage += _amount;
+        
+        // Check for win condition
+        if (playerState.coldStorage >= WIN_CONDITION_ETH) {
+            game.isFinished = true;
+            emit GameFinished(_gameId, msg.sender, "ColdStorageWin");
+        }
+        
+        emit ColdStorageDeposit(_gameId, msg.sender, _amount, playerState.coldStorage);
+    }
+    
+    function withdrawFromColdStorage(uint256 _gameId, uint256 _amount) external {
+        Game storage game = games[_gameId];
+        
+        if (!game.isStarted || game.isFinished) {
+            revert GameNotActive();
+        }
+        
+        if (msg.sender != game.player1 && msg.sender != game.player2) {
+            revert NotInGame();
+        }
+        
+        // Must be caller's turn
+        address currentPlayer = game.currentTurn == 0 ? game.player1 : game.player2;
+        if (msg.sender != currentPlayer) {
+            revert NotYourTurn();
+        }
+        
+        PlayerState storage playerState = msg.sender == game.player1 ? game.player1State : game.player2State;
+        
+        // Check withdrawal limits
+        if (playerState.coldStorageWithdrawnThisTurn + _amount > MAX_COLD_STORAGE_WITHDRAWAL_PER_TURN) {
+            revert ExceedsWithdrawalLimit();
+        }
+        
+        // Check if player has enough in cold storage
+        if (playerState.coldStorage < _amount) {
+            revert InsufficientColdStorage();
+        }
+        
+        // Transfer ETH from cold storage to hot wallet
+        playerState.coldStorage -= _amount;
+        playerState.eth += _amount;
+        playerState.coldStorageWithdrawnThisTurn += _amount;
+        
+        emit ColdStorageWithdrawal(_gameId, msg.sender, _amount, playerState.coldStorage);
     }
     
     // ========== VIEW FUNCTIONS ==========
@@ -472,6 +566,10 @@ contract GameEngine {
             player2: game.player2,
             player1ETH: game.player1State.eth,
             player2ETH: game.player2State.eth,
+            player1ColdStorage: game.player1State.coldStorage,
+            player2ColdStorage: game.player2State.coldStorage,
+            player1ColdStorageWithdrawnThisTurn: game.player1State.coldStorageWithdrawnThisTurn,
+            player2ColdStorageWithdrawnThisTurn: game.player2State.coldStorageWithdrawnThisTurn,
             player1HandSize: game.player1State.hand.length,
             player2HandSize: game.player2State.hand.length,
             player1BattlefieldSize: game.player1State.battlefield.length,

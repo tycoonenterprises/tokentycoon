@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useGameStore } from '@/stores/gameStore'
+import { useWallets } from '@privy-io/react-auth'
+import { useGameEngine } from '@/lib/hooks/useGameEngine'
 
 interface ColdStorageProps {
   playerId: string
@@ -9,72 +11,79 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
   const { 
     players, 
     activePlayer, 
-    transferToColdStorage, 
-    transferFromColdStorage,
-    transferFromWalletCardToColdStorage,
-    depositETHToWalletCard
+    gameId
   } = useGameStore()
+  const { depositToColdStorage, withdrawFromColdStorage, getFullGameState } = useGameEngine()
   const [transferAmount, setTransferAmount] = useState(1)
   const [showTransferModal, setShowTransferModal] = useState(false)
-  const [selectedSource, setSelectedSource] = useState<'hot-wallet' | string>('hot-wallet')
+  const [isTransferring, setIsTransferring] = useState(false)
   
+  const { wallets } = useWallets()
   const player = players[playerId as keyof typeof players]
-  // For now, determine if current player based on playerId (simplified after demo mode removal)
-  const isCurrentPlayer = true // Will be enhanced with wallet address detection
-  const canTransfer = activePlayer === playerId
+  
+  // Get current user's wallet address
+  const privyWallet = wallets.find(w => w.walletClientType === 'privy')
+  const userAddress = privyWallet?.address
+  
+  // Check if the current user's address matches the activePlayer
+  const isCurrentPlayer = Boolean(activePlayer && userAddress && activePlayer.toLowerCase() === userAddress.toLowerCase())
+  const canTransfer = isCurrentPlayer
   
   const coldStorageBalance = Number(player?.coldStorage || 0)
   const hotWalletBalance = Number(player?.eth || 0)
   const withdrawnThisTurn = Number(player?.coldStorageWithdrawnThisTurn || 0)
   const remainingWithdrawal = Math.max(0, 1 - withdrawnThisTurn)
-  const winAmount = 10 // 10 ETH wins the game
+  const winAmount = 20 // 20 ETH wins the game
   
-  // Find wallet cards on the board that have ETH
-  const walletCards = player?.board?.filter(card => 
-    (card.type === 'EOA' || card.name.toLowerCase().includes('wallet')) && 
-    (card.heldETH || 0) > 0
-  ) || []
+  // For contract-based cold storage, only use hot wallet ETH
+  const totalAvailableETH = hotWalletBalance
   
-  // Calculate total available ETH from all sources
-  const totalAvailableETH = hotWalletBalance + walletCards.reduce((sum, card) => sum + (card.heldETH || 0), 0)
-  
-  const handleTransferToColdStorage = () => {
-    if (!canTransfer) return
+  const handleTransferToColdStorage = async () => {
+    if (!canTransfer || !gameId || isTransferring) return
     
-    if (selectedSource === 'hot-wallet') {
-      if (hotWalletBalance >= transferAmount) {
-        transferToColdStorage(playerId, transferAmount)
+    if (hotWalletBalance >= transferAmount) {
+      try {
+        setIsTransferring(true)
+        await depositToColdStorage(gameId, transferAmount)
+        
+        // Refresh game state after transaction
+        setTimeout(async () => {
+          await getFullGameState(gameId)
+        }, 3000)
+        
         setShowTransferModal(false)
         setTransferAmount(1)
-        setSelectedSource('hot-wallet')
-      }
-    } else {
-      // Transfer from wallet card
-      const card = walletCards.find(c => c.id === selectedSource)
-      if (card && (card.heldETH || 0) >= transferAmount) {
-        transferFromWalletCardToColdStorage(playerId, selectedSource, transferAmount)
-        setShowTransferModal(false)
-        setTransferAmount(1)
-        setSelectedSource('hot-wallet')
+      } catch (error) {
+        console.error('Failed to deposit to cold storage:', error)
+      } finally {
+        setIsTransferring(false)
       }
     }
   }
 
-  const handleTransferFromColdStorage = () => {
-    if (canTransfer && coldStorageBalance >= transferAmount && remainingWithdrawal >= transferAmount) {
-      transferFromColdStorage(playerId, transferAmount)
+  const handleTransferFromColdStorage = async () => {
+    if (!canTransfer || !gameId || isTransferring || coldStorageBalance < transferAmount || remainingWithdrawal < transferAmount) return
+    
+    try {
+      setIsTransferring(true)
+      await withdrawFromColdStorage(gameId, transferAmount)
+      
+      // Refresh game state after transaction
+      setTimeout(async () => {
+        await getFullGameState(gameId)
+      }, 3000)
+      
       setShowTransferModal(false)
       setTransferAmount(1)
+    } catch (error) {
+      console.error('Failed to withdraw from cold storage:', error)
+    } finally {
+      setIsTransferring(false)
     }
   }
 
-  const getSelectedSourceBalance = () => {
-    if (selectedSource === 'hot-wallet') {
-      return hotWalletBalance
-    }
-    const card = walletCards.find(c => c.id === selectedSource)
-    return card?.heldETH || 0
-  }
+  // Simplified - only hot wallet balance
+  const getSelectedSourceBalance = () => hotWalletBalance
 
   const progressPercentage = Math.min((coldStorageBalance / winAmount) * 100, 100)
   const isWinner = coldStorageBalance >= winAmount
@@ -121,12 +130,10 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
           </div>
         </div>
 
-        {/* Available Sources Info */}
-        {walletCards.length > 0 && (
-          <div className="text-xs text-gray-400 mb-2 text-center">
-            + {walletCards.reduce((sum, card) => sum + (card.heldETH || 0), 0)} ETH in {walletCards.length} wallet{walletCards.length > 1 ? 's' : ''}
-          </div>
-        )}
+        {/* Available ETH Info */}
+        <div className="text-xs text-gray-400 mb-2 text-center">
+          {totalAvailableETH} ETH available in hot wallet
+        </div>
 
         {/* Transfer Button - Only show for current player */}
         {isCurrentPlayer && canTransfer && (
@@ -139,9 +146,9 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
         )}
 
         {/* Status for non-interactive states */}
-        {isCurrentPlayer && !canTransfer && (
+        {!canTransfer && (
           <div className="text-center text-xs text-gray-400">
-            {activePlayer !== playerId ? 'Not your turn' : 'Cannot transfer during this phase'}
+            {!isCurrentPlayer ? 'Not your turn' : 'Cannot transfer during this phase'}
           </div>
         )}
       </div>
@@ -153,30 +160,11 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
             <h3 className="text-lg font-bold text-white mb-4">Transfer ETH</h3>
             
             <div className="space-y-4">
-              {/* ETH Source Selection */}
-              <div>
-                <label className="block text-sm text-gray-300 mb-2">
-                  Transfer From:
-                </label>
-                <select
-                  value={selectedSource}
-                  onChange={(e) => setSelectedSource(e.target.value)}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
-                >
-                  <option value="hot-wallet">🔥 Hot Wallet ({hotWalletBalance} ETH)</option>
-                  {walletCards.map(card => (
-                    <option key={card.id} value={card.id}>
-                      👤 {card.name} ({card.heldETH} ETH)
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               {/* Current Balances */}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="text-center">
-                  <div className="text-eth-secondary font-bold">Selected Source</div>
-                  <div className="text-white">{getSelectedSourceBalance()} ETH</div>
+                  <div className="text-eth-secondary font-bold">Hot Wallet</div>
+                  <div className="text-white">{hotWalletBalance} ETH</div>
                 </div>
                 <div className="text-center">
                   <div className="text-eth-primary font-bold">Cold Storage</div>
@@ -207,11 +195,9 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
               )}
 
               {/* Total Available */}
-              {(walletCards.length > 0) && (
-                <div className="text-center text-sm text-gray-400">
-                  Total Available: {totalAvailableETH} ETH from all sources
-                </div>
-              )}
+              <div className="text-center text-sm text-gray-400">
+                Total Available: {totalAvailableETH} ETH in hot wallet
+              </div>
 
               {/* Transfer Amount */}
               <div>
@@ -232,18 +218,18 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
               <div className="flex gap-3">
                 <button
                   onClick={handleTransferToColdStorage}
-                  disabled={getSelectedSourceBalance() < transferAmount}
+                  disabled={isTransferring || getSelectedSourceBalance() < transferAmount}
                   className="flex-1 btn-primary text-sm py-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  → Cold Storage
+                  {isTransferring ? 'Transferring...' : '→ Cold Storage'}
                 </button>
                 <button
                   onClick={handleTransferFromColdStorage}
-                  disabled={coldStorageBalance < transferAmount || remainingWithdrawal < transferAmount}
+                  disabled={isTransferring || coldStorageBalance < transferAmount || remainingWithdrawal < transferAmount}
                   className="flex-1 btn-secondary text-sm py-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  → Hot Wallet
-                  {remainingWithdrawal < transferAmount && remainingWithdrawal < coldStorageBalance && (
+                  {isTransferring ? 'Transferring...' : '→ Hot Wallet'}
+                  {!isTransferring && remainingWithdrawal < transferAmount && remainingWithdrawal < coldStorageBalance && (
                     <div className="text-xs mt-1">Limit: {remainingWithdrawal} ETH</div>
                   )}
                 </button>
@@ -252,7 +238,8 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
               {/* Cancel */}
               <button
                 onClick={() => setShowTransferModal(false)}
-                className="w-full text-gray-400 hover:text-white transition-colors text-sm"
+                disabled={isTransferring}
+                className="w-full text-gray-400 hover:text-white transition-colors text-sm disabled:opacity-50"
               >
                 Cancel
               </button>

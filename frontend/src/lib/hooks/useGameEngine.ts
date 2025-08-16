@@ -314,6 +314,52 @@ export const useGameEngine = () => {
     }
   }
 
+  const depositToColdStorage = async (gameId: number, amount: number) => {
+    try {
+      console.log(`Depositing ${amount} ETH to cold storage for game ${gameId}`)
+      const args = [BigInt(gameId), BigInt(amount)]
+      
+      const result = await privyWriteContract({
+        address: CONTRACT_ADDRESSES.GAME_ENGINE,
+        abi: GameEngineABI,
+        functionName: 'depositToColdStorage',
+        args,
+      })
+      
+      // Track the transaction
+      trackTransaction('depositToColdStorage', args, result)
+      
+      console.log('ETH deposited to cold storage successfully:', result)
+      return result
+    } catch (error) {
+      console.error('Error depositing to cold storage:', error)
+      throw error
+    }
+  }
+
+  const withdrawFromColdStorage = async (gameId: number, amount: number) => {
+    try {
+      console.log(`Withdrawing ${amount} ETH from cold storage for game ${gameId}`)
+      const args = [BigInt(gameId), BigInt(amount)]
+      
+      const result = await privyWriteContract({
+        address: CONTRACT_ADDRESSES.GAME_ENGINE,
+        abi: GameEngineABI,
+        functionName: 'withdrawFromColdStorage',
+        args,
+      })
+      
+      // Track the transaction
+      trackTransaction('withdrawFromColdStorage', args, result)
+      
+      console.log('ETH withdrawn from cold storage successfully:', result)
+      return result
+    } catch (error) {
+      console.error('Error withdrawing from cold storage:', error)
+      throw error
+    }
+  }
+
   // Helper function to get active games from the blockchain
   const getActiveGames = async (minutesAgo: number = 30) => {
     try {
@@ -601,6 +647,8 @@ export const useGameEngine = () => {
     endTurn,
     playCard,
     stakeETH,
+    depositToColdStorage,
+    withdrawFromColdStorage,
     getActiveGames,
     getGameState,
     getDetailedGameState,

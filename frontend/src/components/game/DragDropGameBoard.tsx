@@ -472,7 +472,7 @@ export function DragDropGameBoard() {
   }, [gameId])
   
   const { wallets, ready: walletsReady } = useWallets()
-  const { endTurn, drawToStartTurn, getDetailedGameState, getFullGameState } = useGameEngine()
+  const { endTurn, drawToStartTurn, getDetailedGameState, getFullGameState, playCard } = useGameEngine()
   const [activeId, setActiveId] = useState<string | null>(null)
   const [draggedCard, setDraggedCard] = useState<Card | null>(null)
   const [isEndingTurn, setIsEndingTurn] = useState(false)
@@ -575,7 +575,7 @@ export function DragDropGameBoard() {
     }
   }
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event
     setActiveId(null)
     setDraggedCard(null)
@@ -602,18 +602,21 @@ export function DragDropGameBoard() {
         }
         
         if (cardIndex !== undefined && cardIndex !== null && cardIndex >= 0) {
-          playCardByIndex(playerId, cardIndex)
-          // Fetch updated game state after playing card
-          if (gameId !== null) {
+          // Call playCard directly from useGameEngine instead of through store
+          try {
+            await playCard(gameId, cardIndex)
+            // Fetch updated game state after playing card
             setTimeout(async () => {
               await getFullGameState(gameId)
             }, 1000)
+          } catch (error) {
+            console.error('Failed to play card:', error)
           }
         } else {
-          // Card not found in hand
+          console.error('Card not found in hand')
         }
       } else {
-        // Cannot play card - insufficient ETH or not player's turn
+        console.log('Cannot play card - insufficient ETH or not player\'s turn')
       }
     }
     

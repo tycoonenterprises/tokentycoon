@@ -373,8 +373,8 @@ export const useGameStore = create<GameState & GameActions>()(
               id: gameView.player1, // Use actual contract addresses
               balance: 20, // Default health
               eth: convertBigInt(gameView.player1ETH),
-              coldStorage: 0,
-              coldStorageWithdrawnThisTurn: 0,
+              coldStorage: convertBigInt(gameView.player1ColdStorage || 0),
+              coldStorageWithdrawnThisTurn: convertBigInt(gameView.player1ColdStorageWithdrawnThisTurn || 0),
               hand: [], // Will be populated by updatePlayerHandFromContract
               board: [], // Will be populated by updatePlayerBattlefieldFromContract
               deck: [], // Not available from contract GameView
@@ -385,8 +385,8 @@ export const useGameStore = create<GameState & GameActions>()(
               id: gameView.player2, // Use actual contract addresses
               balance: 20, // Default health
               eth: convertBigInt(gameView.player2ETH),
-              coldStorage: 0,
-              coldStorageWithdrawnThisTurn: 0,
+              coldStorage: convertBigInt(gameView.player2ColdStorage || 0),
+              coldStorageWithdrawnThisTurn: convertBigInt(gameView.player2ColdStorageWithdrawnThisTurn || 0),
               hand: [], // Will be populated by updatePlayerHandFromContract
               board: [], // Will be populated by updatePlayerBattlefieldFromContract
               deck: [], // Not available from contract GameView
@@ -443,6 +443,8 @@ export const useGameStore = create<GameState & GameActions>()(
               ...get().players.player1,
               id: player1Id, // Ensure player ID is set
               eth: convertBigInt(gameView.player1ETH),
+              coldStorage: convertBigInt(gameView.player1ColdStorage || 0),
+              coldStorageWithdrawnThisTurn: convertBigInt(gameView.player1ColdStorageWithdrawnThisTurn || 0),
               deckRemaining: convertBigInt(gameView.player1DeckRemaining),
               battlefieldSize: convertBigInt(gameView.player1BattlefieldSize),
             },
@@ -450,6 +452,8 @@ export const useGameStore = create<GameState & GameActions>()(
               ...get().players.player2,
               id: player2Id, // Ensure player ID is set
               eth: convertBigInt(gameView.player2ETH),
+              coldStorage: convertBigInt(gameView.player2ColdStorage || 0),
+              coldStorageWithdrawnThisTurn: convertBigInt(gameView.player2ColdStorageWithdrawnThisTurn || 0),
               deckRemaining: convertBigInt(gameView.player2DeckRemaining),
               battlefieldSize: convertBigInt(gameView.player2BattlefieldSize),
             },
@@ -771,53 +775,13 @@ export const useGameStore = create<GameState & GameActions>()(
       },
 
       transferToColdStorage: (playerId: string, amount: number) => {
-        // Cold storage is a UI-only feature for now
-        // Keep local simulation until contract supports it
-        const { players } = get()
-        const player = players[playerId as keyof typeof players]
-        
-        if (player.eth >= amount) {
-          const newColdStorage = player.coldStorage + amount
-          
-          set({
-            players: {
-              ...players,
-              [playerId]: {
-                ...player,
-                eth: player.eth - amount,
-                coldStorage: newColdStorage,
-              },
-            },
-          })
-          
-          // Check for cold storage win condition
-          if (newColdStorage >= 10) {
-            get().endGame(playerId)
-          }
-        }
+        // Deprecated: Use contract functions via useGameEngine hook instead
+        console.warn('transferToColdStorage is deprecated. Use depositToColdStorage from useGameEngine instead.')
       },
 
       transferFromColdStorage: (playerId: string, amount: number) => {
-        const { players } = get()
-        const player = players[playerId as keyof typeof players]
-        
-        // Enforce 1 ETH per turn withdrawal limit
-        const maxWithdrawal = 1 - player.coldStorageWithdrawnThisTurn
-        const actualAmount = Math.min(amount, maxWithdrawal, player.coldStorage)
-        
-        if (actualAmount > 0) {
-          set({
-            players: {
-              ...players,
-              [playerId]: {
-                ...player,
-                eth: player.eth + actualAmount,
-                coldStorage: player.coldStorage - actualAmount,
-                coldStorageWithdrawnThisTurn: player.coldStorageWithdrawnThisTurn + actualAmount,
-              },
-            },
-          })
-        }
+        // Deprecated: Use contract functions via useGameEngine hook instead
+        console.warn('transferFromColdStorage is deprecated. Use withdrawFromColdStorage from useGameEngine instead.')
       },
 
       transferFromWalletCardToColdStorage: (playerId: string, cardId: string, amount: number) => {
