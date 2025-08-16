@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { usePrivy } from '@privy-io/react-auth'
 import { useBalance, useAccount } from 'wagmi'
 import { useCardRegistry } from '@/lib/hooks/useCardRegistry'
@@ -37,7 +37,7 @@ function ActionButton({ onClick, loading, disabled = false, children, className 
 }
 
 export function Web3Actions() {
-  const { user, signMessage, sendTransaction } = usePrivy()
+  const { user, signMessage, sendTransaction, authenticated, ready, connectWallet, createWallet } = usePrivy()
   const { address, isConnected, chain } = useAccount()
   const { data: balance } = useBalance({ address })
   
@@ -57,9 +57,24 @@ export function Web3Actions() {
 
   const clearError = () => setError('')
 
+  // Debug user state changes
+  useEffect(() => {
+    console.log('=== USER STATE CHANGE ===')
+    console.log('authenticated:', authenticated)
+    console.log('ready:', ready)
+    if (user) {
+      console.log('user.id:', user.id)
+      console.log('user.linkedAccounts:', user.linkedAccounts)
+      console.log('wallet accounts:', user.linkedAccounts?.filter(acc => acc.type === 'wallet'))
+    }
+    console.log('wagmi address:', address)
+    console.log('wagmi isConnected:', isConnected)
+    console.log('=== END USER STATE ===')
+  }, [user, authenticated, ready, address, isConnected])
+
   const handleSignMessage = async () => {
-    if (!user) {
-      setError('No user logged in')
+    if (!user || !authenticated || !ready) {
+      setError('User not properly authenticated')
       return
     }
     
@@ -67,18 +82,75 @@ export function Web3Actions() {
     setError('')
     
     try {
+      console.log('=== PRIVY WALLET DEBUG ===')
+      console.log('User authenticated:', authenticated)
+      console.log('User ready:', ready)
+      console.log('User object:', user)
+      console.log('User linkedAccounts:', user.linkedAccounts)
+      console.log('Address from wagmi:', address)
+      console.log('Is connected from wagmi:', isConnected)
+      
+      // Check wallets in detail
+      const walletAccounts = user.linkedAccounts?.filter(account => account.type === 'wallet') || []
+      console.log('Wallet accounts:', walletAccounts)
+      
+      const embeddedWallets = walletAccounts.filter(account => 
+        account.walletClient === 'privy' || account.walletClientType === 'privy'
+      )
+      console.log('Embedded wallets:', embeddedWallets)
+      
+      const connectedWallets = walletAccounts.filter(account => 
+        account.walletClient !== 'privy' && account.walletClientType !== 'privy'
+      )
+      console.log('Connected wallets:', connectedWallets)
+      
+      // If no wallets at all, try to create one
+      if (walletAccounts.length === 0) {
+        console.log('No wallets found, creating embedded wallet...')
+        try {
+          const createdWallet = await createWallet()
+          console.log('Embedded wallet created:', createdWallet)
+          
+          // Wait a moment for the wallet to be registered
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          
+          // Refresh user data
+          console.log('Updated user linkedAccounts:', user.linkedAccounts)
+        } catch (createErr: any) {
+          console.error('Failed to create embedded wallet:', createErr)
+          setError(`Failed to create wallet: ${createErr.message}`)
+          return
+        }
+      }
+      
+      // If still no embedded wallet but has connected wallet, try to connect it
+      if (embeddedWallets.length === 0 && connectedWallets.length === 0) {
+        console.log('No wallets available, trying to connect...')
+        try {
+          await connectWallet()
+          console.log('Wallet connected successfully')
+        } catch (connectErr: any) {
+          console.error('Failed to connect wallet:', connectErr)
+          setError(`Failed to connect wallet: ${connectErr.message}`)
+          return
+        }
+      }
+      
       const message = `Welcome to Ethereum TCG!\n\nTimestamp: ${new Date().toISOString()}\nUser: ${user.id}`
       
-      console.log('Attempting to sign message for user:', user.id)
-      console.log('User wallets:', user.linkedAccounts)
-      console.log('Address from wagmi:', address)
-      console.log('Is connected:', isConnected)
-      
+      console.log('Attempting to sign message:', message)
       const signResult = await signMessage({ message })
       setSignedMessage(signResult.signature)
       console.log('Message signed successfully:', signResult)
+      console.log('=== END DEBUG ===')
     } catch (err: any) {
       console.error('Message signing error:', err)
+      console.error('Error details:', {
+        name: err.name,
+        message: err.message,
+        stack: err.stack,
+        code: err.code
+      })
       setError(`Message signing failed: ${err.message || err}`)
     } finally {
       setIsSigningMessage(false)
