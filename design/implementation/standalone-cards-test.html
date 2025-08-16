@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standalone Cards Test - High Contrast & Self-Contained</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/token-tycoon-v2.css">
+    <link rel="stylesheet" href="css/card-abilities.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #0A0E27 0%, #1A1E3A 100%);
+            font-family: 'Orbitron', sans-serif;
+            padding: 2rem;
+        }
+        
+        .test-title {
+            color: #00D9FF;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 15px #00D9FF;
+            text-align: center;
+        }
+        
+        .test-subtitle {
+            color: #F0F0F0;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            max-width: 700px;
+            line-height: 1.4;
+        }
+        
+        .cards-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            justify-items: center;
+            max-width: 1300px;
+            width: 100%;
+        }
+        
+        .section-header {
+            grid-column: 1 / -1;
+            color: #FFA500;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 2rem 0 1rem 0;
+            text-shadow: 0 0 10px #FFA500;
+            padding: 0.5rem;
+            background: rgba(255, 165, 0, 0.1);
+            border: 2px solid rgba(255, 165, 0, 0.3);
+            border-radius: 8px;
+        }
+        
+        /* ULTRA HIGH CONTRAST CARD TITLES */
+        .card-name {
+            background: linear-gradient(135deg, #000000, #1A1A1A) !important;
+            border: 4px solid #FFFFFF !important;
+            box-shadow: 
+                0 0 40px rgba(255, 255, 255, 0.9),
+                inset 0 0 20px rgba(0, 217, 255, 0.3) !important;
+            padding: 0.8rem 1rem !important;
+            margin: 0.5rem !important;
+            border-radius: 12px !important;
+        }
+        
+        .name-text {
+            color: #FFFFFF !important;
+            font-weight: 900 !important;
+            font-size: 1.1rem !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.1em !important;
+            text-shadow: 
+                0 0 10px #FFFFFF,
+                0 0 20px #FFFFFF,
+                2px 2px 6px #000000,
+                -2px -2px 6px #000000 !important;
+        }
+        
+        /* SELF-CONTAINED EXPANDABLE TEXT */
+        .card-rules-text {
+            background: rgba(0, 0, 0, 0.95) !important;
+            border: 3px solid rgba(0, 217, 255, 0.8) !important;
+            padding: 1rem !important;
+            margin: 0.5rem !important;
+            border-radius: 8px !important;
+            min-height: 80px !important;
+            max-height: 120px !important;
+            overflow: hidden !important;
+            cursor: pointer !important;
+            transition: max-height 0.3s ease !important;
+            position: relative !important;
+        }
+        
+        .card-rules-text:hover {
+            max-height: 200px !important;
+            overflow-y: auto !important;
+            border-color: rgba(0, 217, 255, 1) !important;
+        }
+        
+        .card-rules-text::after {
+            content: "👁️ Hover to expand";
+            position: absolute;
+            bottom: 4px;
+            right: 8px;
+            font-size: 0.7rem;
+            color: #00D9FF;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 2px 6px;
+            border-radius: 4px;
+            opacity: 0.8;
+        }
+        
+        .card-rules-text:hover::after {
+            content: "Expanded";
+            opacity: 0.6;
+        }
+        
+        .description-text {
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            font-size: 0.95rem !important;
+            line-height: 1.3 !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 1) !important;
+        }
+        
+        /* ENHANCED STATS VISIBILITY */
+        .card-stats-footer {
+            background: rgba(0, 0, 0, 0.95) !important;
+            border-top: 3px solid rgba(0, 217, 255, 0.8) !important;
+            padding: 0.8rem !important;
+            margin: 0.5rem !important;
+            border-radius: 0 0 8px 8px !important;
+        }
+        
+        .stat-item {
+            background: rgba(0, 217, 255, 0.2) !important;
+            border: 2px solid rgba(0, 217, 255, 0.8) !important;
+            padding: 0.4rem 0.6rem !important;
+            font-weight: 900 !important;
+        }
+        
+        .stat-value {
+            color: #FFFFFF !important;
+            font-size: 1rem !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 1) !important;
+        }
+        
+        /* HIGH CONTRAST ABILITY MECHANICS */
+        .ability-mechanic {
+            background: rgba(0, 0, 0, 0.8) !important;
+            border: 2px solid rgba(0, 217, 255, 0.6) !important;
+            border-left: 4px solid var(--mechanic-color, #00D9FF) !important;
+            padding: 0.4rem 0.6rem !important;
+            margin: 0.3rem 0 !important;
+        }
+        
+        .mechanic-text {
+            color: #FFFFFF !important;
+            font-weight: 600 !important;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 1) !important;
+        }
+        
+        /* Specific mechanic colors */
+        .destroy-mechanic {
+            --mechanic-color: #FF0044;
+            border-left-color: #FF0044 !important;
+        }
+        
+        .takeover-mechanic {
+            --mechanic-color: #DC143C;
+            border-left-color: #DC143C !important;
+        }
+        
+        .yield-mechanic {
+            --mechanic-color: #00FF7F;
+            border-left-color: #00FF7F !important;
+        }
+        
+        .storage-mechanic {
+            --mechanic-color: #4682B4;
+            border-left-color: #4682B4 !important;
+        }
+        
+        .shield-mechanic {
+            --mechanic-color: #32CD32;
+            border-left-color: #32CD32 !important;
+        }
+        
+        .steal-mechanic {
+            --mechanic-color: #DC143C;
+            border-left-color: #DC143C !important;
+        }
+        
+        .burn-mechanic {
+            --mechanic-color: #FF4500;
+            border-left-color: #FF4500 !important;
+        }
+        
+        .gain-mechanic {
+            --mechanic-color: #00FF7F;
+            border-left-color: #00FF7F !important;
+        }
+        
+        .draw-mechanic {
+            --mechanic-color: #8A2BE2;
+            border-left-color: #8A2BE2 !important;
+        }
+        
+        /* Enhanced card headers */
+        .card-header {
+            padding: 0.6rem !important;
+            background: rgba(0, 0, 0, 0.8) !important;
+            border-bottom: 2px solid rgba(0, 217, 255, 0.6) !important;
+        }
+        
+        .card-cost .cost-value {
+            color: #FFFFFF !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 1) !important;
+            font-weight: 900 !important;
+            font-size: 1.2rem !important;
+        }
+        
+        .card-type .type-label {
+            color: #FFFFFF !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 1) !important;
+            font-weight: 700 !important;
+        }
+        
+        /* Enhanced art backgrounds */
+        .literal-art {
+            background: rgba(0, 0, 0, 0.6) !important;
+            border-radius: 8px !important;
+            padding: 15px !important;
+            border: 2px solid rgba(0, 217, 255, 0.4) !important;
+            min-height: 60px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-direction: column !important;
+        }
+        
+        .feature-highlight {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00FF44;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            text-align: center;
+            color: #00FF44;
+            font-weight: bold;
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body class="cyberpunk-theme">
+    <div class="test-title">🎴 Standalone Cards Test</div>
+    <div class="test-subtitle">
+        <strong>Zero JavaScript • High Contrast • Self-Contained Functionality</strong><br>
+        Card titles now have maximum contrast. Long descriptions expand on hover. All data matches cards.json exactly.
+    </div>
+    
+    <div class="cards-showcase">
+        
+        <div class="feature-highlight">
+            ✅ WHITE TEXT on BLACK backgrounds • ✅ CSS-only hover expansion • ✅ Correct JSON data • ✅ No external dependencies
+        </div>
+        
+        <!-- SECTION: Maximum Destruction Cards -->
+        <div class="section-header">💥 MASSIVE DESTRUCTION - CORRECT VALUES</div>
+        
+        <!-- Lost Keys - destroy 100 -->
+        <div class="card action-card premium-tier" data-card-name="Lost Keys" data-type="Action" data-cost="4">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">4</span>
+                    <span class="cost-symbol">Ξ</span>
+                </div>
+                <div class="card-type action-type">
+                    <span class="type-icon">⚡</span>
+                    <span class="type-label">Action</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Lost Keys</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="color: #FF0044; font-size: 28px; text-shadow: 0 0 10px #FF0044;">🔑💀</div>
+                        <div style="color: #FF0044; font-size: 10px; font-weight: bold; text-shadow: 1px 1px 2px #000;">TOTAL WALLET LOSS</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Target wallet loses all of its ETH. This represents the devastating loss that occurs when private keys are permanently lost, making the wallet's contents completely inaccessible forever.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic destroy-mechanic">
+                        <span class="mechanic-symbol">💥</span>
+                        <span class="mechanic-text">Destroy target (massive damage)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item destroy-stat">
+                        <span class="stat-symbol">💥</span>
+                        <span class="stat-value">100</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Liquidation Cascade - destroy 99 -->
+        <div class="card action-card legendary-tier" data-card-name="Liquidation Cascade" data-type="Action" data-cost="5">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">5</span>
+                    <span class="cost-symbol">Ξ</span>
+                </div>
+                <div class="card-type action-type">
+                    <span class="type-icon">⚡</span>
+                    <span class="type-label">Action</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Liquidation Cascade</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="color: #FF0044; font-size: 24px; text-shadow: 0 0 10px #FF0044;">📉💥📉</div>
+                        <div style="color: #FF0044; font-size: 10px; font-weight: bold; text-shadow: 1px 1px 2px #000;">MASS LIQUIDATION EVENT</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Destroy all opponent wallets with 4+ ETH. A catastrophic market event that triggers automatic liquidation of overleveraged positions, creating a domino effect that destroys multiple wallets simultaneously.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic destroy-mechanic">
+                        <span class="mechanic-symbol">💥</span>
+                        <span class="mechanic-text">Destroy all qualifying targets</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item destroy-stat">
+                        <span class="stat-symbol">💥</span>
+                        <span class="stat-value">99</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION: Multi-Ability Cards -->
+        <div class="section-header">⚡ MULTI-ABILITY CARDS</div>
+        
+        <!-- 51% Attack - destroy 1 AND takeover 5 -->
+        <div class="card action-card legendary-tier" data-card-name="51% Attack" data-type="Action" data-cost="5">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">5</span>
+                    <span class="cost-symbol">Ξ</span>
+                </div>
+                <div class="card-type action-type">
+                    <span class="type-icon">⚡</span>
+                    <span class="type-label">Action</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">51% Attack</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="color: #DC143C; font-size: 24px; text-shadow: 0 0 10px #DC143C;">👑⛓️💀</div>
+                        <div style="color: #DC143C; font-size: 10px; font-weight: bold; text-shadow: 1px 1px 2px #000;">BLOCKCHAIN TAKEOVER</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Take control of target Chain. By controlling the majority of mining power or validator nodes, an attacker can reorganize the blockchain, reverse transactions, and effectively control the network.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic destroy-mechanic">
+                        <span class="mechanic-symbol">💥</span>
+                        <span class="mechanic-text">Destroy 1 target</span>
+                    </div>
+                    <div class="ability-mechanic takeover-mechanic">
+                        <span class="mechanic-symbol">👑</span>
+                        <span class="mechanic-text">Take control (Power 5)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item destroy-stat">
+                        <span class="stat-symbol">💥</span>
+                        <span class="stat-value">1</span>
+                    </div>
+                    <div class="stat-item takeover-stat">
+                        <span class="stat-symbol">👑</span>
+                        <span class="stat-value">5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION: Correct Yield Values -->
+        <div class="section-header">📈 YIELD CARDS - CORRECT VALUES</div>
+        
+        <!-- Aave - yield 2, not 1 -->
+        <div class="card defi-card premium-tier" data-card-name="Aave" data-type="DeFi" data-cost="4">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">4</span>
+                    <span class="cost-symbol">Ξ</span>
+                </div>
+                <div class="card-type defi-type">
+                    <span class="type-icon">💎</span>
+                    <span class="type-label">DeFi</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Aave</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="color: #00FF7F; font-size: 24px; text-shadow: 0 0 10px #00FF7F;">📈🏦💎</div>
+                        <div style="color: #00FF7F; font-size: 10px; font-weight: bold; text-shadow: 1px 1px 2px #000;">LENDING PROTOCOL</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Gain 2 ETH per turn per ETH stored here. A sophisticated lending protocol that allows users to earn yield by supplying liquidity to money markets, with rates determined algorithmically based on supply and demand.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic yield-mechanic">
+                        <span class="mechanic-symbol">📈</span>
+                        <span class="mechanic-text">+2 ETH per turn per ETH stored here</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item yield-stat">
+                        <span class="stat-symbol">📈</span>
+                        <span class="stat-value">2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION: Complex Storage + Shield -->
+        <div class="section-header">🏦 STORAGE + PROTECTION</div>
+        
+        <!-- Multi-sig Wallet - storage 8 AND shield 1 -->
+        <div class="card eoa-card standard-tier" data-card-name="Multi-sig Wallet" data-type="EOA" data-cost="3">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">3</span>
+                    <span class="cost-symbol">Ξ</span>
+                </div>
+                <div class="card-type eoa-type">
+                    <span class="type-icon">👤</span>
+                    <span class="type-label">EOA</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Multi-sig Wallet</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="color: #32CD32; font-size: 24px; text-shadow: 0 0 10px #32CD32;">🏦🛡️🔐</div>
+                        <div style="color: #32CD32; font-size: 10px; font-weight: bold; text-shadow: 1px 1px 2px #000;">SECURE MULTI-SIG VAULT</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Storage max 8. The first time each turn this would be stolen from or destroyed, prevent it. A wallet that requires multiple cryptographic signatures to authorize transactions, providing enhanced security against single points of failure and unauthorized access attempts.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic storage-mechanic">
+                        <span class="mechanic-symbol">🏦</span>
+                        <span class="mechanic-text">Store up to 8 ETH</span>
+                    </div>
+                    <div class="ability-mechanic shield-mechanic">
+                        <span class="mechanic-symbol">🛡️</span>
+                        <span class="mechanic-text">Prevent first 1 attack per turn</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item storage-stat">
+                        <span class="stat-symbol">🏦</span>
+                        <span class="stat-value">8</span>
+                    </div>
+                    <div class="stat-item shield-stat">
+                        <span class="stat-symbol">🛡️</span>
+                        <span class="stat-value">1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION: New Ability Types -->
+        <div class="section-header">🆕 NEW ABILITY TYPES</div>
+        
+        <!-- Secret Key Leak - steal 3 -->
+        <div class="card action-card premium-tier" data-card-name="Secret Key Leak" data-type="Action" data-cost="5">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">5</span>
+                    <span class="cost-symbol">Ξ</span>
+                </div>
+                <div class="card-type action-type">
+                    <span class="type-icon">⚡</span>
+                    <span class="type-label">Action</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Secret Key Leak</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="color: #DC143C; font-size: 24px; text-shadow: 0 0 10px #DC143C;">🔑💰🔥</div>
+                        <div style="color: #DC143C; font-size: 10px; font-weight: bold; text-shadow: 1px 1px 2px #000;">PRIVATE KEY THEFT</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Steal up to 3 ETH from a target wallet. When private keys are compromised through social engineering, phishing, or security breaches, attackers can directly access and drain funds from the victim's wallet.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic steal-mechanic">
+                        <span class="mechanic-symbol">🔥</span>
+                        <span class="mechanic-text">Steal 3 ETH</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item steal-stat">
+                        <span class="stat-symbol">🔥</span>
+                        <span class="stat-value">3</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

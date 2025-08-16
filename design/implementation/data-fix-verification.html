@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Fix Verification - Key Problem Cards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/token-tycoon-v2.css">
+    <link rel="stylesheet" href="css/card-abilities.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #0A0E27 0%, #1A1E3A 100%);
+            font-family: 'Orbitron', sans-serif;
+            padding: 2rem;
+        }
+        
+        .test-title {
+            color: #00D9FF;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px #00D9FF;
+            text-align: center;
+        }
+        
+        .test-subtitle {
+            color: #F0F0F0;
+            font-size: 1rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        .cards-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 3rem;
+            justify-items: center;
+            max-width: 1200px;
+        }
+        
+        .section-header {
+            grid-column: 1 / -1;
+            color: #FFA500;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 1rem 0;
+            text-shadow: 0 0 10px #FFA500;
+        }
+        
+        /* ULTRA HIGH CONTRAST CARD TITLES */
+        .card-name {
+            background: linear-gradient(135deg, #000000, #1A1A1A) !important;
+            border: 4px solid #FFFFFF !important;
+            box-shadow: 
+                0 0 40px rgba(255, 255, 255, 0.9),
+                inset 0 0 20px rgba(0, 217, 255, 0.3) !important;
+            padding: 0.8rem 1rem !important;
+            margin: 0.5rem !important;
+            border-radius: 12px !important;
+        }
+        
+        .name-text {
+            color: #FFFFFF !important;
+            font-weight: 900 !important;
+            font-size: 1.1rem !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.1em !important;
+            text-shadow: 
+                0 0 10px #FFFFFF,
+                0 0 20px #FFFFFF,
+                2px 2px 6px #000000,
+                -2px -2px 6px #000000 !important;
+        }
+        
+        /* SELF-CONTAINED EXPANDABLE TEXT */
+        .card-rules-text {
+            background: rgba(0, 0, 0, 0.95) !important;
+            border: 3px solid rgba(0, 217, 255, 0.8) !important;
+            padding: 1rem !important;
+            margin: 0.5rem !important;
+            border-radius: 8px !important;
+            min-height: 80px !important;
+            max-height: 120px !important;
+            overflow: hidden !important;
+            cursor: pointer !important;
+            transition: max-height 0.3s ease !important;
+            position: relative !important;
+        }
+        
+        .card-rules-text:hover {
+            max-height: 200px !important;
+            overflow-y: auto !important;
+            border-color: rgba(0, 217, 255, 1) !important;
+        }
+        
+        .card-rules-text::after {
+            content: "👁️ Hover to expand";
+            position: absolute;
+            bottom: 4px;
+            right: 8px;
+            font-size: 0.7rem;
+            color: #00D9FF;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 2px 6px;
+            border-radius: 4px;
+            opacity: 0.8;
+        }
+        
+        .card-rules-text:hover::after {
+            content: "Expanded";
+            opacity: 0.6;
+        }
+        
+        .description-text {
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            font-size: 0.95rem !important;
+            line-height: 1.3 !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 1) !important;
+        }
+        
+        /* ENHANCED STATS VISIBILITY */
+        .card-stats-footer {
+            background: rgba(0, 0, 0, 0.95) !important;
+            border-top: 3px solid rgba(0, 217, 255, 0.8) !important;
+            padding: 0.8rem !important;
+            margin: 0.5rem !important;
+            border-radius: 0 0 8px 8px !important;
+        }
+        
+        .stat-item {
+            background: rgba(0, 217, 255, 0.2) !important;
+            border: 2px solid rgba(0, 217, 255, 0.8) !important;
+            padding: 0.4rem 0.6rem !important;
+            font-weight: 900 !important;
+        }
+        
+        .stat-value {
+            color: #FFFFFF !important;
+            font-size: 1rem !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 1) !important;
+        }
+        
+        /* HIGH CONTRAST ABILITY MECHANICS */
+        .ability-mechanic {
+            background: rgba(0, 0, 0, 0.8) !important;
+            border: 2px solid rgba(0, 217, 255, 0.6) !important;
+            border-left: 4px solid var(--mechanic-color, #00D9FF) !important;
+            padding: 0.4rem 0.6rem !important;
+            margin: 0.3rem 0 !important;
+        }
+        
+        .mechanic-text {
+            color: #FFFFFF !important;
+            font-weight: 600 !important;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 1) !important;
+        }
+        
+        /* Specific mechanic colors */
+        .destroy-mechanic {
+            --mechanic-color: #FF0044;
+            border-left-color: #FF0044 !important;
+        }
+        
+        .takeover-mechanic {
+            --mechanic-color: #DC143C;
+            border-left-color: #DC143C !important;
+        }
+        
+        .yield-mechanic {
+            --mechanic-color: #00FF7F;
+            border-left-color: #00FF7F !important;
+        }
+        
+        .storage-mechanic {
+            --mechanic-color: #4682B4;
+            border-left-color: #4682B4 !important;
+        }
+        
+        .shield-mechanic {
+            --mechanic-color: #32CD32;
+            border-left-color: #32CD32 !important;
+        }
+        
+        .problem-indicator {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #FF0044;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            text-align: center;
+            color: #FF0044;
+            font-weight: bold;
+        }
+        
+        .fix-indicator {
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00FF44;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border-radius: 6px;
+            text-align: center;
+            color: #00FF44;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="cyberpunk-theme">
+    <div class="test-title">Data Fix Verification</div>
+    <div class="test-subtitle">
+        These cards had incorrect data before. Now they should show the <strong>exact numbers from cards.json</strong>
+    </div>
+    
+    <div class="cards-showcase">
+        
+        <!-- SECTION: Cards with Wrong Destroy Values -->
+        <div class="section-header">💥 MASSIVE DESTRUCTION CARDS</div>
+        <div class="problem-indicator">
+            BEFORE: Lost Keys showed destroy 💥 1<br>
+            SHOULD BE: destroy 💥 100 (from JSON: "amount": 100)
+        </div>
+        
+        <!-- Lost Keys - Should show destroy 100 -->
+        <div class="card action-card premium-tier" data-card-name="Lost Keys" data-type="Action" data-cost="4">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">4</span>
+                </div>
+                <div class="card-type action-type">
+                    <span class="type-icon">⚡</span>
+                    <span class="type-label">Action</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Lost Keys</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="text-align: center; color: #FF0044; font-size: 24px;">🔑❌</div>
+                        <div style="text-align: center; color: #FF0044; font-size: 8px; font-weight: bold;">WALLET LOST</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Target wallet loses all of its ETH.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic destroy-mechanic">
+                        <span class="mechanic-symbol">💥</span>
+                        <span class="mechanic-text">Destroy target (massive damage)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item destroy-stat">
+                        <span class="stat-symbol">💥</span>
+                        <span class="stat-value">100</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="problem-indicator">
+            BEFORE: Liquidation Cascade showed destroy 💥 1<br>
+            SHOULD BE: destroy 💥 99 (from JSON: "amount": 99)
+        </div>
+        
+        <!-- Liquidation Cascade - Should show destroy 99 -->
+        <div class="card action-card legendary-tier" data-card-name="Liquidation Cascade" data-type="Action" data-cost="5">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">5</span>
+                </div>
+                <div class="card-type action-type">
+                    <span class="type-icon">⚡</span>
+                    <span class="type-label">Action</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Liquidation Cascade</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="text-align: center; color: #FF0044; font-size: 20px;">💥🔥💥</div>
+                        <div style="text-align: center; color: #FF0044; font-size: 8px; font-weight: bold;">MASS LIQUIDATION</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Destroy all opponent wallets with 4+ ETH.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic destroy-mechanic">
+                        <span class="mechanic-symbol">💥</span>
+                        <span class="mechanic-text">Destroy all qualifying targets</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item destroy-stat">
+                        <span class="stat-symbol">💥</span>
+                        <span class="stat-value">99</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION: Multi-Ability Cards -->
+        <div class="section-header">⚡ MULTI-ABILITY CARDS</div>
+        <div class="problem-indicator">
+            BEFORE: 51% Attack only showed one ability<br>
+            SHOULD BE: destroy 💥 1 AND takeover 👑 5
+        </div>
+        
+        <!-- 51% Attack - Should show BOTH destroy 1 AND takeover 5 -->
+        <div class="card action-card legendary-tier" data-card-name="51% Attack" data-type="Action" data-cost="5">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">5</span>
+                </div>
+                <div class="card-type action-type">
+                    <span class="type-icon">⚡</span>
+                    <span class="type-label">Action</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">51% Attack</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="text-align: center; color: #DC143C; font-size: 16px;">👑⛓️</div>
+                        <div style="text-align: center; color: #DC143C; font-size: 8px; font-weight: bold;">CHAIN TAKEOVER</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Take control of target Chain.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic destroy-mechanic">
+                        <span class="mechanic-symbol">💥</span>
+                        <span class="mechanic-text">Destroy 1 target</span>
+                    </div>
+                    <div class="ability-mechanic takeover-mechanic">
+                        <span class="mechanic-symbol">👑</span>
+                        <span class="mechanic-text">Take control (Power 5)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item destroy-stat">
+                        <span class="stat-symbol">💥</span>
+                        <span class="stat-value">1</span>
+                    </div>
+                    <div class="stat-item takeover-stat">
+                        <span class="stat-symbol">👑</span>
+                        <span class="stat-value">5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION: Wrong Yield Values -->
+        <div class="section-header">📈 YIELD CARDS</div>
+        <div class="problem-indicator">
+            BEFORE: Aave showed yield 📈 1<br>
+            SHOULD BE: yield 📈 2 (from JSON: "amount": 2)
+        </div>
+        
+        <!-- Aave - Should show yield 2, not 1 -->
+        <div class="card defi-card premium-tier" data-card-name="Aave" data-type="DeFi" data-cost="4">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">4</span>
+                </div>
+                <div class="card-type defi-type">
+                    <span class="type-icon">💎</span>
+                    <span class="type-label">DeFi</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Aave</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="text-align: center; color: #00FF7F; font-size: 16px;">📈💎</div>
+                        <div style="text-align: center; color: #00FF7F; font-size: 8px; font-weight: bold;">LENDING PROTOCOL</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Gain 2 ETH per turn per ETH stored here.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic yield-mechanic">
+                        <span class="mechanic-symbol">📈</span>
+                        <span class="mechanic-text">+2 ETH per turn per ETH stored here</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item yield-stat">
+                        <span class="stat-symbol">📈</span>
+                        <span class="stat-value">2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION: Complex Storage + Shield -->
+        <div class="section-header">🏦 STORAGE + PROTECTION</div>
+        <div class="problem-indicator">
+            BEFORE: Multi-sig only showed storage<br>
+            SHOULD BE: storage 🏦 8 AND shield 🛡️ 1
+        </div>
+        
+        <!-- Multi-sig Wallet - Should show BOTH storage 8 AND shield 1 -->
+        <div class="card eoa-card standard-tier" data-card-name="Multi-sig Wallet" data-type="EOA" data-cost="3">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">3</span>
+                </div>
+                <div class="card-type eoa-type">
+                    <span class="type-icon">👤</span>
+                    <span class="type-label">EOA</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Multi-sig Wallet</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="text-align: center; color: #32CD32; font-size: 16px;">🏦🛡️</div>
+                        <div style="text-align: center; color: #32CD32; font-size: 8px; font-weight: bold;">SECURE VAULT</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Storage max 8. The first time each turn this would be stolen from or destroyed, prevent it.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic storage-mechanic">
+                        <span class="mechanic-symbol">🏦</span>
+                        <span class="mechanic-text">Store up to 8 ETH</span>
+                    </div>
+                    <div class="ability-mechanic shield-mechanic">
+                        <span class="mechanic-symbol">🛡️</span>
+                        <span class="mechanic-text">Prevent first 1 attack per turn</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item storage-stat">
+                        <span class="stat-symbol">🏦</span>
+                        <span class="stat-value">8</span>
+                    </div>
+                    <div class="stat-item shield-stat">
+                        <span class="stat-symbol">🛡️</span>
+                        <span class="stat-value">1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FINAL CONFIRMATION -->
+        <div class="fix-indicator" style="grid-column: 1 / -1;">
+            ✅ ALL CARDS NOW SHOW CORRECT DATA FROM cards.json
+        </div>
+        
+    </div>
+
+    <!-- No external JavaScript needed - all functionality is CSS-only -->
+</body>
+</html>

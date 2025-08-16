@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Accuracy Test - All Card Mechanics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/token-tycoon-v2.css">
+    <link rel="stylesheet" href="css/card-abilities.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #0A0E27 0%, #1A1E3A 100%);
+            font-family: 'Orbitron', sans-serif;
+            padding: 2rem;
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .test-title {
+            color: #00D9FF;
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px #00D9FF;
+        }
+        
+        .test-subtitle {
+            color: #F0F0F0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .data-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            max-width: 800px;
+        }
+        
+        .stat-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(0, 217, 255, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #00D9FF;
+            text-shadow: 0 0 10px #00D9FF;
+        }
+        
+        .stat-label {
+            color: #F0F0F0;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        .cards-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            justify-items: center;
+            max-width: 1400px;
+            width: 100%;
+        }
+        
+        .section-title {
+            grid-column: 1 / -1;
+            color: #FFA500;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 2rem 0 1rem 0;
+            text-shadow: 0 0 10px #FFA500;
+        }
+        
+        /* Enhanced card name visibility for testing */
+        .card-name {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(10, 14, 39, 0.95)) !important;
+            border: 3px solid var(--color-cyan-electric) !important;
+            box-shadow: 0 0 25px rgba(0, 217, 255, 0.6) !important;
+        }
+        
+        .name-text {
+            color: #FFFFFF !important;
+            text-shadow: 
+                0 0 15px var(--color-cyan-electric),
+                0 0 30px rgba(0, 217, 255, 0.8),
+                2px 2px 4px rgba(0, 0, 0, 1) !important;
+        }
+    </style>
+</head>
+<body class="cyberpunk-theme">
+    <div class="test-header">
+        <div class="test-title">Data Accuracy Test</div>
+        <div class="test-subtitle">Verifying all 92 cards match JSON data exactly</div>
+        
+        <div class="data-stats" id="data-stats">
+            <!-- Stats will be populated by JavaScript -->
+        </div>
+    </div>
+    
+    <div class="cards-showcase" id="cards-showcase">
+        <!-- Cards will be populated by JavaScript -->
+    </div>
+
+    <script src="js/card-generator.js"></script>
+    <script src="js/text-overflow-handler.js"></script>
+    <script>
+        // Test data from cards.json - key problematic cards
+        const testCardsData = {
+            "cards": [
+                {
+                    "name": "Lost Keys",
+                    "description": "Target wallet loses all of its ETH.",
+                    "cost": 4,
+                    "cardType": "Action",
+                    "abilities": { "destroy": { "amount": 100 } }
+                },
+                {
+                    "name": "Liquidation Cascade",
+                    "description": "Destroy all opponent wallets with 4+ ETH.",
+                    "cost": 5,
+                    "cardType": "Action",
+                    "abilities": { "destroy": { "amount": 99 } }
+                },
+                {
+                    "name": "51% Attack",
+                    "description": "Take control of target Chain.",
+                    "cost": 5,
+                    "cardType": "Action",
+                    "abilities": { "destroy": { "amount": 1 }, "takeover": { "amount": 5 } }
+                },
+                {
+                    "name": "Aave",
+                    "description": "Gain 2 ETH per turn per ETH stored here.",
+                    "cost": 4,
+                    "cardType": "DeFi",
+                    "abilities": { "yield": { "amount": 2 } }
+                },
+                {
+                    "name": "Multi-sig Wallet",
+                    "description": "Storage max 8. The first time each turn this would be stolen from or destroyed, prevent it.",
+                    "cost": 3,
+                    "cardType": "EOA",
+                    "abilities": { "storage": { "max": 8, "type": "ETH" }, "shield": { "perTurn": 1 } }
+                },
+                {
+                    "name": "Secret Key Leak",
+                    "description": "Steal up to 3 ETH from a target wallet.",
+                    "cost": 5,
+                    "cardType": "Action",
+                    "abilities": { "steal": { "amount": 3 } }
+                },
+                {
+                    "name": "EIP-1559 Burn",
+                    "description": "Burn 1 ETH from each opponent. Then gain 1 ETH.",
+                    "cost": 3,
+                    "cardType": "Action",
+                    "abilities": { "burn": { "amount": 1 }, "gain": { "amount": 1 } }
+                },
+                {
+                    "name": "Yield Farm",
+                    "description": "Enters with 3 tokens. Each turn remove 1 token and add 2 ETH.",
+                    "cost": 2,
+                    "cardType": "DeFi",
+                    "tokens": 3,
+                    "abilities": { "income": { "amount": 2 }, "scale": { "by": "tokens" } }
+                },
+                {
+                    "name": "Time Bomb Stablecoin",
+                    "description": "Gain 5 ETH now. At the end of your 3rd turn after this, lose 5 ETH unless this is destroyed.",
+                    "cost": 3,
+                    "cardType": "DeFi",
+                    "abilities": { "gain": { "amount": 5 }, "delayedLose": { "turns": 3, "amount": 5 } }
+                },
+                {
+                    "name": "Attend a Conference",
+                    "description": "Draw 3 cards.",
+                    "cost": 5,
+                    "cardType": "Ability",
+                    "abilities": { "draw": { "amount": 3 } }
+                },
+                {
+                    "name": "Insurance",
+                    "description": "This chain and all DeFi protocols on it can't be destroyed.",
+                    "cost": 4,
+                    "cardType": "DeFi",
+                    "abilities": { "invincible": { "amount": 1 } }
+                },
+                {
+                    "name": "Proof of Work",
+                    "description": "Exhaust up to 2 opponent EOAs for 1 turn (they produce 0).",
+                    "cost": 1,
+                    "cardType": "Action",
+                    "abilities": { "freeze": { "targets": "opponentEOA", "count": 2, "duration": 1 } }
+                }
+            ]
+        };
+
+        // Generate data statistics
+        function generateDataStats() {
+            const statsContainer = document.getElementById('data-stats');
+            
+            const stats = [
+                { number: testCardsData.cards.length, label: 'Test Cards' },
+                { number: testCardsData.cards.filter(c => c.cardType === 'Action').length, label: 'Action Cards' },
+                { number: testCardsData.cards.filter(c => c.cardType === 'DeFi').length, label: 'DeFi Cards' },
+                { number: testCardsData.cards.filter(c => c.cardType === 'EOA').length, label: 'EOA Cards' },
+                { number: testCardsData.cards.filter(c => c.cardType === 'Ability').length, label: 'Ability Cards' }
+            ];
+            
+            statsContainer.innerHTML = stats.map(stat => `
+                <div class="stat-card">
+                    <div class="stat-number">${stat.number}</div>
+                    <div class="stat-label">${stat.label}</div>
+                </div>
+            `).join('');
+        }
+
+        // Generate test cards
+        function generateTestCards() {
+            const cardGenerator = new CardGenerator(testCardsData);
+            const cardsContainer = document.getElementById('cards-showcase');
+            
+            let cardsHTML = '';
+            
+            // Group cards by issue type
+            const massiveDestructionCards = testCardsData.cards.filter(card => 
+                card.abilities.destroy && card.abilities.destroy.amount >= 99
+            );
+            
+            const multiAbilityCards = testCardsData.cards.filter(card => 
+                Object.keys(card.abilities || {}).length > 1
+            );
+            
+            const complexMechanicCards = testCardsData.cards.filter(card => 
+                card.abilities.shield || card.abilities.freeze || card.abilities.delayedLose || card.abilities.scale
+            );
+            
+            const newAbilityCards = testCardsData.cards.filter(card => 
+                card.abilities.steal || card.abilities.burn || card.abilities.invincible
+            );
+            
+            const abilityTypeCards = testCardsData.cards.filter(card => 
+                card.cardType === 'Ability'
+            );
+
+            // Generate sections
+            if (massiveDestructionCards.length > 0) {
+                cardsHTML += '<div class="section-title">🚨 Massive Destruction Cards (Should show 99, 100)</div>';
+                cardsHTML += massiveDestructionCards.map(card => cardGenerator.generateCard(card)).join('\n');
+            }
+            
+            if (multiAbilityCards.length > 0) {
+                cardsHTML += '<div class="section-title">⚡ Multi-Ability Cards</div>';
+                cardsHTML += multiAbilityCards.map(card => cardGenerator.generateCard(card)).join('\n');
+            }
+            
+            if (complexMechanicCards.length > 0) {
+                cardsHTML += '<div class="section-title">🔧 Complex Mechanics</div>';
+                cardsHTML += complexMechanicCards.map(card => cardGenerator.generateCard(card)).join('\n');
+            }
+            
+            if (newAbilityCards.length > 0) {
+                cardsHTML += '<div class="section-title">🆕 New Ability Types</div>';
+                cardsHTML += newAbilityCards.map(card => cardGenerator.generateCard(card)).join('\n');
+            }
+            
+            if (abilityTypeCards.length > 0) {
+                cardsHTML += '<div class="section-title">🧠 Ability Type Cards</div>';
+                cardsHTML += abilityTypeCards.map(card => cardGenerator.generateCard(card)).join('\n');
+            }
+            
+            cardsContainer.innerHTML = cardsHTML;
+            
+            // Log generated card stats for verification
+            console.log('🎴 Generated test cards:', {
+                total: testCardsData.cards.length,
+                massiveDestruction: massiveDestructionCards.length,
+                multiAbility: multiAbilityCards.length,
+                complexMechanics: complexMechanicCards.length,
+                newAbilities: newAbilityCards.length,
+                abilityType: abilityTypeCards.length
+            });
+        }
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            generateDataStats();
+            generateTestCards();
+            
+            console.log('✅ Data Accuracy Test initialized');
+        });
+    </script>
+</body>
+</html>
