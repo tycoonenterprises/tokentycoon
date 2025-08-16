@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { DndContext, DragOverlay, closestCenter, useDroppable, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
@@ -444,20 +444,22 @@ function DropZone({ id, children, label, isEmpty, canDrop, isOver: isOverProp = 
 }
 
 export function DragDropGameBoard() {
-  const { 
-    players, 
-    activePlayer, 
-    playCard,
-    playCardByIndex,
-    moveCard,
-    gameId,
-    needsToDraw,
-    currentTurn 
-  } = useGameStore()
+  // Subscribe to specific store values to ensure re-renders
+  const players = useGameStore(state => state.players)
+  const activePlayer = useGameStore(state => state.activePlayer)
+  const playCardByIndex = useGameStore(state => state.playCardByIndex)
+  const gameId = useGameStore(state => state.gameId)
+  const needsToDraw = useGameStore(state => state.needsToDraw)
+  const currentTurn = useGameStore(state => state.currentTurn)
+  const updateGameFromContract = useGameStore(state => state.updateGameFromContract)
   
-  const { wallets } = useWallets()
-  const { user } = usePrivy()
-  const { endTurn, drawToStartTurn, getDetailedGameState, updateGameFromContract } = useGameEngine()
+  // Debug gameId
+  useEffect(() => {
+    console.log('🎮 DragDropGameBoard gameId changed:', gameId)
+  }, [gameId])
+  
+  const { wallets, ready: walletsReady } = useWallets()
+  const { endTurn, drawToStartTurn, getDetailedGameState, getFullGameState } = useGameEngine()
   const [activeId, setActiveId] = useState<string | null>(null)
   const [draggedCard, setDraggedCard] = useState<Card | null>(null)
   const [isEndingTurn, setIsEndingTurn] = useState(false)
@@ -469,73 +471,74 @@ export function DragDropGameBoard() {
   const privyWallet = wallets.find(w => w.walletClientType === 'privy')
   const userAddress = privyWallet?.address
   
-  // Determine which player we're viewing based on wallet address
-  const isViewingPlayer1 = userAddress?.toLowerCase() === player1.id?.toLowerCase()
-  const currentViewingPlayer = isViewingPlayer1 ? 'player1' : 'player2'
-  
-  // Poll game state every second to stay in sync with contract
   useEffect(() => {
-    if (!gameId || gameId === null || gameId === undefined) return
-    
-    let lastTurnNumber = -1
-    let lastActivePlayer = ''
-    
-    const pollGameState = async () => {
-      try {
-        const gameState = await getDetailedGameState(gameId)
-        if (gameState) {
-          // Only log if something changed
-          const turnChanged = gameState.turnNumber !== lastTurnNumber
-          const activePlayerChanged = gameState.activePlayer !== lastActivePlayer
-          
-          if (turnChanged || activePlayerChanged) {
-            console.log('Game state changed:', {
-              turnNumber: gameState.turnNumber,
-              currentTurn: gameState.currentTurn,
-              activePlayer: gameState.activePlayer,
-              needsToDraw: gameState.needsToDraw
-            })
-            lastTurnNumber = gameState.turnNumber
-            lastActivePlayer = gameState.activePlayer
-          }
-          
-          updateGameFromContract(gameState)
-        }
-      } catch (error) {
-        // Only log errors occasionally to avoid spam
-        if (Math.random() < 0.1) {
-          console.error('Error polling game state:', error)
-        }
-      }
-    }
-    
-    // Poll immediately
-    pollGameState()
-    
-    // Set up interval to poll every second
-    const intervalId = setInterval(pollGameState, 1000)
-    
-    // Cleanup
-    return () => clearInterval(intervalId)
-  }, [gameId, getDetailedGameState, updateGameFromContract])
-  
-  // Only log turn info occasionally to avoid spam
-  if (Math.random() < 0.05) {
-    console.log('Turn Info:', {
-      currentTurn,
-      activePlayer,
+    console.log('🔑 Wallet info:', {
+      walletsReady,
+      walletsCount: wallets.length,
+      wallets: wallets.map(w => ({ type: w.walletClientType, address: w.address })),
+      privyWallet: privyWallet?.address,
       userAddress,
       player1Id: player1.id,
       player2Id: player2.id
     })
-  }
+  }, [wallets, walletsReady])
+  
+  // Determine which player we're viewing based on wallet address
+  const isViewingPlayer1 = userAddress?.toLowerCase() === player1.id?.toLowerCase()
+  const currentViewingPlayer = isViewingPlayer1 ? 'player1' : 'player2'
+  
+  // DISABLED polling to stop request spam
+  useEffect(() => {
+    console.log('🎮 DragDropGameBoard: gameId is', gameId, 'but polling is DISABLED')
+    // Polling disabled due to request spam
+    return
+  }, [gameId]) // Only depend on gameId
+  
   
   // Simply check if the current user's address matches the activePlayer
-  const canPlayCards = activePlayer?.toLowerCase() === userAddress?.toLowerCase()
+  // Wait for wallets to be ready before checking
+  const canPlayCards = walletsReady && Boolean(activePlayer && userAddress && activePlayer.toLowerCase() === userAddress.toLowerCase())
+  
+  // Debug: Log when activePlayer changes
+  useEffect(() => {
+    console.log('🎯 Active player changed in DragDropGameBoard:', {
+      activePlayer,
+      activePlayerLower: activePlayer?.toLowerCase(),
+      userAddress,
+      userAddressLower: userAddress?.toLowerCase(),
+      matches: activePlayer?.toLowerCase() === userAddress?.toLowerCase(),
+      canPlayCards,
+      currentTurn,
+      needsToDraw
+    })
+  }, [activePlayer])
+  
+  // Force log on every meaningful state change
+  useEffect(() => {
+    console.log('🔄 Component re-rendered with state:', {
+      activePlayer,
+      userAddress,
+      canPlayCards,
+      currentTurn,
+      needsToDraw,
+      walletsReady
+    })
+  }, [activePlayer, userAddress, canPlayCards, currentTurn, needsToDraw, walletsReady])
+  
+  // Debug: Log only significant state changes
+  useEffect(() => {
+    console.log('Game state changed:', {
+      activePlayer,
+      canPlayCards,
+      needsToDraw,
+      currentTurn,
+      gameId
+    })
+  }, [activePlayer, canPlayCards, needsToDraw, currentTurn])
+  
   
   // Determine which player's perspective we're showing
   const playerHand = isViewingPlayer1 ? player1 : player2
-  const opponentHand = isViewingPlayer1 ? player2 : player1
   const playerBoard = isViewingPlayer1 ? player1 : player2
   const opponentBoard = isViewingPlayer1 ? player2 : player1
 
@@ -568,35 +571,26 @@ export function DragDropGameBoard() {
     if (source === 'hand' && overId === targetBoard && playerId === currentViewingPlayer) {
       if (canPlayCards && playerHand.eth >= card.cost) {
         // Use the handIndex property if available, otherwise fall back to finding by ID
-        console.log('Playing card:', {
-          cardId: card.id,
-          cardName: card.name,
-          handIndex: card.handIndex,
-          originalCardId: card.originalCardId
-        })
-        
         let cardIndex = card.handIndex
         
         // If handIndex is not available, try to find it
         if (cardIndex === undefined || cardIndex === null) {
           cardIndex = playerHand.hand.findIndex(c => c.id === card.id)
-          console.log('No handIndex, found card at index:', cardIndex)
         }
         
         if (cardIndex !== undefined && cardIndex !== null && cardIndex >= 0) {
-          console.log(`Playing card ${card.name} at index ${cardIndex}`)
           playCardByIndex(playerId, cardIndex)
+          // Fetch updated game state after playing card
+          if (gameId !== null) {
+            setTimeout(async () => {
+              await getFullGameState(gameId)
+            }, 1000)
+          }
         } else {
-          console.error('Card not found in hand! Card:', card, 'Hand:', playerHand.hand)
-          console.error('Unable to determine card index for contract call')
+          // Card not found in hand
         }
       } else {
-        console.log('Cannot play card:', {
-          canPlayCards,
-          playerETH: playerHand.eth,
-          cardCost: card.cost,
-          canAfford: playerHand.eth >= card.cost
-        })
+        // Cannot play card - insufficient ETH or not player's turn
       }
     }
     
@@ -613,7 +607,6 @@ export function DragDropGameBoard() {
     
     if (source === 'hand') {
       const canDrag = canPlayCards && playerHand.eth >= card.cost
-      // Debug logging
       return canDrag
     }
     return false // Board cards can't be moved yet
@@ -626,10 +619,17 @@ export function DragDropGameBoard() {
     try {
       setIsDrawing(true)
       await drawToStartTurn(gameId)
-      console.log('Draw to start turn completed')
-      // Game state will be automatically refreshed by the polling interval
+      
+      // Immediately fetch the updated game state
+      // The polling will pick up the change, but we fetch immediately for responsiveness
+      const gameState = await getDetailedGameState(gameId)
+      if (gameState) {
+        updateGameFromContract(gameState)
+      }
+      // Also fetch full state for hands/battlefield
+      await getFullGameState(gameId)
     } catch (error) {
-      console.error('Failed to draw to start turn:', error)
+      console.error('Failed to draw:', error)
     } finally {
       setIsDrawing(false)
     }
@@ -637,37 +637,31 @@ export function DragDropGameBoard() {
 
   // Handle end turn
   const handleEndTurn = async () => {
-    console.log('End turn button clicked', {
-      gameId,
-      canPlayCards,
-      needsToDraw,
-      currentViewingPlayer,
-      activePlayer,
-      userAddress
-    })
-    
     if (gameId === null || gameId === undefined) {
-      console.error('No gameId available')
       return
     }
     
     // Basic validation
     if (!canPlayCards) {
-      console.error('Not your turn')
       return
     }
     
     if (needsToDraw) {
-      console.error('Need to draw first')
       return
     }
     
     try {
       setIsEndingTurn(true)
-      console.log('Calling endTurn contract function with gameId:', gameId)
-      const result = await endTurn(gameId)
-      console.log('Turn ended successfully, result:', result)
-      // Game state will be automatically refreshed by the polling interval
+      await endTurn(gameId)
+      
+      // Immediately fetch the updated game state
+      // The polling will pick up the change, but we fetch immediately for responsiveness
+      const gameState = await getDetailedGameState(gameId)
+      if (gameState) {
+        updateGameFromContract(gameState)
+      }
+      // Also fetch full state for hands/battlefield  
+      await getFullGameState(gameId)
     } catch (error) {
       console.error('Failed to end turn:', error)
     } finally {
@@ -777,6 +771,8 @@ export function DragDropGameBoard() {
                         <span className="text-eth-success">⚡ Drag cards to board to play</span>
                         <span className="text-gray-400 ml-4">💰 {playerHand.eth} ETH available</span>
                       </>
+                    ) : !walletsReady ? (
+                      <span className="text-gray-400">🔄 Loading wallet...</span>
                     ) : (
                       <span className="text-gray-400">⏳ Opponent's turn</span>
                     )}

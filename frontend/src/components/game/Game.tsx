@@ -24,7 +24,7 @@ interface GameProps {
 
 export function Game({ isRouted = false, routedGameId }: GameProps) {
   const { logout, user } = usePrivy()
-  const { wallets } = useWallets()
+  const { wallets, ready: walletsReady } = useWallets()
   const [searchParams] = useSearchParams()
   const { 
     startGame,
@@ -54,7 +54,7 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
   const [customDeck, setCustomDeck] = useState<Card[] | null>(null)
   const hasLoadedFromUrl = useRef(false)
   
-  // Set up contract functions in game store
+  // Set up contract functions in game store - only once on mount
   useEffect(() => {
     setContractFunctions({
       endTurn,
@@ -64,136 +64,79 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
       getFullGameState,
       drawToStartTurn
     })
-  }, [endTurn, playCard, stakeETH, getDetailedGameState, setContractFunctions, drawToStartTurn, getFullGameState])
+  }, []) // Empty deps - only set once
 
-  // Set up event listeners for the current game
+  // Listen for critical game events - specifically TurnEnded to update UI
   useEffect(() => {
-    if (!gameId) return
+    if (!gameId) {
+      console.log('🔔 No gameId for event listener')
+      return
+    }
 
-    console.log('Setting up event listeners for game', gameId)
+    console.log('🔔 Setting up TurnEnded event listener for game', gameId)
+    
+    // Capture current functions in closure
+    const currentGetDetailedGameState = getDetailedGameState
+    const currentGetFullGameState = getFullGameState
+    const currentUpdateGameFromContract = updateGameFromContract
 
-    // Listen for game events that affect the current game
-    const unsubscribeEvents = [
-      // Turn events
-      watchContractEvent(wagmiConfig, {
-        address: CONTRACT_ADDRESSES.GAME_ENGINE,
-        abi: GameEngineABI,
-        eventName: 'TurnStarted',
-        args: { gameId: BigInt(gameId) },
-        onLogs: (logs) => {
-          console.log('TurnStarted event:', logs)
-          // Refresh game state
-          setTimeout(() => {
-            if (getDetailedGameState) {
-              getDetailedGameState(gameId).then(state => {
-                if (state) updateGameFromContract(state)
-              })
-            }
-          }, 1000)
+    // Listen only for TurnEnded event to know when opponent ends their turn
+    const unsubscribe = watchContractEvent(wagmiConfig, {
+      address: CONTRACT_ADDRESSES.GAME_ENGINE,
+      abi: GameEngineABI,
+      eventName: 'TurnEnded',
+      args: { gameId: BigInt(gameId) },
+      onLogs: async (logs) => {
+        console.log('🔔 TurnEnded event detected for game', gameId, ':', logs)
+        // Immediately refresh game state when turn ends
+        try {
+          // Use the functions from the current scope
+          const store = useGameStore.getState()
+          
+          const state = await currentGetDetailedGameState(gameId)
+          if (state) {
+            console.log('🎯 Updating game state after TurnEnded event:', {
+              currentTurn: state.currentTurn,
+              player1: state.player1,
+              player2: state.player2,
+              needsToDraw: state.needsToDraw,
+              activePlayerWillBe: Number(state.currentTurn) === 0 ? state.player1 : state.player2
+            })
+            store.updateGameFromContract(state)
+            console.log('✅ Store updated after TurnEnded event')
+            // Also fetch full game state for hands/battlefield
+            await currentGetFullGameState(gameId)
+            console.log('✅ Full game state fetched after TurnEnded event')
+          }
+        } catch (error) {
+          console.error('Error updating state after TurnEnded:', error)
         }
-      }),
+      }
+    })
 
-      watchContractEvent(wagmiConfig, {
-        address: CONTRACT_ADDRESSES.GAME_ENGINE,
-        abi: GameEngineABI,
-        eventName: 'TurnEnded',
-        args: { gameId: BigInt(gameId) },
-        onLogs: (logs) => {
-          console.log('TurnEnded event:', logs)
-          // Refresh game state
-          setTimeout(() => {
-            if (getDetailedGameState) {
-              getDetailedGameState(gameId).then(state => {
-                if (state) updateGameFromContract(state)
-              })
-            }
-          }, 1000)
+    // Also set up a simple 5-second poll as backup
+    const pollInterval = setInterval(async () => {
+      try {
+        if (currentGetDetailedGameState) {
+          const state = await currentGetDetailedGameState(gameId)
+          if (state) {
+            const store = useGameStore.getState()
+            store.updateGameFromContract(state)
+            console.log('🕰️ Backup poll updated state')
+          }
         }
-      }),
-
-      // Card events
-      watchContractEvent(wagmiConfig, {
-        address: CONTRACT_ADDRESSES.GAME_ENGINE,
-        abi: GameEngineABI,
-        eventName: 'CardPlayed',
-        args: { gameId: BigInt(gameId) },
-        onLogs: (logs) => {
-          console.log('CardPlayed event:', logs)
-          // Refresh game state
-          setTimeout(() => {
-            if (getDetailedGameState) {
-              getDetailedGameState(gameId).then(state => {
-                if (state) updateGameFromContract(state)
-              })
-            }
-          }, 1000)
-        }
-      }),
-
-      // Resource events
-      watchContractEvent(wagmiConfig, {
-        address: CONTRACT_ADDRESSES.GAME_ENGINE,
-        abi: GameEngineABI,
-        eventName: 'ResourcesGained',
-        args: { gameId: BigInt(gameId) },
-        onLogs: (logs) => {
-          console.log('ResourcesGained event:', logs)
-          // Refresh game state
-          setTimeout(() => {
-            if (getDetailedGameState) {
-              getDetailedGameState(gameId).then(state => {
-                if (state) updateGameFromContract(state)
-              })
-            }
-          }, 1000)
-        }
-      }),
-
-      // Ability events
-      watchContractEvent(wagmiConfig, {
-        address: CONTRACT_ADDRESSES.GAME_ENGINE,
-        abi: GameEngineABI,
-        eventName: 'UpkeepTriggered',
-        args: { gameId: BigInt(gameId) },
-        onLogs: (logs) => {
-          console.log('UpkeepTriggered event (ability processed):', logs)
-          // Refresh game state to get updated resources
-          setTimeout(() => {
-            if (getDetailedGameState) {
-              getDetailedGameState(gameId).then(state => {
-                if (state) updateGameFromContract(state)
-              })
-            }
-          }, 1000)
-        }
-      }),
-
-      // Card draw events
-      watchContractEvent(wagmiConfig, {
-        address: CONTRACT_ADDRESSES.GAME_ENGINE,
-        abi: GameEngineABI,
-        eventName: 'CardDrawn',
-        args: { gameId: BigInt(gameId) },
-        onLogs: (logs) => {
-          console.log('CardDrawn event (ability effect):', logs)
-          // Refresh game state to get updated hand
-          setTimeout(() => {
-            if (getDetailedGameState) {
-              getDetailedGameState(gameId).then(state => {
-                if (state) updateGameFromContract(state)
-              })
-            }
-          }, 1000)
-        }
-      })
-    ]
+      } catch (error) {
+        // Silent fail
+      }
+    }, 5000)
 
     // Cleanup function
     return () => {
-      console.log('Cleaning up event listeners for game', gameId)
-      unsubscribeEvents.forEach(unsubscribe => unsubscribe())
+      console.log('Cleaning up TurnEnded event listener for game', gameId)
+      unsubscribe()
+      clearInterval(pollInterval)
     }
-  }, [gameId, getDetailedGameState, updateGameFromContract])
+  }, [gameId]) // Only depend on gameId to avoid recreating
 
   const handleStartGame = () => {
     startGame(user?.id || 'player1', 'player2')
@@ -300,7 +243,9 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
     // Get the current user's wallet address
     const privyWallet = wallets.find(w => w.walletClientType === 'privy')
     const userAddress = privyWallet?.address
-    console.log('Current user address:', userAddress)
+    console.log('🏁 Game start - Current user address:', userAddress)
+    console.log('🏁 Game start - Available wallets:', wallets.map(w => ({ type: w.walletClientType, address: w.address })))
+    console.log('🏁 Game start - Wallets ready:', walletsReady)
     
     // Load the game state from the blockchain
     if (getDetailedGameState && getFullGameState) {
@@ -593,9 +538,24 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
             <div className="font-bold">TURN ACTIVE</div>
             <div className="text-gray-400 text-xs">
               {(() => {
+                if (!walletsReady) {
+                  return '🔄 Loading wallet...'
+                }
+                
                 const privyWallet = wallets.find(w => w.walletClientType === 'privy')
                 const userAddress = privyWallet?.address?.toLowerCase()
                 const isMyTurn = activePlayer?.toLowerCase() === userAddress
+                
+                console.log('🎮 Turn indicator check:', {
+                  walletsReady,
+                  walletsCount: wallets.length,
+                  activePlayer,
+                  activePlayerLower: activePlayer?.toLowerCase(),
+                  userAddress,
+                  isMyTurn,
+                  needsToDraw,
+                  wallets: wallets.map(w => ({ type: w.walletClientType, address: w.address }))
+                })
                 
                 if (isMyTurn && needsToDraw) {
                   return '🃏 Draw card to start turn'

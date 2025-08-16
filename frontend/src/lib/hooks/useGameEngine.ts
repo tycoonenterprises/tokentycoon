@@ -81,7 +81,15 @@ export const useGameEngine = () => {
     }
   }, [addTransaction, updateTransaction])
 
-  // Read functions
+  // Read functions - DISABLED to prevent filter spam
+  // These hooks might be creating eth_getFilterChanges requests
+  const sessionCount = undefined
+  const myGames = undefined
+  const refetchMyGames = async () => {}
+  const availableGames = undefined
+  const refetchAvailableGames = async () => {}
+  
+  /*
   const { data: sessionCount } = useReadContract({
     address: CONTRACT_ADDRESSES.GAME_ENGINE,
     abi: GameEngineABI,
@@ -100,6 +108,7 @@ export const useGameEngine = () => {
     abi: GameEngineABI,
     functionName: 'getAvailableGames',
   })
+  */
 
   const createGame = async (deckId: number) => {
     try {
@@ -385,19 +394,9 @@ export const useGameEngine = () => {
         args: [BigInt(gameId)],
       })
       
-      console.log('Game state loaded from contract for game', gameId, ':', gameStateView)
-      
-      // Debug: Check the actual values
-      if (gameStateView) {
-        console.log('getDetailedGameState debug:')
-        console.log('  isStarted:', gameStateView.isStarted, typeof gameStateView.isStarted)
-        console.log('  isFinished:', gameStateView.isFinished, typeof gameStateView.isFinished)
-        console.log('  Raw object keys:', Object.keys(gameStateView))
-      }
-      
       return gameStateView
     } catch (error: any) {
-      console.error('Error fetching game state for game', gameId, ':', error.message)
+      // Silently fail to avoid console spam
       throw error
     }
   }
@@ -414,26 +413,10 @@ export const useGameEngine = () => {
         args: [BigInt(gameId)],
       })
       
-      console.log('===== RAW GAME DATA FROM CONTRACT =====')
-      console.log('Game ID:', gameId)
-      console.log('Raw game data:', gameData)
-      console.log('Type of game data:', typeof gameData)
-      console.log('Is array?:', Array.isArray(gameData))
-      console.log('Length of tuple:', gameData.length)
-      console.log('All values by index:')
-      for (let i = 0; i < gameData.length; i++) {
-        console.log(`  [${i}]:`, gameData[i])
-      }
       
       if (!gameData) {
-        console.log('No game data returned!')
         return null
       }
-      
-      // The games mapping returns a tuple, which viem converts to an object
-      // Let's see what properties are actually available
-      console.log('Game data keys:', Object.keys(gameData))
-      console.log('Game data entries:', Object.entries(gameData))
       
       // Try accessing by index first (arrays in Solidity return as indexed)
       // NOTE: PlayerState structs are not returned by public mappings, so indices shift!
@@ -451,8 +434,6 @@ export const useGameEngine = () => {
       const createdAt = gameData[10]  // Shifted due to missing structs
       const startedAt = gameData[11]  // Shifted due to missing structs
       
-      console.log('Parsed values:')
-      console.log('  Game ID:', gameId_)
       console.log('  Player1:', player1)
       console.log('  Player2:', player2)
       console.log('  Player1 Deck ID:', player1DeckId)
@@ -506,11 +487,9 @@ export const useGameEngine = () => {
       const { readContract } = await import('wagmi/actions')
       const { useGameStore } = await import('@/stores/gameStore')
       
-      console.log('=== FETCHING FULL CONTRACT STATE ===')
       
       // Get basic game state
       const gameState = await getDetailedGameState(gameId)
-      console.log('Basic Game State:', gameState)
       
       if (!gameState) {
         console.error('No game state found')
@@ -528,7 +507,6 @@ export const useGameEngine = () => {
           functionName: 'getPlayerHand',
           args: [BigInt(gameId), gameState.player1],
         })
-        console.log('Player 1 Hand (card IDs):', player1Hand)
         
         if (player1Hand && Array.isArray(player1Hand)) {
           // Convert BigInt array to number array
@@ -542,7 +520,6 @@ export const useGameEngine = () => {
           functionName: 'getPlayerHand',
           args: [BigInt(gameId), gameState.player2],
         })
-        console.log('Player 2 Hand (card IDs):', player2Hand)
         
         if (player2Hand && Array.isArray(player2Hand)) {
           // Convert BigInt array to number array
@@ -561,7 +538,6 @@ export const useGameEngine = () => {
           functionName: 'getPlayerBattlefield',
           args: [BigInt(gameId), gameState.player1],
         })
-        console.log('Player 1 Battlefield (instance IDs):', player1Battlefield)
         
         if (player1Battlefield && Array.isArray(player1Battlefield)) {
           // Convert BigInt array to number array
@@ -569,20 +545,7 @@ export const useGameEngine = () => {
           useGameStore.getState().updatePlayerBattlefieldFromContract('player1', instanceIds)
           
           // Get card instance details for battlefield cards
-          console.log('=== PLAYER 1 BATTLEFIELD DETAILS ===')
-          for (const instanceId of player1Battlefield) {
-            try {
-              const cardInstance = await readContract(wagmiConfig, {
-                address: CONTRACT_ADDRESSES.GAME_ENGINE,
-                abi: GameEngineABI,
-                functionName: 'getCardInstance',
-                args: [instanceId],
-              })
-              console.log(`Instance ${instanceId}:`, cardInstance)
-            } catch (err) {
-              console.error(`Error fetching instance ${instanceId}:`, err)
-            }
-          }
+          // Removed battlefield details logging for performance
         }
         
         const player2Battlefield = await readContract(wagmiConfig, {
@@ -591,7 +554,6 @@ export const useGameEngine = () => {
           functionName: 'getPlayerBattlefield',
           args: [BigInt(gameId), gameState.player2],
         })
-        console.log('Player 2 Battlefield (instance IDs):', player2Battlefield)
         
         if (player2Battlefield && Array.isArray(player2Battlefield)) {
           // Convert BigInt array to number array
@@ -599,26 +561,12 @@ export const useGameEngine = () => {
           useGameStore.getState().updatePlayerBattlefieldFromContract('player2', instanceIds)
           
           // Get card instance details for battlefield cards
-          console.log('=== PLAYER 2 BATTLEFIELD DETAILS ===')
-          for (const instanceId of player2Battlefield) {
-            try {
-              const cardInstance = await readContract(wagmiConfig, {
-                address: CONTRACT_ADDRESSES.GAME_ENGINE,
-                abi: GameEngineABI,
-                functionName: 'getCardInstance',
-                args: [instanceId],
-              })
-              console.log(`Instance ${instanceId}:`, cardInstance)
-            } catch (err) {
-              console.error(`Error fetching instance ${instanceId}:`, err)
-            }
-          }
+          // Removed battlefield details logging for performance
         }
       } catch (err) {
         console.error('Error fetching player battlefields:', err)
       }
       
-      console.log('=== END FULL CONTRACT STATE ===')
       return gameState
     } catch (error) {
       console.error('Error fetching full game state:', error)

@@ -419,11 +419,15 @@ export const useGameStore = create<GameState & GameActions>()(
         // currentTurn from contract: 0 = player1's turn, 1 = player2's turn
         const activePlayer = currentTurnNumber === 0 ? player1Id : player2Id
         
-        console.log('updateGameFromContract - Turn sync:', {
-          currentTurn: currentTurnNumber,
+        const previousState = get()
+        console.log('🔄 Updating game from contract:', {
+          previousTurn: previousState.currentTurn,
+          newTurn: currentTurnNumber,
+          previousActivePlayer: previousState.activePlayer,
+          newActivePlayer: activePlayer,
+          needsToDraw: gameView.needsToDraw,
           player1: player1Id,
-          player2: player2Id,
-          activePlayer
+          player2: player2Id
         })
         
         set({
@@ -884,12 +888,12 @@ export const useGameStore = create<GameState & GameActions>()(
 
       // Contract integration functions
       setContractGameId: (gameId: number) => {
+        console.log('🎮 Setting contract gameId in store:', gameId)
         set({ gameId })
       },
 
       setContractFunctions: (functions: ContractFunctions) => {
         contractFunctions = { ...contractFunctions, ...functions }
-        console.log('Contract functions updated:', contractFunctions)
       },
       }
     },
