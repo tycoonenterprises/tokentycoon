@@ -2,23 +2,7 @@ import { useReadContract, useWriteContract } from 'wagmi'
 import { CONTRACT_ADDRESSES } from '@/lib/web3/config'
 import { GameEngineABI } from '@/lib/contracts/GameEngineABI'
 import { useAccount } from 'wagmi'
-
-// Types based on the smart contract
-export interface GameSession {
-  id: number
-  player1: string
-  player2: string
-  isActive: boolean
-  isComplete: boolean
-  createdAt: number
-  completedAt: number
-}
-
-export interface PlayerHand {
-  gameId: number
-  player: string
-  cards: string[]
-}
+import { GameSession, PlayerHand } from '@/lib/types/contracts'
 
 export const useGameEngine = () => {
   const { address } = useAccount()

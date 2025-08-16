@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { ContractCard } from '@/lib/hooks/useCardRegistry'
+import { ContractCard } from '@/lib/types/contracts'
 
 export interface Card {
   id: string

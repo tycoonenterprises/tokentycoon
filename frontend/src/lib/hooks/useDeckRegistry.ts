@@ -1,20 +1,7 @@
 import { useReadContract, useWriteContract } from 'wagmi'
 import { CONTRACT_ADDRESSES } from '@/lib/web3/config'
 import { DeckRegistryABI } from '@/lib/contracts/DeckRegistryABI'
-
-// Types based on the smart contract
-export interface ContractDeck {
-  id: number
-  name: string
-  description: string
-  cardNames: string[]
-  cardCounts: number[]
-}
-
-export interface ExpandedDeckCard {
-  name: string
-  count: number
-}
+import { ContractDeck, ExpandedDeckCard } from '@/lib/types/contracts'
 
 export const useDeckRegistry = () => {
   // Read functions
