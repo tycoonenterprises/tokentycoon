@@ -1,10 +1,13 @@
 {
   "decks": [
     {
-      "name": "Test Deck",
+      "name": "Starter Deck",
       "description": "Simple test deck",
       "cards": [
-        { "name": "Ethereum", "count": 30 }
+        { "name": "Polygon", "count": 15 },
+        { "name": "Uniswap", "count": 15 },
+        { "name": "Validator Node", "count": 5 },
+        { "name": "Read a Whitepaper", "count": 5 }
       ]
     },
     {
