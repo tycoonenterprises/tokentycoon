@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Example - Uniswap</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/token-tycoon-v2.css">
+    <link rel="stylesheet" href="css/card-abilities.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #0A0E27 0%, #1A1E3A 100%);
+            font-family: 'Orbitron', sans-serif;
+            padding: 2rem;
+        }
+        
+        .card-container {
+            text-align: center;
+        }
+        
+        .card-title {
+            color: #00D9FF;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px #00D9FF;
+        }
+        
+        .card-info {
+            color: #F0F0F0;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body class="cyberpunk-theme">
+    <div class="card-container">
+        <div class="card-title">Uniswap - DeFi Card Example</div>
+        
+        <div class="card defi-card standard-tier card-enter" 
+             data-card-name="Uniswap" 
+             data-type="DeFi" 
+             data-cost="2"
+             data-abilities="yield"
+             data-rarity="standard">
+            
+            <!-- Card Background Effects -->
+            <div class="card-background">
+                <div class="liquidity-pools">
+                    <div class="pool pool-primary"></div>
+                    <div class="pool pool-secondary"></div>
+                </div>
+                <div class="yield-streams">
+                    <div class="stream stream-1"></div>
+                    <div class="stream stream-2"></div>
+                </div>
+            </div>
+            
+            <!-- Circuit Board Pattern -->
+            <div class="circuit-board">
+                <svg class="circuit-svg" viewBox="0 0 252 352" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="circuit-gradient-DeFi-standard" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00D9FF;stop-opacity:0.3"/>
+                            <stop offset="50%" style="stop-color:#8B00FF;stop-opacity:0.1"/>
+                            <stop offset="100%" style="stop-color:#FFA500;stop-opacity:0.3"/>
+                        </linearGradient>
+                        <pattern id="circuit-pattern-DeFi" patternUnits="userSpaceOnUse" width="20" height="20">
+                            <rect width="20" height="20" fill="none" stroke="url(#circuit-gradient-DeFi-standard)" stroke-width="0.5"/>
+                            <circle cx="10" cy="10" r="1" fill="#00D9FF" opacity="0.6"/>
+                        </pattern>
+                    </defs>
+                    
+                    <!-- Base circuit grid -->
+                    <rect width="100%" height="100%" fill="url(#circuit-pattern-DeFi)" opacity="0.4"/>
+                    
+                    <!-- Energy pathways -->
+                    <path d="M40,50 Q126,50 212,80" 
+                          fill="none" 
+                          stroke="#00D9FF" 
+                          stroke-width="1" 
+                          opacity="0.4"
+                          class="energy-path">
+                        <animate attributeName="stroke-dasharray" 
+                                 values="0,100;50,50;100,0" 
+                                 dur="3s" 
+                                 repeatCount="indefinite"/>
+                    </path>
+                    
+                    <path d="M60,150 Q126,120 190,180" 
+                          fill="none" 
+                          stroke="#00D9FF" 
+                          stroke-width="1" 
+                          opacity="0.4"
+                          class="energy-path">
+                        <animate attributeName="stroke-dasharray" 
+                                 values="0,100;50,50;100,0" 
+                                 dur="4s" 
+                                 repeatCount="indefinite"/>
+                    </path>
+                    
+                    <!-- Circuit nodes -->
+                    <circle cx="80" cy="100" r="3" 
+                            fill="#00D9FF" 
+                            opacity="0.8"
+                            class="circuit-node">
+                        <animate attributeName="opacity" 
+                                 values="0.3;1;0.3" 
+                                 dur="2s" 
+                                 repeatCount="indefinite"/>
+                    </circle>
+                    
+                    <circle cx="170" cy="120" r="2" 
+                            fill="#FFA500" 
+                            opacity="0.8"
+                            class="circuit-node">
+                        <animate attributeName="opacity" 
+                                 values="0.3;1;0.3" 
+                                 dur="2.5s" 
+                                 repeatCount="indefinite"/>
+                    </circle>
+                </svg>
+            </div>
+            
+            <!-- Card Header with Cost and Type -->
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">2</span>
+                    <span class="cost-symbol">Ξ</span>
+                </div>
+                <div class="card-type defi-type">
+                    <span class="type-icon">💎</span>
+                    <span class="type-label">DeFi</span>
+                </div>
+            </div>
+            
+            <!-- Card Name -->
+            <div class="card-name">
+                <span class="name-text">Uniswap</span>
+                <div class="name-glow standard-glow"></div>
+            </div>
+            
+            <!-- Card Art Area -->
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="art-content defi-art">
+                        <div class="uniswap-amm">
+                            <div class="liquidity-pool pool-a"></div>
+                            <div class="liquidity-pool pool-b"></div>
+                            <div class="swap-arrow"></div>
+                            <div class="price-curve"></div>
+                        </div>
+                    </div>
+                    <div class="art-overlay standard-overlay"></div>
+                </div>
+            </div>
+            
+            <!-- Card Rules Text -->
+            <div class="card-rules-text">
+                <p class="description-text">Gain 1 ETH per turn per ETH stored here.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic yield-mechanic">
+                        <span class="mechanic-symbol">📈</span>
+                        <span class="mechanic-text">+1 ETH per turn per ETH stored here</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card Stats Footer -->
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item yield-stat">
+                        <span class="stat-symbol">📈</span>
+                        <span class="stat-value">1</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rarity Indicator -->
+            <div class="rarity-indicator standard-rarity">
+                <div class="rarity-gems">
+                    <div class="rarity-gem gem-1"></div>
+                    <div class="rarity-gem gem-2"></div>
+                    <div class="rarity-gem gem-3"></div>
+                </div>
+            </div>
+            
+            <!-- Energy Effects -->
+            <div class="energy-effects">
+                <div class="energy-core core-0" style="--delay: 0s; --position-x: 20%; --position-y: 30%;"></div>
+                <div class="energy-core core-1" style="--delay: 0.3s; --position-x: 35%; --position-y: 70%;"></div>
+                <div class="energy-core core-2" style="--delay: 0.6s; --position-x: 50%; --position-y: 50%;"></div>
+                <div class="energy-stream stream-horizontal"></div>
+                <div class="energy-stream stream-vertical"></div>
+            </div>
+            
+            <!-- Interactive Glow -->
+            <div class="glow-effect defi-glow"></div>
+        </div>
+        
+        <div class="card-info">
+            <strong>This card shows all essential MTG-style information:</strong><br>
+            • Cost (2 ETH) in top-left corner<br>
+            • Type (DeFi) with icon in top-right<br>
+            • Card name prominently displayed<br>
+            • Visual art with animated circuit patterns<br>
+            • Complete rules text explaining the ability<br>
+            • Structured ability display with symbols<br>
+            • Quick-reference stats in footer<br>
+            • Rarity gems (3 = Standard tier)
+        </div>
+    </div>
+</body>
+</html>

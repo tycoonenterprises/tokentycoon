@@ -32,11 +32,13 @@ export function Game() {
     setContractGameId,
     gameId,
     updateGameFromContract,
-    initializeGameFromContract
+    initializeGameFromContract,
+    needsToDraw,
+    drawToStartTurn
   } = useGameStore()
   
   // Get contract functions
-  const { endTurn, playCard, stakeETH, getDetailedGameState, getFullGameState } = useGameEngine()
+  const { endTurn, playCard, stakeETH, getDetailedGameState, getFullGameState, drawToStartTurn } = useGameEngine()
   
   const [showWeb3Panel, setShowWeb3Panel] = useState(false)
   const [showDeckBuilder, setShowDeckBuilder] = useState(false)
@@ -52,9 +54,10 @@ export function Game() {
       playCard,
       stakeETH,
       getDetailedGameState,
-      getFullGameState
+      getFullGameState,
+      drawToStartTurn
     })
-  }, [endTurn, playCard, stakeETH, getDetailedGameState, setContractFunctions])
+  }, [endTurn, playCard, stakeETH, getDetailedGameState, setContractFunctions, drawToStartTurn, getFullGameState])
 
   // Check URL parameters on mount to restore PlayPage state
   useEffect(() => {
@@ -235,6 +238,15 @@ export function Game() {
     }
   }
 
+  const handleDrawToStartTurn = async () => {
+    try {
+      await drawToStartTurn()
+      console.log('Draw to start turn completed')
+    } catch (error) {
+      console.error('Failed to draw to start turn:', error)
+    }
+  }
+
   const handleGetGameState = async () => {
     console.log('=== CURRENT GAME STATE DEBUG ===')
     const state = useGameStore.getState()
@@ -373,6 +385,16 @@ export function Game() {
               </>
             ) : (
               <div className="flex items-center gap-2">
+                {/* Draw Card button when turn needs to be started */}
+                {needsToDraw && !isDemoMode && activePlayer === 'player1' && (
+                  <button
+                    onClick={handleDrawToStartTurn}
+                    className="btn-primary text-sm animate-pulse"
+                  >
+                    🃏 Draw Card to Start Turn
+                  </button>
+                )}
+                
                 {isDemoMode && (
                   <button
                     onClick={switchViewingPlayer}
@@ -382,13 +404,18 @@ export function Game() {
                     Switch Player
                   </button>
                 )}
-                <button
-                  onClick={handleEndTurn}
-                  className="btn-primary text-sm"
-                  disabled={!isDemoMode && activePlayer !== 'player1'}
-                >
-                  End Turn
-                </button>
+                
+                {/* Only show End Turn button if not waiting to draw */}
+                {!needsToDraw && (
+                  <button
+                    onClick={handleEndTurn}
+                    className="btn-primary text-sm"
+                    disabled={!isDemoMode && activePlayer !== 'player1'}
+                  >
+                    End Turn
+                  </button>
+                )}
+                
                 <button
                   onClick={handleGetGameState}
                   className="btn-secondary text-sm"
@@ -505,11 +532,13 @@ export function Game() {
           <div className="text-sm text-white">
             <div className="font-bold">TURN {gameId ? 'ACTIVE' : 'DEMO'}</div>
             <div className="text-gray-400 text-xs">
-              {isDemoMode 
-                ? `Player ${activePlayer === 'player1' ? '1' : '2'}'s turn`
-                : activePlayer === 'player1' 
-                  ? 'Your turn' 
-                  : "Opponent's turn"
+              {needsToDraw && !isDemoMode && activePlayer === 'player1' 
+                ? '🃏 Draw card to start turn'
+                : isDemoMode 
+                  ? `Player ${activePlayer === 'player1' ? '1' : '2'}'s turn`
+                  : activePlayer === 'player1' 
+                    ? 'Your turn' 
+                    : "Opponent's turn"
               }
             </div>
           </div>

@@ -85,6 +85,7 @@ export interface GameState {
   activePlayer: string
   viewingPlayer: string // Which player's perspective we're viewing in demo mode
   isDemoMode: boolean // Whether we're in demo mode (user plays both sides)
+  needsToDraw: boolean // Whether current player needs to draw to start turn (from contract)
   players: {
     player1: PlayerState
     player2: PlayerState
@@ -117,6 +118,7 @@ export interface GameActions {
   playCard: (playerId: string, cardId: string, targetId?: string) => void
   playCardByIndex: (playerId: string, cardIndex: number) => void
   drawCard: (playerId: string) => void
+  drawToStartTurn: () => Promise<void>
   moveCard: (playerId: string, cardId: string, from: 'hand' | 'board', to: 'hand' | 'board') => void
   
   // Player actions
@@ -143,6 +145,8 @@ export interface GameActions {
     playCard?: (gameId: number, cardIndex: number) => Promise<any>
     stakeETH?: (gameId: number, instanceId: number, amount: number) => Promise<any>
     getDetailedGameState?: (gameId: number) => Promise<any>
+    drawToStartTurn?: (gameId: number) => Promise<any>
+    getFullGameState?: (gameId: number) => Promise<any>
   }) => void
 }
 
@@ -221,6 +225,8 @@ type ContractFunctions = {
   playCard?: (gameId: number, cardIndex: number) => Promise<any>
   stakeETH?: (gameId: number, instanceId: number, amount: number) => Promise<any>
   getDetailedGameState?: (gameId: number) => Promise<any>
+  drawToStartTurn?: (gameId: number) => Promise<any>
+  getFullGameState?: (gameId: number) => Promise<any>
 }
 
 const initialState: GameState = {
@@ -231,6 +237,7 @@ const initialState: GameState = {
   activePlayer: 'player1',
   viewingPlayer: 'player1',
   isDemoMode: false,
+  needsToDraw: false, // Initially false
   players: {
     player1: {
       id: 'player1',
@@ -388,6 +395,7 @@ export const useGameStore = create<GameState & GameActions>()(
           activePlayer,
           viewingPlayer: 'player1', // Always view as player1 initially
           isDemoMode: false,
+          needsToDraw: gameView.needsToDraw || false,
           isGameActive: gameView.isStarted && !gameView.isFinished,
           isGameStarted: gameView.isStarted,
           winner: null,
@@ -438,6 +446,7 @@ export const useGameStore = create<GameState & GameActions>()(
           currentTurn: convertBigInt(gameView.currentTurn),
           turnNumber: convertBigInt(gameView.turnNumber),
           activePlayer,
+          needsToDraw: gameView.needsToDraw || false,
           isGameStarted: gameView.isStarted,
           isGameActive: gameView.isStarted && !gameView.isFinished,
           players: {
@@ -708,6 +717,34 @@ export const useGameStore = create<GameState & GameActions>()(
         // if (contractFunctions.drawCard && gameId !== null) {
         //   await contractFunctions.drawCard(gameId)
         // }
+      },
+
+      drawToStartTurn: async () => {
+        const { gameId } = get()
+        
+        // Use contract for explicit turn starting
+        if (contractFunctions.drawToStartTurn && gameId !== null) {
+          try {
+            console.log('Drawing to start turn using contract for game', gameId)
+            await contractFunctions.drawToStartTurn(gameId)
+            
+            // Wait a moment then refresh game state from contract
+            setTimeout(async () => {
+              if (contractFunctions.getDetailedGameState) {
+                const gameStateView = await contractFunctions.getDetailedGameState(gameId)
+                if (gameStateView) {
+                  get().updateGameFromContract(gameStateView)
+                }
+              }
+            }, 2000)
+            
+          } catch (error) {
+            console.error('Contract drawToStartTurn failed:', error)
+            throw error
+          }
+        } else {
+          console.warn('Cannot draw to start turn: missing contract functions or gameId')
+        }
       },
 
       moveCard: (playerId: string, cardId: string, from: 'hand' | 'board', to: 'hand' | 'board') => {

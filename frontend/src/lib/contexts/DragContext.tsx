@@ -42,6 +42,7 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     activePlayer,
     players,
     isGameActive,
+    needsToDraw,
   } = useGameStore()
 
   const isDragging = draggedCard !== null
@@ -60,14 +61,15 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
       playerState.eth,
       activePlayer,
       currentPlayer,
-      isGameActive
+      isGameActive,
+      needsToDraw
     )
     
     console.log('Card playability:', cardPlayability)
     
     setDraggedCard(card)
     setPlayability(cardPlayability)
-  }, [playerState.eth, activePlayer, currentPlayer, isGameActive])
+  }, [playerState.eth, activePlayer, currentPlayer, isGameActive, needsToDraw])
 
   const endDrag = useCallback(() => {
     console.log('Ending drag')
@@ -104,7 +106,8 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
       playerState.eth,
       activePlayer,
       currentPlayer,
-      isGameActive
+      isGameActive,
+      needsToDraw
     )
 
     if (cardPlayability.canPlay) {
@@ -124,7 +127,7 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     }
     
     return 'card-not-playable'
-  }, [playerState.eth, activePlayer, currentPlayer, isGameActive])
+  }, [playerState.eth, activePlayer, currentPlayer, isGameActive, needsToDraw])
 
   const isCardPlayable = useCallback((card: Card): boolean => {
     const cardPlayability = canPlayCard(
@@ -133,10 +136,11 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
       playerState.eth,
       activePlayer,
       currentPlayer,
-      isGameActive
+      isGameActive,
+      needsToDraw
     )
     return cardPlayability.canPlay
-  }, [playerState.eth, activePlayer, currentPlayer, isGameActive])
+  }, [playerState.eth, activePlayer, currentPlayer, isGameActive, needsToDraw])
 
   const value: DragContextType = {
     draggedCard,

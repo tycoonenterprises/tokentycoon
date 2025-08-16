@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Card Generation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/token-tycoon-v2.css">
+    <link rel="stylesheet" href="css/card-abilities.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #0A0E27 0%, #1A1E3A 100%);
+            font-family: 'Orbitron', sans-serif;
+            padding: 2rem;
+        }
+        
+        .test-container {
+            text-align: center;
+            max-width: 800px;
+        }
+        
+        .test-title {
+            color: #00D9FF;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px #00D9FF;
+        }
+        
+        .cards-display {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .loading-message {
+            color: #F0F0F0;
+            font-size: 1.2rem;
+            margin: 2rem;
+        }
+        
+        .error-message {
+            color: #FF0044;
+            font-size: 1rem;
+            margin: 2rem;
+            padding: 1rem;
+            border: 2px solid #FF0044;
+            border-radius: 8px;
+            background: rgba(255, 0, 68, 0.1);
+        }
+    </style>
+</head>
+<body class="cyberpunk-theme">
+    <div class="test-container">
+        <div class="test-title">Testing Card Generation with Real Data</div>
+        <div id="loading" class="loading-message">Loading cards data...</div>
+        <div id="error" class="error-message" style="display: none;"></div>
+        <div id="cards-container" class="cards-display"></div>
+    </div>
+
+    <script>
+        // Test the card generation with actual cards.json data
+        async function testCardGeneration() {
+            try {
+                console.log('🚀 Loading cards data...');
+                
+                // Load the cards data
+                const response = await fetch('../../data/cards.json');
+                if (!response.ok) {
+                    throw new Error(`Failed to load cards.json: ${response.status}`);
+                }
+                
+                const cardsData = await response.json();
+                console.log('✅ Cards data loaded:', cardsData.cards.length, 'cards');
+                
+                // Test with a few specific cards
+                const testCards = [
+                    cardsData.cards.find(card => card.name === 'Uniswap'),
+                    cardsData.cards.find(card => card.name === 'Bridge Hack'),
+                    cardsData.cards.find(card => card.name === 'Multi-sig Wallet')
+                ].filter(card => card); // Remove any undefined cards
+                
+                console.log('🎴 Test cards:', testCards.map(c => c.name));
+                
+                if (testCards.length === 0) {
+                    throw new Error('No test cards found in data');
+                }
+                
+                // Import and use the CardGenerator
+                const CardGenerator = window.CardGenerator || await import('./js/card-generator.js').then(m => m.CardGenerator);
+                
+                if (!CardGenerator) {
+                    throw new Error('CardGenerator class not available');
+                }
+                
+                const generator = new CardGenerator({ cards: testCards });
+                
+                // Generate the test cards
+                const cardsHTML = generator.generateAllCards();
+                
+                // Display the cards
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('cards-container').innerHTML = cardsHTML;
+                
+                console.log('✅ Cards rendered successfully');
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').innerHTML = `
+                    <strong>Error loading cards:</strong><br>
+                    ${error.message}<br><br>
+                    <em>Check browser console for details</em>
+                `;
+            }
+        }
+        
+        // Load the CardGenerator script first
+        const script = document.createElement('script');
+        script.src = 'js/card-generator.js';
+        script.onload = () => {
+            console.log('📜 CardGenerator script loaded');
+            testCardGeneration();
+        };
+        script.onerror = (error) => {
+            console.error('❌ Failed to load CardGenerator script:', error);
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').innerHTML = `
+                <strong>Error loading CardGenerator script</strong><br>
+                Could not load js/card-generator.js<br><br>
+                <em>Check that the file exists and is accessible</em>
+            `;
+        };
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>

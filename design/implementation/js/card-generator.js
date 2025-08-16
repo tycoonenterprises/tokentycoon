@@ -489,17 +489,25 @@ class CardGenerator {
     }
     
     getAbilityMechanic(abilityType, amount, cardData) {
+        // Handle complex abilities with conditional mechanics
+        if (abilityType === 'scale' && cardData.abilities?.scale) {
+            return `Scales with ${this.getScaleType(cardData)}`;
+        }
+        
+        if (abilityType === 'trigger' && cardData.abilities?.trigger) {
+            const trigger = cardData.abilities.trigger;
+            return `When ${trigger.on || 'triggered'}: ${trigger.steal ? 'steal ' + trigger.steal + ' ETH' : 'gain ' + (trigger.gain || trigger.amount || 1) + ' ETH'}`;
+        }
+        
         const mechanics = {
             income: `+${amount} ETH per turn`,
             yield: `+${amount} ETH per turn per ETH stored here`,
-            destroy: `Destroy ${amount} target${amount > 1 ? 's' : ''}`,
+            destroy: amount > 50 ? `Destroy target (massive damage)` : `Destroy ${amount} target${amount > 1 ? 's' : ''}`,
             draw: `Draw ${amount} card${amount > 1 ? 's' : ''}`,
             storage: `Store up to ${amount} ETH`,
             protection: `Protection ${amount}`,
             steal: `Steal ${amount} ETH`,
             takeover: `Take control (Power ${amount})`,
-            trigger: `Triggered ability`,
-            scale: `Scales with ${this.getScaleType(cardData)}`,
             burn: `All opponents lose ${amount} ETH`,
             gain: `Gain ${amount} ETH`,
             tax: `Opponents pay +${amount} ETH`,
@@ -507,11 +515,19 @@ class CardGenerator {
             boost: `+${amount} production`,
             freeze: `Freeze for ${amount} turn${amount > 1 ? 's' : ''}`,
             shield: `Shield ${amount} per turn`,
-            duration: cardData.abilities?.duration ? `Duration: ${cardData.abilities.duration.turns} turns` : null,
-            requires: cardData.abilities?.requires ? `Requires: ${cardData.abilities.requires.storedETH} ETH stored` : null
+            discard: `Target opponent discards ${amount} card${amount > 1 ? 's' : ''}`,
+            invincible: `Cannot be destroyed`,
+            choice: `Optional effect`,
+            copy: `Create copy`,
+            freePlay: `Play for free`,
+            loseNext: `Lose ${amount} ETH next turn`,
+            gainTemp: `Temporary +${amount} ETH`,
+            debuff: `Reduce production to 0`,
+            cap: `Maximum ${amount}`,
+            limit: `Cost ${amount} or less only`
         };
         
-        return mechanics[abilityType];
+        return mechanics[abilityType] || `${abilityType.charAt(0).toUpperCase() + abilityType.slice(1)} ${amount}`;
     }
     
     getScaleType(cardData) {

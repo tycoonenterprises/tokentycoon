@@ -20,7 +20,8 @@ export const canPlayCard = (
   playerETH: number,
   activePlayer: string,
   currentPlayer: string,
-  isGameActive: boolean
+  isGameActive: boolean,
+  needsToDraw: boolean = false
 ): PlayabilityResult => {
   const reasons: string[] = []
   let phase: PlayabilityResult['phase'] = 'valid'
@@ -43,6 +44,12 @@ export const canPlayCard = (
   if (activePlayer !== currentPlayer) {
     reasons.push('Not your turn')
     turn = 'not-your-turn'
+  }
+
+  // Check if player needs to draw to start turn
+  if (needsToDraw && activePlayer === currentPlayer) {
+    reasons.push('Must draw card to start turn first')
+    phase = 'wrong-phase'
   }
 
   // Check ETH requirements

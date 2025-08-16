@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Direct Card Test - Real Game Data</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/token-tycoon-v2.css">
+    <link rel="stylesheet" href="css/card-abilities.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #0A0E27 0%, #1A1E3A 100%);
+            font-family: 'Orbitron', sans-serif;
+            padding: 2rem;
+        }
+        
+        .test-container {
+            text-align: center;
+            max-width: 1200px;
+        }
+        
+        .test-title {
+            color: #00D9FF;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px #00D9FF;
+        }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            justify-items: center;
+        }
+        
+        .card-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .card-label {
+            color: #F0F0F0;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="cyberpunk-theme">
+    <div class="test-container">
+        <div class="test-title">Cards with Real Game Data</div>
+        <div class="cards-grid">
+            
+            <!-- Uniswap - DeFi Card -->
+            <div class="card-wrapper">
+                <div class="card-label">Uniswap (DeFi) - Cost: 2 ETH</div>
+                <div class="card defi-card standard-tier" data-card-name="Uniswap" data-type="DeFi" data-cost="2">
+                    
+                    <!-- Card Header -->
+                    <div class="card-header">
+                        <div class="card-cost">
+                            <span class="cost-value">2</span>
+                            <span class="cost-symbol">Ξ</span>
+                        </div>
+                        <div class="card-type defi-type">
+                            <span class="type-icon">💎</span>
+                            <span class="type-label">DeFi</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Name -->
+                    <div class="card-name">
+                        <span class="name-text">Uniswap</span>
+                    </div>
+                    
+                    <!-- Card Art -->
+                    <div class="card-art">
+                        <div class="art-frame">
+                            <div class="art-content defi-art">
+                                <div class="uniswap-amm">
+                                    <div class="liquidity-pool pool-a"></div>
+                                    <div class="liquidity-pool pool-b"></div>
+                                    <div class="swap-arrow"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Rules Text -->
+                    <div class="card-rules-text">
+                        <p class="description-text">Gain 1 ETH per turn per ETH stored here.</p>
+                        <div class="abilities-text">
+                            <div class="ability-mechanic yield-mechanic">
+                                <span class="mechanic-symbol">📈</span>
+                                <span class="mechanic-text">+1 ETH per turn per ETH stored here</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Footer -->
+                    <div class="card-stats-footer">
+                        <div class="stats-bar">
+                            <div class="stat-item yield-stat">
+                                <span class="stat-symbol">📈</span>
+                                <span class="stat-value">1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bridge Hack - Action Card -->
+            <div class="card-wrapper">
+                <div class="card-label">Bridge Hack (Action) - Cost: 5 ETH</div>
+                <div class="card action-card legendary-tier" data-card-name="Bridge Hack" data-type="Action" data-cost="5">
+                    
+                    <!-- Card Header -->
+                    <div class="card-header">
+                        <div class="card-cost">
+                            <span class="cost-value">5</span>
+                            <span class="cost-symbol">Ξ</span>
+                        </div>
+                        <div class="card-type action-type">
+                            <span class="type-icon">⚡</span>
+                            <span class="type-label">Action</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Name -->
+                    <div class="card-name">
+                        <span class="name-text">Bridge Hack</span>
+                    </div>
+                    
+                    <!-- Card Art -->
+                    <div class="card-art">
+                        <div class="art-frame">
+                            <div class="art-content action-art">
+                                <div class="bridge-explosion">
+                                    <div class="explosion-center"></div>
+                                    <div class="explosion-rings">
+                                        <div class="ring ring-1"></div>
+                                        <div class="ring ring-2"></div>
+                                        <div class="ring ring-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Rules Text -->
+                    <div class="card-rules-text">
+                        <p class="description-text">Destroy target chain and all DeFi Protocols on it.</p>
+                        <div class="abilities-text">
+                            <div class="ability-mechanic destroy-mechanic">
+                                <span class="mechanic-symbol">💥</span>
+                                <span class="mechanic-text">Destroy 1 target</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Footer -->
+                    <div class="card-stats-footer">
+                        <div class="stats-bar">
+                            <div class="stat-item destroy-stat">
+                                <span class="stat-symbol">💥</span>
+                                <span class="stat-value">1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Multi-sig Wallet - EOA Card -->
+            <div class="card-wrapper">
+                <div class="card-label">Multi-sig Wallet (EOA) - Cost: 3 ETH</div>
+                <div class="card eoa-card standard-tier" data-card-name="Multi-sig Wallet" data-type="EOA" data-cost="3">
+                    
+                    <!-- Card Header -->
+                    <div class="card-header">
+                        <div class="card-cost">
+                            <span class="cost-value">3</span>
+                            <span class="cost-symbol">Ξ</span>
+                        </div>
+                        <div class="card-type eoa-type">
+                            <span class="type-icon">👤</span>
+                            <span class="type-label">EOA</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Name -->
+                    <div class="card-name">
+                        <span class="name-text">Multi-sig Wallet</span>
+                    </div>
+                    
+                    <!-- Card Art -->
+                    <div class="card-art">
+                        <div class="art-frame">
+                            <div class="art-content eoa-art">
+                                <div class="multisig-vault">
+                                    <div class="vault-door"></div>
+                                    <div class="signature-keys">
+                                        <div class="key key-1"></div>
+                                        <div class="key key-2"></div>
+                                        <div class="key key-3"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Rules Text -->
+                    <div class="card-rules-text">
+                        <p class="description-text">Storage max 8. The first time each turn this would be stolen from or destroyed, prevent it.</p>
+                        <div class="abilities-text">
+                            <div class="ability-mechanic storage-mechanic">
+                                <span class="mechanic-symbol">🏦</span>
+                                <span class="mechanic-text">Store up to 8 ETH</span>
+                            </div>
+                            <div class="ability-mechanic shield-mechanic">
+                                <span class="mechanic-symbol">🛡️</span>
+                                <span class="mechanic-text">Shield 1 per turn</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Footer -->
+                    <div class="card-stats-footer">
+                        <div class="stats-bar">
+                            <div class="stat-item storage-stat">
+                                <span class="stat-symbol">🏦</span>
+                                <span class="stat-value">8</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Yield Farm - DeFi Card with Tokens -->
+            <div class="card-wrapper">
+                <div class="card-label">Yield Farm (DeFi) - Cost: 2 ETH, Tokens: 3</div>
+                <div class="card defi-card common-tier" data-card-name="Yield Farm" data-type="DeFi" data-cost="2">
+                    
+                    <!-- Card Header -->
+                    <div class="card-header">
+                        <div class="card-cost">
+                            <span class="cost-value">2</span>
+                            <span class="cost-symbol">Ξ</span>
+                        </div>
+                        <div class="card-type defi-type">
+                            <span class="type-icon">💎</span>
+                            <span class="type-label">DeFi</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Name -->
+                    <div class="card-name">
+                        <span class="name-text">Yield Farm</span>
+                    </div>
+                    
+                    <!-- Card Art -->
+                    <div class="card-art">
+                        <div class="art-frame">
+                            <div class="art-content defi-art">
+                                <div class="yield-farm-visual">
+                                    <div class="farm-plots">
+                                        <div class="plot plot-1">🌱</div>
+                                        <div class="plot plot-2">🌾</div>
+                                        <div class="plot plot-3">🌿</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card Rules Text -->
+                    <div class="card-rules-text">
+                        <p class="description-text">Enters with 3 tokens. Each turn remove 1 token and add 2 ETH.</p>
+                        <div class="abilities-text">
+                            <div class="ability-mechanic income-mechanic">
+                                <span class="mechanic-symbol">💰</span>
+                                <span class="mechanic-text">+2 ETH per turn</span>
+                            </div>
+                            <div class="ability-mechanic scale-mechanic">
+                                <span class="mechanic-symbol">📊</span>
+                                <span class="mechanic-text">Scales with token counters</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Footer -->
+                    <div class="card-stats-footer">
+                        <div class="stats-bar">
+                            <div class="stat-item income-stat">
+                                <span class="stat-symbol">💰</span>
+                                <span class="stat-value">2</span>
+                            </div>
+                        </div>
+                        <div class="token-counter">
+                            <span class="token-label">Tokens:</span>
+                            <span class="token-display">
+                                <span class="token-symbol">🪙</span>
+                                <span class="token-count">3</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>

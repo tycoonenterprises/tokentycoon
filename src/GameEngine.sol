@@ -41,6 +41,7 @@ contract GameEngine {
         bool isFinished;
         uint256 currentTurn;      // 0 for player1, 1 for player2
         uint256 turnNumber;
+        bool needsToDraw;         // True if current player needs to draw to start turn
         uint256 createdAt;
         uint256 startedAt;
     }
@@ -58,6 +59,7 @@ contract GameEngine {
         uint256 player2DeckRemaining;
         uint256 currentTurn;
         uint256 turnNumber;
+        bool needsToDraw;
         bool isStarted;
         bool isFinished;
     }
@@ -314,6 +316,7 @@ contract GameEngine {
         
         if (!game.isStarted) revert GameNotStarted();
         if (game.isFinished) revert GameFinished();
+        if (game.needsToDraw) revert("Must draw card to start turn first");
         
         PlayerState storage playerState;
         if (msg.sender == game.player1 && game.currentTurn == 0) {
@@ -391,6 +394,7 @@ contract GameEngine {
         
         if (!game.isStarted) revert GameNotStarted();
         if (game.isFinished) revert GameFinished();
+        if (game.needsToDraw) revert("Must draw card to start turn first");
         
         // Verify it's the current player ending their turn
         if ((game.currentTurn == 0 && msg.sender != game.player1) ||
@@ -404,9 +408,30 @@ contract GameEngine {
         game.currentTurn = 1 - game.currentTurn;
         game.turnNumber++;
         
-        // Start the next player's turn with automatic draw and upkeep
-        PlayerState storage nextPlayerState = game.currentTurn == 0 ? game.player1State : game.player2State;
-        _startTurn(game, nextPlayerState, false);
+        // Next player must draw to start their turn (except on very first turn)
+        game.needsToDraw = true;
+    }
+    
+    function drawToStartTurn(uint256 _gameId) external {
+        Game storage game = games[_gameId];
+        
+        if (!game.isStarted) revert GameNotStarted();
+        if (game.isFinished) revert GameFinished();
+        if (!game.needsToDraw) revert("Turn already started");
+        
+        // Verify it's the current player starting their turn
+        if ((game.currentTurn == 0 && msg.sender != game.player1) ||
+            (game.currentTurn == 1 && msg.sender != game.player2)) {
+            revert NotYourTurn();
+        }
+        
+        PlayerState storage currentPlayerState = game.currentTurn == 0 ? game.player1State : game.player2State;
+        
+        // Start the turn with draw and upkeep
+        _startTurn(game, currentPlayerState, false);
+        
+        // Turn is now officially started
+        game.needsToDraw = false;
     }
     
     // ========== VIEW FUNCTIONS ==========
@@ -455,6 +480,7 @@ contract GameEngine {
             player2DeckRemaining: game.player2State.deck.length - game.player2State.deckIndex,
             currentTurn: game.currentTurn,
             turnNumber: game.turnNumber,
+            needsToDraw: game.needsToDraw,
             isStarted: game.isStarted,
             isFinished: game.isFinished
         });

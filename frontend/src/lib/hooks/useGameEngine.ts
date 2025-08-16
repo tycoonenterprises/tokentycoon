@@ -208,6 +208,29 @@ export const useGameEngine = () => {
     return result
   }
 
+  const drawToStartTurn = async (gameId: number) => {
+    try {
+      console.log(`Drawing to start turn for game ${gameId}`)
+      const args = [BigInt(gameId)]
+      
+      const result = await privyWriteContract({
+        address: CONTRACT_ADDRESSES.GAME_ENGINE,
+        abi: GameEngineABI,
+        functionName: 'drawToStartTurn',
+        args,
+      })
+      
+      // Track the transaction
+      trackTransaction('drawToStartTurn', args, result)
+      
+      console.log('Draw to start turn successful:', result)
+      return result
+    } catch (error) {
+      console.error('Error drawing to start turn:', error)
+      throw error
+    }
+  }
+
   const endTurn = async (gameId: number) => {
     try {
       console.log(`Ending turn for game ${gameId}`)
@@ -570,6 +593,7 @@ export const useGameEngine = () => {
     joinGame,
     startGame,
     drawCard,
+    drawToStartTurn,
     endTurn,
     playCard,
     stakeETH,

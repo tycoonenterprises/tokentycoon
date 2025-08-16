@@ -291,10 +291,23 @@ contract GameEngineTest is Test {
         emit TurnEnded(gameId, player1);
         gameEngine.endTurn(gameId);
         
+        // Check game state after endTurn - player2 should need to draw
+        GameEngine.GameView memory gameViewAfterEnd = gameEngine.getGameState(gameId);
+        assertEq(gameViewAfterEnd.currentTurn, 1); // Now player 2's turn
+        assertEq(gameViewAfterEnd.turnNumber, 2);
+        assertEq(gameViewAfterEnd.needsToDraw, true); // Player 2 needs to draw
+        assertEq(gameViewAfterEnd.player2HandSize, 5); // Still 5, hasn't drawn yet
+        assertEq(gameViewAfterEnd.player2ETH, 3); // Still 3, upkeep hasn't happened yet
+        
+        // Player 2 draws to start their turn
+        vm.prank(player2);
+        gameEngine.drawToStartTurn(gameId);
+        
         GameEngine.GameView memory gameView = gameEngine.getGameState(gameId);
         
-        assertEq(gameView.currentTurn, 1); // Now player 2's turn
+        assertEq(gameView.currentTurn, 1); // Still player 2's turn
         assertEq(gameView.turnNumber, 2);
+        assertEq(gameView.needsToDraw, false); // No longer needs to draw
         assertEq(gameView.player2HandSize, 6); // 5 initial + 1 drawn
         assertEq(gameView.player2ETH, 4); // 3 initial + 1 from upkeep
     }
@@ -631,13 +644,23 @@ contract GameEngineTest is Test {
         // Player 1 should not draw on first turn
         GameEngine.GameView memory gameView = gameEngine.getGameState(gameId);
         assertEq(gameView.player1HandSize, 5); // Still 5, no draw on first turn
+        assertEq(gameView.needsToDraw, false); // Player 1 doesn't need to draw on very first turn
         
         // End turn
         vm.prank(player1);
         gameEngine.endTurn(gameId);
         
-        // Player 2 should draw on their first turn (not the very first turn of game)
+        // Check that player 2 now needs to draw
         GameEngine.GameView memory gameView2 = gameEngine.getGameState(gameId);
-        assertEq(gameView2.player2HandSize, 6); // 5 initial + 1 drawn
+        assertEq(gameView2.needsToDraw, true); // Player 2 needs to draw
+        assertEq(gameView2.player2HandSize, 5); // Still 5, hasn't drawn yet
+        
+        // Player 2 draws to start their turn (not the very first turn of game)
+        vm.prank(player2);
+        gameEngine.drawToStartTurn(gameId);
+        
+        GameEngine.GameView memory gameView3 = gameEngine.getGameState(gameId);
+        assertEq(gameView3.needsToDraw, false); // No longer needs to draw
+        assertEq(gameView3.player2HandSize, 6); // 5 initial + 1 drawn
     }
 }

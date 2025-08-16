@@ -495,6 +495,18 @@
   border-bottom: 4px solid transparent;
 }
 
+.price-curve {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 20px;
+  border: 1px solid var(--color-purple-circuit);
+  border-radius: 50px 50px 0 0;
+  opacity: 0.6;
+}
+
 /* Multi-sig Vault */
 .multisig-vault {
   position: relative;
