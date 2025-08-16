@@ -6,6 +6,7 @@ import { DragDropGameBoard } from './DragDropGameBoard'
 import { Web3Actions } from './Web3Actions'
 import { DeckBuilder } from './DeckBuilder'
 import { CardsPage } from './CardsPage'
+import { DecksPage } from './DecksPage'
 import { PlayPage } from './PlayPage'
 import { ContractDebugPanel } from '@/components/debug/ContractDebugPanel'
 import { PrivyDebugInfo } from '@/components/debug/PrivyDebugInfo'
@@ -40,6 +41,7 @@ export function Game() {
   const [showWeb3Panel, setShowWeb3Panel] = useState(false)
   const [showDeckBuilder, setShowDeckBuilder] = useState(false)
   const [showCardsPage, setShowCardsPage] = useState(false)
+  const [showDecksPage, setShowDecksPage] = useState(false)
   const [showPlayPage, setShowPlayPage] = useState(false)
   const [currentGameId, setCurrentGameId] = useState<number | null>(null)
   const [customDeck, setCustomDeck] = useState<Card[] | null>(null)
@@ -384,6 +386,13 @@ export function Game() {
             >
               🃏 Cards
             </button>
+
+            <button
+              onClick={() => setShowDecksPage(true)}
+              className="btn-secondary text-sm"
+            >
+              📚 Decks
+            </button>
             
             <button
               onClick={() => setShowWeb3Panel(!showWeb3Panel)}
@@ -560,6 +569,11 @@ export function Game() {
       {/* Cards Page Modal */}
       {showCardsPage && (
         <CardsPage onClose={() => setShowCardsPage(false)} />
+      )}
+
+      {/* Decks Page Modal */}
+      {showDecksPage && (
+        <DecksPage onClose={() => setShowDecksPage(false)} />
       )}
 
       {/* Play Page Modal */}
