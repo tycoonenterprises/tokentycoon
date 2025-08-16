@@ -4,12 +4,97 @@ import { wagmiConfig } from '@/lib/web3/wagmiConfig'
 import { GameEngineABI } from '@/lib/contracts/GameEngineABI'
 import { usePrivySmartContract } from './usePrivySmartContract'
 import type { GameSession, PlayerHand } from '@/lib/types/contracts'
+import { useState, useCallback } from 'react'
+
+interface TransactionRecord {
+  id: string
+  functionName: string
+  args: any[]
+  hash: string
+  gasUsed: bigint
+  gasPrice: bigint
+  totalCost: bigint
+  timestamp: number
+  status: 'pending' | 'success' | 'failed'
+}
 
 export const useGameEngine = () => {
   const { address } = useAccount()
   
   // Use Privy's smart contract hook for write operations
   const { writeContract: privyWriteContract, isPending: isPrivyPending } = usePrivySmartContract()
+
+  // Transaction tracking state
+  const [transactions, setTransactions] = useState<TransactionRecord[]>([])
+  
+  // Helper function to track transactions
+  const trackTransaction = useCallback(async (
+    functionName: string,
+    args: any[],
+    txHash: string
+  ): Promise<TransactionRecord> => {
+    const txId = `${Date.now()}_${Math.random()}`
+    
+    // Create initial transaction record
+    const initialRecord: TransactionRecord = {
+      id: txId,
+      functionName,
+      args,
+      hash: txHash,
+      gasUsed: 0n,
+      gasPrice: 0n,
+      totalCost: 0n,
+      timestamp: Date.now(),
+      status: 'pending'
+    }
+    
+    // Add to transactions list
+    setTransactions(prev => [initialRecord, ...prev])
+    
+    try {
+      // Wait for transaction receipt to get gas information
+      const { readContract } = await import('wagmi/actions')
+      const { createPublicClient, http } = await import('viem')
+      
+      const publicClient = createPublicClient({
+        transport: http('http://localhost:8545')
+      })
+      
+      const receipt = await publicClient.waitForTransactionReceipt({ 
+        hash: txHash as `0x${string}` 
+      })
+      
+      // Update transaction record with gas information
+      const updatedRecord: TransactionRecord = {
+        ...initialRecord,
+        gasUsed: receipt.gasUsed,
+        gasPrice: receipt.effectiveGasPrice,
+        totalCost: receipt.gasUsed * receipt.effectiveGasPrice,
+        status: receipt.status === 'success' ? 'success' : 'failed'
+      }
+      
+      // Update the transaction in the list
+      setTransactions(prev => 
+        prev.map(tx => tx.id === txId ? updatedRecord : tx)
+      )
+      
+      return updatedRecord
+    } catch (error) {
+      console.error('Error tracking transaction:', error)
+      
+      // Mark as failed
+      const failedRecord: TransactionRecord = {
+        ...initialRecord,
+        status: 'failed'
+      }
+      
+      setTransactions(prev => 
+        prev.map(tx => tx.id === txId ? failedRecord : tx)
+      )
+      
+      return failedRecord
+    }
+  }, [])
 
   // Read functions
   const { data: sessionCount } = useReadContract({
@@ -33,15 +118,20 @@ export const useGameEngine = () => {
 
   const createGame = async (deckId: number) => {
     try {
+      const args = [BigInt(deckId)]
+      
       // Use Privy's writeContract directly
       const txHash = await privyWriteContract({
         address: CONTRACT_ADDRESSES.GAME_ENGINE,
         abi: GameEngineABI,
         functionName: 'createGame',
-        args: [BigInt(deckId)],
+        args,
       })
       
       console.log('Game creation transaction sent with Privy:', txHash)
+      
+      // Track the transaction (async, don't wait for it)
+      trackTransaction('createGame', args, txHash)
       
       // Wait a bit for the transaction to be mined
       await new Promise(resolve => setTimeout(resolve, 3000))
@@ -74,13 +164,19 @@ export const useGameEngine = () => {
 
   const joinGame = async (gameId: number, deckId: number) => {
     try {
+      const args = [BigInt(gameId), BigInt(deckId)]
+      
       // Use Privy's writeContract directly
       const result = await privyWriteContract({
         address: CONTRACT_ADDRESSES.GAME_ENGINE,
         abi: GameEngineABI,
         functionName: 'joinGame',
-        args: [BigInt(gameId), BigInt(deckId)],
+        args,
       })
+      
+      // Track the transaction
+      trackTransaction('joinGame', args, result)
+      
       return result
     } catch (error) {
       console.error('Error joining game:', error)
@@ -90,13 +186,19 @@ export const useGameEngine = () => {
 
   const startGame = async (gameId: number) => {
     try {
+      const args = [BigInt(gameId)]
+      
       // Use Privy's writeContract directly
       const result = await privyWriteContract({
         address: CONTRACT_ADDRESSES.GAME_ENGINE,
         abi: GameEngineABI,
         functionName: 'startGame',
-        args: [BigInt(gameId)],
+        args,
       })
+      
+      // Track the transaction
+      trackTransaction('startGame', args, result)
+      
       return result
     } catch (error) {
       console.error('Error starting game:', error)
@@ -105,24 +207,37 @@ export const useGameEngine = () => {
   }
 
   const drawCard = async (gameId: number) => {
+    const args = [BigInt(gameId)]
+    
     // Use Privy's writeContract directly
-    return privyWriteContract({
+    const result = await privyWriteContract({
       address: CONTRACT_ADDRESSES.GAME_ENGINE,
       abi: GameEngineABI,
       functionName: 'drawCard',
-      args: [BigInt(gameId)],
+      args,
     })
+    
+    // Track the transaction
+    trackTransaction('drawCard', args, result)
+    
+    return result
   }
 
   const endTurn = async (gameId: number) => {
     try {
       console.log(`Ending turn for game ${gameId}`)
+      const args = [BigInt(gameId)]
+      
       const result = await privyWriteContract({
         address: CONTRACT_ADDRESSES.GAME_ENGINE,
         abi: GameEngineABI,
         functionName: 'endTurn',
-        args: [BigInt(gameId)],
+        args,
       })
+      
+      // Track the transaction
+      trackTransaction('endTurn', args, result)
+      
       console.log('Turn ended successfully:', result)
       return result
     } catch (error) {
@@ -134,12 +249,18 @@ export const useGameEngine = () => {
   const playCard = async (gameId: number, cardIndex: number) => {
     try {
       console.log(`Playing card at index ${cardIndex} for game ${gameId}`)
+      const args = [BigInt(gameId), BigInt(cardIndex)]
+      
       const result = await privyWriteContract({
         address: CONTRACT_ADDRESSES.GAME_ENGINE,
         abi: GameEngineABI,
         functionName: 'playCard',
-        args: [BigInt(gameId), BigInt(cardIndex)],
+        args,
       })
+      
+      // Track the transaction
+      trackTransaction('playCard', args, result)
+      
       console.log('Card played successfully:', result)
       return result
     } catch (error) {
@@ -151,12 +272,18 @@ export const useGameEngine = () => {
   const stakeETH = async (gameId: number, instanceId: number, amount: number) => {
     try {
       console.log(`Staking ${amount} ETH on instance ${instanceId} for game ${gameId}`)
+      const args = [BigInt(gameId), BigInt(instanceId), BigInt(amount)]
+      
       const result = await privyWriteContract({
         address: CONTRACT_ADDRESSES.GAME_ENGINE,
         abi: GameEngineABI,
         functionName: 'stakeETH',
-        args: [BigInt(gameId), BigInt(instanceId), BigInt(amount)],
+        args,
       })
+      
+      // Track the transaction
+      trackTransaction('stakeETH', args, result)
+      
       console.log('ETH staked successfully:', result)
       return result
     } catch (error) {
@@ -331,11 +458,26 @@ export const useGameEngine = () => {
     }
   }
 
+  // Calculate cumulative gas cost
+  const totalGasCost = transactions
+    .filter(tx => tx.status === 'success')
+    .reduce((total, tx) => total + tx.totalCost, 0n)
+
+  // Clear transactions function
+  const clearTransactions = useCallback(() => {
+    setTransactions([])
+  }, [])
+
   return {
     // Data
     sessionCount: sessionCount as number | undefined,
     myGames: myGames as number[] | undefined,
     availableGames: availableGames as number[] | undefined,
+    
+    // Transaction tracking
+    transactions,
+    totalGasCost,
+    clearTransactions,
     
     // Loading states - use Privy's pending state
     isCreatingGame: isPrivyPending,
