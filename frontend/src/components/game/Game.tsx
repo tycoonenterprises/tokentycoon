@@ -5,6 +5,8 @@ import { PlayerStats } from './PlayerStats'
 import { DragDropGameBoard } from './DragDropGameBoard'
 import { Web3Actions } from './Web3Actions'
 import { DeckBuilder } from './DeckBuilder'
+import { ContractDebugPanel } from '@/components/debug/ContractDebugPanel'
+import { PrivyDebugInfo } from '@/components/debug/PrivyDebugInfo'
 
 export function Game() {
   const { logout, user } = usePrivy()
@@ -206,6 +208,10 @@ export function Game() {
           onClose={() => setShowDeckBuilder(false)}
         />
       )}
+
+      {/* Debug Panels */}
+      <PrivyDebugInfo />
+      <ContractDebugPanel />
     </div>
   )
 }

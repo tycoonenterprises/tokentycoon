@@ -523,6 +523,62 @@ export const GameEngineABI = [
     "anonymous": false
   },
   {
+    "type": "event",
+    "name": "ETHStaked",
+    "inputs": [
+      {
+        "name": "gameId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "cardInstanceId",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "GameJoined",
+    "inputs": [
+      {
+        "name": "gameId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "deckId",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
     "type": "error",
     "name": "AlreadyInGame",
     "inputs": []
@@ -545,6 +601,66 @@ export const GameEngineABI = [
   {
     "type": "error",
     "name": "NotYourTurn",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "GameNotFound",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "GameAlreadyStarted",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "GameFull",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotInGame",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidDeck",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "DeckEmpty",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "HandFull",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "GameNotStarted",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InvalidStakeAmount",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "CardNotOnBattlefield",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotDeFiCard",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "NotCardOwner",
     "inputs": []
   }
 ] as const;
