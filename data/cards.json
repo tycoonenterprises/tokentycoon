@@ -1,5 +1,329 @@
 {
+  
   "cards": [
+    {
+      "name": "DeFi Llama Research",
+      "description": "Draw 2 cards.",
+      "cost": 3,
+      "cardType": "Ability",
+      "abilities": {
+        "draw": {
+          "amount": 2
+        }
+      }
+    },
+    {
+      "name": "Altcoin Validator",
+      "description": "Gain 2 ETH every turn per ETH stored here.",
+      "cost": 4,
+      "cardType": "DeFi",
+      "abilities": {
+        "income": {
+          "amount": 2
+        }
+      }
+    },
+    {
+      "name": "Secret Key Leak",
+      "description": "Steal all ETH from a wallet.",
+      "cost": 5,
+      "cardType": "Action",
+      "abilities": {
+        "takeover": {
+          "amount": 100
+        }
+      }
+    },
+    {
+      "name": "DeFi Llama Research",
+      "description": "Draw 2 cards.",
+      "cost": 3,
+      "cardType": "Ability",
+      "abilities": {
+        "draw": {
+          "amount": 2
+        }
+      }
+    },
+    {
+      "name": "Attend a conference",
+      "description": "Draw 3 cards.",
+      "cost": 5,
+      "cardType": "Ability",
+      "abilities": {
+        "draw": {
+          "amount": 3
+        }
+      }
+    },
+    {
+      "name": "Rocketpool Validator",
+      "description": "Gain 1 ETH every turn per ETH stored here.",
+      "cost": 2,
+      "cardType": "EOA",
+      "abilities": {
+        "income": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Jito",
+      "description": "Gain 1 ETH every turn.",
+      "cost": 2,
+      "cardType": "DeFi",
+      "abilities": {
+        "yield": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Flashbots",
+      "description": "Gain 1 ETH every turn.",
+      "cost": 5,
+      "cardType": "DeFi",
+      "abilities": {
+        "yield": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Lido",
+      "description": "Gain 1 ETH per ETH stored here.",
+      "cost": 3,
+      "cardType": "DeFi",
+      "abilities": {
+        "yield": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Invalid OP-Code",
+      "description": "Target opponent discards a card.",
+      "cost": 3,
+      "cardType": "Action",
+      "abilities": {
+        "discard": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Lost Keys",
+      "description": "Target wallet loses all of its ETH",
+      "cost": 4,
+      "cardType": "Action",
+      "abilities": {
+        "destroy": {
+          "amount": 100
+        }
+      }
+    },
+    {
+      "name": "Validator Cluster",
+      "description": "Gain 2 ETH every turn.",
+      "cost": 4,
+      "cardType": "EOA",
+      "abilities": {
+        "yield": {
+          "amount": 2
+        }
+      }
+    },
+    {
+      "name": "Flow",
+      "description": "Generates 1 ETH per turn.",
+      "cost": 5,
+      "cardType": "DeFi",
+      "abilities": {
+        "income": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Jupiter",
+      "description": "Gain 2 ETH every turn.",
+      "cost": 2,
+      "cardType": "DeFi",
+      "abilities": {
+        "yield": {
+          "amount": 2
+        }
+      }
+    },
+    {
+      "name": "Curve",
+      "description": "Gain 1 ETH per ETH stored here",
+      "cost": 2,
+      "cardType": "DeFi",
+      "abilities": {
+        "yield": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Ethena",
+      "description": "Gain 3 ETH every turn.",
+      "cost": 5,
+      "cardType": "DeFi",
+      "abilities": {
+        "yield": {
+          "amount": 3
+        }
+      }
+    },
+    {
+      "name": "Pendle",
+      "description": "Gain 1 ETH per ETH stored here.",
+      "cost": 2,
+      "cardType": "DeFi",
+      "abilities": {
+        "yield": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Aave",
+      "description": "Gain 2 ETH per turn per ETH stored here.",
+      "cost": 4,
+      "cardType": "DeFi",
+      "abilities": {
+        "yield": {
+          "amount": 2
+        }
+      }
+    },
+    {
+      "name": "Arbitrum",
+      "description": "Generates 1 ETH per turn.",
+      "cost": 2,
+      "cardType": "Chain",
+      "abilities": {
+        "income": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Base",
+      "description": "Generates 1 ETH per turn.",
+      "cost": 2,
+      "cardType": "Chain",
+      "abilities": {
+        "income": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Morpho",
+      "description": "Gain 1 ETH per turn per ETH stored here. ",
+      "cost": 2,
+      "cardType": "DeFi",
+      "abilities": {
+        "income": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Insurance",
+      "description": "This chain and all DeFi Protocols on it can't be destroyed",
+      "cost": 4,
+      "cardType": "DeFi",
+      "abilities": {
+        "invincible": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Crypto Whale",
+      "description": "Add 1 ETH per DeFi governance control",
+      "cost": 5,
+      "cardType": "EOA",
+      "abilities": {
+        "income": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Fork",
+      "description": "Copy target DeFi protocol",
+      "cost": 3,
+      "cardType": "Action",
+      "abilities": {
+        "takeover": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Wormhole",
+      "description": "Must attach to two chains. Take two ETH per turn per ETH stored here.",
+      "cost": 3,
+      "cardType": "DeFi",
+      "abilities": {
+       "yield": {
+          "amount": 2
+        }
+      }
+    },
+    {
+      "name": "Re-entrant attack",
+      "description": "Destroy target DeFi protocol",
+      "cost": 3,
+      "cardType": "Action",
+      "abilities": {
+        "destroy": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "51% Attack",
+      "description": "Take control of target chain",
+      "cost": 5,
+      "cardType": "Action",
+      "abilities": {
+        "destroy": {
+          "amount": 1
+        },
+        "takeover": {
+          "amount": 5
+        }
+      }
+    },
+    {
+      "name": "Wallet",
+      "description": "Place max 5 ETH here",
+      "cost": 1,
+      "cardType": "EOA",
+      "abilities": {
+        "storage": {
+          "max": 5,
+          "type": "ETH"
+        }
+      }
+    },
+    {
+      "name": "Dune Research",
+      "description": "Draw 2 cards",
+      "cost": 3,
+      "cardType": "Ability",
+      "abilities": {
+        "draw": {
+          "amount": 2
+        }
+      }
+    },
     {
       "name": "Polygon",
       "description": "Gain <1> Per Turn",
