@@ -744,7 +744,11 @@ export function DragDropGameBoard() {
                 {opponentBoard.board.map((card) => (
                   <div
                     key={card.id}
-                    className="w-24 h-32 card border-red-500/50 transform rotate-180"
+                    className="w-24 h-32 card border-red-500/50 transform rotate-180 cursor-pointer hover:scale-105 transition-transform"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleCardClick(card)
+                    }}
                   >
                     <div className="p-1 border-b border-gray-600">
                       <div className="text-xs text-center text-gray-300">
