@@ -207,6 +207,19 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
   }
 
   const cardState = getCardState()
+  
+  // Debug logging for cursor troubleshooting
+  if (source === 'hand') {
+    console.log('🎯 DragDropGameBoard Card State Debug:', {
+      cardName: card.name,
+      cardCost: card.cost,
+      playerETH: playerETH,
+      isActivePlayer,
+      canAfford,
+      cardState,
+      resultingCursor: cardState === 'playable' ? 'cursor-grab' : 'cursor-not-allowed'
+    })
+  }
 
   const getTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
@@ -240,7 +253,7 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
     switch (cardState) {
       case 'playable':
         return {
-          className: 'hover:scale-105 cursor-pointer',
+          className: 'hover:scale-105 cursor-grab',
           opacity: '1',
           filter: 'none'
         }
