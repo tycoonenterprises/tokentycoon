@@ -1,6 +1,7 @@
 import React from 'react';
 import { useWallets } from '@privy-io/react-auth';
 import { Users, Crown, Clock, Loader2, Check } from 'lucide-react';
+import { DeckImage } from '@/components/ui/DeckImage';
 
 interface GameLobbyProps {
   gameId: number;
@@ -120,8 +121,15 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
             </div>
             <div className="text-right">
               <div className="text-sm text-gray-400">Deck</div>
-              <div className="text-white font-medium">
-                {getDeckName(gameState?.deckIds?.player1 || 0)}
+              <div className="flex items-center gap-2 justify-end">
+                <DeckImage 
+                  deckName={getDeckName(gameState?.deckIds?.player1 || 0)}
+                  className="w-8 h-12 rounded object-cover"
+                  fallbackIcon="🃏"
+                />
+                <div className="text-white font-medium">
+                  {getDeckName(gameState?.deckIds?.player1 || 0)}
+                </div>
               </div>
             </div>
           </div>
@@ -154,8 +162,15 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
               </div>
               <div className="text-right">
                 <div className="text-sm text-gray-400">Deck</div>
-                <div className="text-white font-medium">
-                  {getDeckName(gameState?.deckIds?.player2 || 0)}
+                <div className="flex items-center gap-2 justify-end">
+                  <DeckImage 
+                    deckName={getDeckName(gameState?.deckIds?.player2 || 0)}
+                    className="w-8 h-12 rounded object-cover"
+                    fallbackIcon="🃏"
+                  />
+                  <div className="text-white font-medium">
+                    {getDeckName(gameState?.deckIds?.player2 || 0)}
+                  </div>
                 </div>
               </div>
             </div>
