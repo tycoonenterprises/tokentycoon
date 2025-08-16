@@ -362,8 +362,13 @@ function GameLobbyWrapper() {
   
   const handleStartGame = async () => {
     try {
+      console.log('Starting game', gameId)
       await startGame(gameId)
-      // Will redirect automatically when polling detects game started
+      // Wait a moment for transaction to be mined
+      await new Promise(resolve => setTimeout(resolve, 3000))
+      // Manually redirect to game page
+      console.log('Redirecting to game page')
+      window.location.hash = `#/game/${gameId}`
     } catch (err) {
       console.error('Error starting game:', err)
     }

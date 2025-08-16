@@ -1,4 +1,5 @@
-export const GameEngineABI = [
+export const GameEngineABI = 
+[
   {
     "type": "constructor",
     "inputs": [
@@ -56,7 +57,33 @@ export const GameEngineABI = [
   },
   {
     "type": "function",
+    "name": "MAX_COLD_STORAGE_WITHDRAWAL_PER_TURN",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "MAX_HAND_SIZE",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "WIN_CONDITION_ETH",
     "inputs": [],
     "outputs": [
       {
@@ -150,6 +177,24 @@ export const GameEngineABI = [
       }
     ],
     "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "depositToColdStorage",
+    "inputs": [
+      {
+        "name": "_gameId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
     "type": "function",
@@ -271,6 +316,16 @@ export const GameEngineABI = [
             "name": "eth",
             "type": "uint256",
             "internalType": "uint256"
+          },
+          {
+            "name": "coldStorage",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "coldStorageWithdrawnThisTurn",
+            "type": "uint256",
+            "internalType": "uint256"
           }
         ]
       },
@@ -311,6 +366,16 @@ export const GameEngineABI = [
           },
           {
             "name": "eth",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "coldStorage",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "coldStorageWithdrawnThisTurn",
             "type": "uint256",
             "internalType": "uint256"
           }
@@ -433,6 +498,26 @@ export const GameEngineABI = [
           },
           {
             "name": "player2ETH",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "player1ColdStorage",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "player2ColdStorage",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "player1ColdStorageWithdrawnThisTurn",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "player2ColdStorageWithdrawnThisTurn",
             "type": "uint256",
             "internalType": "uint256"
           },
@@ -680,6 +765,24 @@ export const GameEngineABI = [
     "stateMutability": "nonpayable"
   },
   {
+    "type": "function",
+    "name": "withdrawFromColdStorage",
+    "inputs": [
+      {
+        "name": "_gameId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
     "type": "event",
     "name": "CardDrawn",
     "inputs": [
@@ -728,6 +831,68 @@ export const GameEngineABI = [
       },
       {
         "name": "instanceId",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ColdStorageDeposit",
+    "inputs": [
+      {
+        "name": "gameId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "totalColdStorage",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "ColdStorageWithdrawal",
+    "inputs": [
+      {
+        "name": "gameId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "amount",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "totalColdStorage",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
@@ -787,6 +952,31 @@ export const GameEngineABI = [
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "GameFinished",
+    "inputs": [
+      {
+        "name": "gameId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "winner",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "reason",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
       }
     ],
     "anonymous": false
@@ -957,17 +1147,27 @@ export const GameEngineABI = [
   },
   {
     "type": "error",
+    "name": "ExceedsWithdrawalLimit",
+    "inputs": []
+  },
+  {
+    "type": "error",
     "name": "GameAlreadyStarted",
     "inputs": []
   },
   {
     "type": "error",
-    "name": "GameFinished",
+    "name": "GameFull",
     "inputs": []
   },
   {
     "type": "error",
-    "name": "GameFull",
+    "name": "GameIsFinished",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "GameNotActive",
     "inputs": []
   },
   {
@@ -983,6 +1183,16 @@ export const GameEngineABI = [
   {
     "type": "error",
     "name": "HandFull",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InsufficientColdStorage",
+    "inputs": []
+  },
+  {
+    "type": "error",
+    "name": "InsufficientETH",
     "inputs": []
   },
   {
@@ -1020,4 +1230,5 @@ export const GameEngineABI = [
     "name": "NotYourTurn",
     "inputs": []
   }
-] as const;
+]
+ as const;
