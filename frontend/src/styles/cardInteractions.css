@@ -14,7 +14,7 @@
   @apply opacity-60 cursor-not-allowed grayscale;
 }
 
-.card-insufficient-gas {
+.card-insufficient-eth {
   @apply ring-2 ring-eth-danger/50 opacity-70 cursor-not-allowed;
 }
 
@@ -134,16 +134,12 @@
   @apply bg-blue-500/20 text-blue-300 border border-blue-500/50;
 }
 
+.phase-upkeep {
+  @apply bg-eth-secondary/20 text-eth-secondary border border-eth-secondary/50;
+}
+
 .phase-main {
   @apply bg-eth-success/20 text-eth-success border border-eth-success/50;
-}
-
-.phase-combat {
-  @apply bg-eth-danger/20 text-eth-danger border border-eth-danger/50;
-}
-
-.phase-end {
-  @apply bg-gray-500/20 text-gray-300 border border-gray-500/50;
 }
 
 /* Playability tooltips */

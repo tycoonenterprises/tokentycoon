@@ -61,18 +61,21 @@ export const contractCardToGameCard = (contractCard: ContractCard, instanceId?: 
 
 export interface PlayerState {
   id: string
-  balance: number
-  gas: number
-  maxGas: number
+  balance: number // Player's life/health (for game end condition)
+  eth: number // ETH resources for paying card costs
   hand: Card[]
   board: Card[]
+  deckRemaining: number // Cards remaining in deck
+  battlefieldSize: number // Number of cards on battlefield
 }
 
-export type GamePhase = 'draw' | 'main' | 'combat' | 'end'
+export type GamePhase = 'draw' | 'upkeep' | 'main'
 
 export interface GameState {
   matchId: string | null
+  gameId: number | null // Contract game ID
   currentTurn: number
+  turnNumber: number // Turn number from contract
   currentPhase: GamePhase
   activePlayer: string
   players: {
@@ -81,6 +84,7 @@ export interface GameState {
   }
   winner: string | null
   isGameActive: boolean
+  isGameStarted: boolean // Whether contract game has started
   
   // Card registry from blockchain
   availableCards: Card[]
@@ -93,7 +97,12 @@ export interface GameActions {
   startGame: (player1Id: string, player2Id: string) => void
   endGame: (winnerId?: string) => void
   nextPhase: () => void
-  nextTurn: () => void
+  endTurn: () => void
+  
+  // Blockchain integration
+  updateGameFromContract: (gameView: any) => void // Update from contract GameView
+  updatePlayerHandFromContract: (playerId: string, cardIds: number[]) => void
+  updatePlayerBattlefieldFromContract: (playerId: string, instanceIds: number[]) => void
   
   // Card actions
   playCard: (playerId: string, cardId: string, targetId?: string) => void
@@ -101,7 +110,7 @@ export interface GameActions {
   moveCard: (playerId: string, cardId: string, from: 'hand' | 'board', to: 'hand' | 'board') => void
   
   // Player actions
-  updatePlayerGas: (playerId: string, amount: number) => void
+  updatePlayerETH: (playerId: string, amount: number) => void
   updatePlayerBalance: (playerId: string, amount: number) => void
   
   // Card registry actions
@@ -139,29 +148,34 @@ const getRandomCards = (availableCards: Card[], count: number): Card[] => {
 
 const initialState: GameState = {
   matchId: null,
-  currentTurn: 1,
-  currentPhase: 'draw',
+  gameId: null,
+  currentTurn: 0, // Contract uses 0 for player1, 1 for player2
+  turnNumber: 1,
+  currentPhase: 'main',
   activePlayer: 'player1',
   players: {
     player1: {
       id: 'player1',
-      balance: 20,
-      gas: 1,
-      maxGas: 1,
-      hand: [], // Will be populated once cards are loaded from blockchain
+      balance: 20, // Health/life points
+      eth: 3, // Starting ETH resources
+      hand: [],
       board: [],
+      deckRemaining: 30,
+      battlefieldSize: 0,
     },
     player2: {
       id: 'player2',
-      balance: 20,
-      gas: 1,
-      maxGas: 1,
-      hand: [], // Will be populated once cards are loaded from blockchain
+      balance: 20, // Health/life points
+      eth: 3, // Starting ETH resources
+      hand: [],
       board: [],
+      deckRemaining: 30,
+      battlefieldSize: 0,
     },
   },
   winner: null,
   isGameActive: false,
+  isGameStarted: false,
   
   // Card registry state
   availableCards: [],
@@ -179,22 +193,110 @@ export const useGameStore = create<GameState & GameActions>()(
         set({
           matchId: `match-${Date.now()}`,
           isGameActive: true,
+          isGameStarted: false, // Will be set to true when contract game starts
           players: {
             player1: {
               id: player1Id,
               balance: 20,
-              gas: 1,
-              maxGas: 1,
+              eth: 3, // Initial ETH from contract INITIAL_ETH
               hand: getRandomCards(availableCards, 5),
               board: [],
+              deckRemaining: 30,
+              battlefieldSize: 0,
             },
             player2: {
               id: player2Id,
               balance: 20,
-              gas: 1,
-              maxGas: 1,
+              eth: 3, // Initial ETH from contract INITIAL_ETH
               hand: getRandomCards(availableCards, 5),
               board: [],
+              deckRemaining: 30,
+              battlefieldSize: 0,
+            },
+          },
+        })
+      },
+
+      // Update game state from contract GameView
+      updateGameFromContract: (gameView: any) => {
+        const activePlayer = gameView.currentTurn === 0 ? 'player1' : 'player2'
+        set({
+          gameId: gameView.gameId,
+          currentTurn: gameView.currentTurn,
+          turnNumber: gameView.turnNumber,
+          activePlayer,
+          isGameStarted: gameView.isStarted,
+          isGameActive: gameView.isStarted && !gameView.isFinished,
+          players: {
+            player1: {
+              ...get().players.player1,
+              eth: gameView.player1ETH,
+              deckRemaining: gameView.player1DeckRemaining,
+              battlefieldSize: gameView.player1BattlefieldSize,
+            },
+            player2: {
+              ...get().players.player2,
+              eth: gameView.player2ETH,
+              deckRemaining: gameView.player2DeckRemaining,
+              battlefieldSize: gameView.player2BattlefieldSize,
+            },
+          },
+        })
+      },
+
+      // Update player hand from contract
+      updatePlayerHandFromContract: (playerId: string, cardIds: number[]) => {
+        const { players, availableCards } = get()
+        const player = players[playerId as keyof typeof players]
+        
+        // Convert contract card IDs to game cards
+        const handCards = cardIds.map(cardId => {
+          const availableCard = availableCards.find(card => 
+            parseInt(card.id.split('-')[1]) === cardId
+          )
+          return availableCard ? {
+            ...availableCard,
+            id: `${availableCard.id}-hand-${cardId}`
+          } : null
+        }).filter(card => card !== null) as Card[]
+        
+        set({
+          players: {
+            ...players,
+            [playerId]: {
+              ...player,
+              hand: handCards,
+            },
+          },
+        })
+      },
+
+      // Update player battlefield from contract
+      updatePlayerBattlefieldFromContract: (playerId: string, instanceIds: number[]) => {
+        const { players, availableCards } = get()
+        const player = players[playerId as keyof typeof players]
+        
+        // Convert contract instance IDs to game cards
+        // Note: This is simplified - in reality you'd query cardInstances mapping
+        const battlefieldCards = instanceIds.map(instanceId => {
+          // For now, create placeholder cards - would need to query contract for actual card data
+          return {
+            id: `instance-${instanceId}`,
+            name: `Card Instance ${instanceId}`,
+            type: 'unit' as Card['type'],
+            cost: 1,
+            text: 'Card from battlefield',
+            power: 2,
+            toughness: 2,
+          }
+        })
+        
+        set({
+          players: {
+            ...players,
+            [playerId]: {
+              ...player,
+              board: battlefieldCards,
             },
           },
         })
@@ -237,43 +339,24 @@ export const useGameStore = create<GameState & GameActions>()(
 
       nextPhase: () => {
         const { currentPhase } = get()
-        const phaseOrder: GamePhase[] = ['draw', 'main', 'combat', 'end']
+        const phaseOrder: GamePhase[] = ['draw', 'upkeep', 'main']
         const currentIndex = phaseOrder.indexOf(currentPhase)
         const nextIndex = (currentIndex + 1) % phaseOrder.length
         
         if (nextIndex === 0) {
-          // If we're going back to draw phase, advance turn
-          get().nextTurn()
+          // If we're going back to draw phase, end turn (handled by contract)
+          get().endTurn()
         } else {
           set({ currentPhase: phaseOrder[nextIndex] })
         }
       },
 
-      nextTurn: () => {
-        const { currentTurn, activePlayer, players } = get()
-        const newActivePlayer = activePlayer === 'player1' ? 'player2' : 'player1'
-        const newTurn = activePlayer === 'player2' ? currentTurn + 1 : currentTurn
-        
-        // Increase max gas for the new active player
-        const currentPlayer = players[newActivePlayer as keyof typeof players]
-        const newMaxGas = Math.min(currentPlayer.maxGas + 1, 10)
-        
-        set({
-          currentTurn: newTurn,
-          currentPhase: 'draw',
-          activePlayer: newActivePlayer,
-          players: {
-            ...players,
-            [newActivePlayer]: {
-              ...currentPlayer,
-              maxGas: newMaxGas,
-              gas: newMaxGas,
-            },
-          },
-        })
-        
-        // Auto-draw card at start of turn
-        get().drawCard(newActivePlayer)
+      endTurn: () => {
+        // In the new system, turn ending is handled by the contract
+        // This function is mainly for UI state management
+        // The actual turn ending will call updateGameFromContract
+        console.log('Turn ended - contract should handle the transition')
+        set({ currentPhase: 'main' }) // Reset to main phase for now
       },
 
       playCard: (playerId: string, cardId: string, targetId?: string) => {
@@ -281,15 +364,15 @@ export const useGameStore = create<GameState & GameActions>()(
         const player = players[playerId as keyof typeof players]
         const card = player.hand.find(c => c.id === cardId)
         
-        if (!card || player.gas < card.cost) {
-          return // Cannot play card - insufficient gas or card not found
+        if (!card || player.eth < card.cost) {
+          return // Cannot play card - insufficient ETH or card not found
         }
         
         const newHand = player.hand.filter(c => c.id !== cardId)
-        const newGas = player.gas - card.cost
+        const newETH = player.eth - card.cost
         
-        if (card.type === 'unit' || card.type === 'EOA') {
-          // Place unit on board
+        if (card.type === 'unit' || card.type === 'EOA' || card.type === 'Chain' || card.type === 'DeFi') {
+          // Place permanent cards on board
           const newBoard = [...player.board, card]
           set({
             players: {
@@ -298,23 +381,20 @@ export const useGameStore = create<GameState & GameActions>()(
                 ...player,
                 hand: newHand,
                 board: newBoard,
-                gas: newGas,
+                eth: newETH,
+                battlefieldSize: player.battlefieldSize + 1,
               },
             },
           })
-        } else {
-          // Handle spell/resource/upgrade/action effects
-          let effectApplied = false
-          
+        } else if (card.type === 'Action') {
+          // Handle Action card effects (they don't go to battlefield)
           // Apply card-specific effects based on abilities
           if (card.abilities === 'draw') {
             // Draw a card effect
             get().drawCard(playerId)
-            effectApplied = true
           } else if (card.abilities === 'income') {
-            // Income effect - add gas
-            get().updatePlayerGas(playerId, 1)
-            effectApplied = true
+            // Income effect - add ETH
+            get().updatePlayerETH(playerId, 1)
           }
           
           set({
@@ -323,7 +403,7 @@ export const useGameStore = create<GameState & GameActions>()(
               [playerId]: {
                 ...player,
                 hand: newHand,
-                gas: newGas,
+                eth: newETH,
               },
             },
           })
@@ -378,7 +458,7 @@ export const useGameStore = create<GameState & GameActions>()(
         })
       },
 
-      updatePlayerGas: (playerId: string, amount: number) => {
+      updatePlayerETH: (playerId: string, amount: number) => {
         const { players } = get()
         const player = players[playerId as keyof typeof players]
         
@@ -387,7 +467,7 @@ export const useGameStore = create<GameState & GameActions>()(
             ...players,
             [playerId]: {
               ...player,
-              gas: Math.max(0, player.gas + amount),
+              eth: Math.max(0, player.eth + amount),
             },
           },
         })

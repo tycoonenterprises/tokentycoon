@@ -5,7 +5,7 @@ export interface PlayabilityResult {
   canPlay: boolean
   reasons: string[]
   phase: 'valid' | 'invalid' | 'wrong-phase'
-  gas: 'valid' | 'insufficient'
+  eth: 'valid' | 'insufficient'
   turn: 'valid' | 'not-your-turn'
 }
 
@@ -15,14 +15,14 @@ export interface PlayabilityResult {
 export const canPlayCard = (
   card: Card,
   currentPhase: GamePhase,
-  playerGas: number,
+  playerETH: number,
   activePlayer: string,
   currentPlayer: string,
   isGameActive: boolean
 ): PlayabilityResult => {
   const reasons: string[] = []
   let phase: PlayabilityResult['phase'] = 'valid'
-  let gas: PlayabilityResult['gas'] = 'valid'
+  let eth: PlayabilityResult['eth'] = 'valid'
   let turn: PlayabilityResult['turn'] = 'valid'
 
   // Check if game is active
@@ -32,7 +32,7 @@ export const canPlayCard = (
       canPlay: false,
       reasons,
       phase: 'invalid',
-      gas,
+      eth,
       turn
     }
   }
@@ -43,10 +43,10 @@ export const canPlayCard = (
     turn = 'not-your-turn'
   }
 
-  // Check gas requirements
-  if (playerGas < card.cost) {
-    reasons.push(`Insufficient gas: need ${card.cost}, have ${playerGas}`)
-    gas = 'insufficient'
+  // Check ETH requirements
+  if (playerETH < card.cost) {
+    reasons.push(`Insufficient ETH: need ${card.cost}, have ${playerETH}`)
+    eth = 'insufficient'
   }
 
   // Check phase requirements
@@ -62,7 +62,7 @@ export const canPlayCard = (
     canPlay,
     reasons,
     phase,
-    gas,
+    eth,
     turn
   }
 }
@@ -78,23 +78,18 @@ export const canPlayCardInPhase = (
 
   switch (currentPhase) {
     case 'draw':
-      // No manual card playing during draw phase
+      // No manual card playing during draw phase (automatic)
       reasons.push('Cannot play cards during Draw phase')
+      return { canPlay: false, reasons }
+
+    case 'upkeep':
+      // No manual card playing during upkeep phase (automatic abilities trigger)
+      reasons.push('Cannot play cards during Upkeep phase')
       return { canPlay: false, reasons }
 
     case 'main':
       // All card types can be played during main phase
       return { canPlay: true, reasons: [] }
-
-    case 'combat':
-      // No new cards during combat (only abilities/attacks)
-      reasons.push('Cannot play new cards during Combat phase')
-      return { canPlay: false, reasons }
-
-    case 'end':
-      // No card playing during end phase
-      reasons.push('Cannot play cards during End phase')
-      return { canPlay: false, reasons }
 
     default:
       reasons.push('Unknown game phase')
@@ -109,12 +104,10 @@ export const getPhaseRestrictionMessage = (currentPhase: GamePhase): string => {
   switch (currentPhase) {
     case 'draw':
       return 'Draw Phase: Cards are drawn automatically'
+    case 'upkeep':
+      return 'Upkeep Phase: Abilities trigger automatically, gain ETH'
     case 'main':
       return 'Main Phase: Play any cards you can afford'
-    case 'combat':
-      return 'Combat Phase: Attack with units on the board'
-    case 'end':
-      return 'End Phase: Turn will advance automatically'
     default:
       return 'Unknown phase'
   }
@@ -148,8 +141,8 @@ export const getCardPlayabilityClass = (playability: PlayabilityResult): string 
     return 'card-not-your-turn'
   }
   
-  if (playability.gas === 'insufficient') {
-    return 'card-insufficient-gas'
+  if (playability.eth === 'insufficient') {
+    return 'card-insufficient-eth'
   }
   
   if (playability.phase === 'wrong-phase') {

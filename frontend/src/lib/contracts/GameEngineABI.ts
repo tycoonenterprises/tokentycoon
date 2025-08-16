@@ -1,4 +1,4 @@
-// Auto-generated ABI for GameEngine
+// Auto-generated ABI for GameEngine with 3-phase gameplay
 export const GameEngineABI = [
   {
     "type": "constructor",
@@ -15,6 +15,32 @@ export const GameEngineABI = [
       }
     ],
     "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "ETH_PER_TURN",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "INITIAL_ETH",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
   },
   {
     "type": "function",
@@ -44,13 +70,34 @@ export const GameEngineABI = [
   },
   {
     "type": "function",
-    "name": "cardRegistry",
-    "inputs": [],
-    "outputs": [
+    "name": "cardInstances",
+    "inputs": [
       {
         "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "cardId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "instanceId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "owner",
         "type": "address",
-        "internalType": "contract CardRegistry"
+        "internalType": "address"
+      },
+      {
+        "name": "turnPlayed",
+        "type": "uint256",
+        "internalType": "uint256"
       }
     ],
     "stateMutability": "view"
@@ -76,32 +123,6 @@ export const GameEngineABI = [
   },
   {
     "type": "function",
-    "name": "deckRegistry",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "address",
-        "internalType": "contract DeckRegistry"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "drawCard",
-    "inputs": [
-      {
-        "name": "_gameId",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [],
-    "stateMutability": "nonpayable"
-  },
-  {
-    "type": "function",
     "name": "endTurn",
     "inputs": [
       {
@@ -115,153 +136,6 @@ export const GameEngineABI = [
   },
   {
     "type": "function",
-    "name": "gameIds",
-    "inputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "games",
-    "inputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "outputs": [
-      {
-        "name": "gameId",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "player1",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "player2",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "player1DeckId",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "player2DeckId",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "player1State",
-        "type": "tuple",
-        "internalType": "struct GameEngine.PlayerState",
-        "components": [
-          {
-            "name": "player",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "deckId",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "deck",
-            "type": "uint256[]",
-            "internalType": "uint256[]"
-          },
-          {
-            "name": "hand",
-            "type": "uint256[]",
-            "internalType": "uint256[]"
-          },
-          {
-            "name": "deckIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      },
-      {
-        "name": "player2State",
-        "type": "tuple",
-        "internalType": "struct GameEngine.PlayerState",
-        "components": [
-          {
-            "name": "player",
-            "type": "address",
-            "internalType": "address"
-          },
-          {
-            "name": "deckId",
-            "type": "uint256",
-            "internalType": "uint256"
-          },
-          {
-            "name": "deck",
-            "type": "uint256[]",
-            "internalType": "uint256[]"
-          },
-          {
-            "name": "hand",
-            "type": "uint256[]",
-            "internalType": "uint256[]"
-          },
-          {
-            "name": "deckIndex",
-            "type": "uint256",
-            "internalType": "uint256"
-          }
-        ]
-      },
-      {
-        "name": "isStarted",
-        "type": "bool",
-        "internalType": "bool"
-      },
-      {
-        "name": "isFinished",
-        "type": "bool",
-        "internalType": "bool"
-      },
-      {
-        "name": "currentTurn",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "createdAt",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "startedAt",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
     "name": "getGameState",
     "inputs": [
       {
@@ -272,67 +146,100 @@ export const GameEngineABI = [
     ],
     "outputs": [
       {
-        "name": "player1",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "player2",
-        "type": "address",
-        "internalType": "address"
-      },
-      {
-        "name": "player1DeckId",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "player2DeckId",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "player1HandSize",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "player2HandSize",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "player1DeckRemaining",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "player2DeckRemaining",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "currentTurn",
-        "type": "uint256",
-        "internalType": "uint256"
-      },
-      {
-        "name": "isStarted",
-        "type": "bool",
-        "internalType": "bool"
-      },
-      {
-        "name": "isFinished",
-        "type": "bool",
-        "internalType": "bool"
+        "name": "",
+        "type": "tuple",
+        "internalType": "struct GameEngine.GameView",
+        "components": [
+          {
+            "name": "player1",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "player2",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "player1ETH",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "player2ETH",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "player1HandSize",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "player2HandSize",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "player1BattlefieldSize",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "player2BattlefieldSize",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "player1DeckRemaining",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "player2DeckRemaining",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "currentTurn",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "turnNumber",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "isStarted",
+            "type": "bool",
+            "internalType": "bool"
+          },
+          {
+            "name": "isFinished",
+            "type": "bool",
+            "internalType": "bool"
+          }
+        ]
       }
     ],
     "stateMutability": "view"
   },
   {
     "type": "function",
-    "name": "getOpenGames",
-    "inputs": [],
+    "name": "getPlayerBattlefield",
+    "inputs": [
+      {
+        "name": "_gameId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_player",
+        "type": "address",
+        "internalType": "address"
+      }
+    ],
     "outputs": [
       {
         "name": "",
@@ -386,40 +293,21 @@ export const GameEngineABI = [
   },
   {
     "type": "function",
-    "name": "nextGameId",
-    "inputs": [],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "playerGames",
+    "name": "playCard",
     "inputs": [
       {
-        "name": "",
-        "type": "address",
-        "internalType": "address"
+        "name": "_gameId",
+        "type": "uint256",
+        "internalType": "uint256"
       },
       {
-        "name": "",
+        "name": "_cardIndex",
         "type": "uint256",
         "internalType": "uint256"
       }
     ],
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint256",
-        "internalType": "uint256"
-      }
-    ],
-    "stateMutability": "view"
+    "outputs": [],
+    "stateMutability": "nonpayable"
   },
   {
     "type": "function",
@@ -461,6 +349,37 @@ export const GameEngineABI = [
   },
   {
     "type": "event",
+    "name": "CardPlayed",
+    "inputs": [
+      {
+        "name": "gameId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "cardId",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "instanceId",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
     "name": "GameCreated",
     "inputs": [
       {
@@ -471,31 +390,6 @@ export const GameEngineABI = [
       },
       {
         "name": "creator",
-        "type": "address",
-        "indexed": true,
-        "internalType": "address"
-      },
-      {
-        "name": "deckId",
-        "type": "uint256",
-        "indexed": false,
-        "internalType": "uint256"
-      }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "GameJoined",
-    "inputs": [
-      {
-        "name": "gameId",
-        "type": "uint256",
-        "indexed": true,
-        "internalType": "uint256"
-      },
-      {
-        "name": "player",
         "type": "address",
         "indexed": true,
         "internalType": "address"
@@ -536,7 +430,7 @@ export const GameEngineABI = [
   },
   {
     "type": "event",
-    "name": "TurnChanged",
+    "name": "ResourcesGained",
     "inputs": [
       {
         "name": "gameId",
@@ -545,10 +439,85 @@ export const GameEngineABI = [
         "internalType": "uint256"
       },
       {
-        "name": "newTurn",
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "amount",
         "type": "uint256",
         "indexed": false,
         "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TurnStarted",
+    "inputs": [
+      {
+        "name": "gameId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      },
+      {
+        "name": "turnNumber",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TurnEnded",
+    "inputs": [
+      {
+        "name": "gameId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "player",
+        "type": "address",
+        "indexed": true,
+        "internalType": "address"
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "UpkeepTriggered",
+    "inputs": [
+      {
+        "name": "gameId",
+        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256"
+      },
+      {
+        "name": "cardInstanceId",
+        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256"
+      },
+      {
+        "name": "abilityName",
+        "type": "string",
+        "indexed": false,
+        "internalType": "string"
       }
     ],
     "anonymous": false
@@ -560,42 +529,17 @@ export const GameEngineABI = [
   },
   {
     "type": "error",
-    "name": "DeckEmpty",
+    "name": "CardNotInHand",
     "inputs": []
   },
   {
     "type": "error",
-    "name": "GameAlreadyStarted",
+    "name": "GameFinished",
     "inputs": []
   },
   {
     "type": "error",
-    "name": "GameFull",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "GameNotFound",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "GameNotStarted",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "HandFull",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "InvalidDeck",
-    "inputs": []
-  },
-  {
-    "type": "error",
-    "name": "NotInGame",
+    "name": "InsufficientResources",
     "inputs": []
   },
   {

@@ -57,7 +57,7 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     const cardPlayability = canPlayCard(
       card,
       currentPhase,
-      playerState.gas,
+      playerState.eth,
       activePlayer,
       currentPlayer,
       isGameActive
@@ -101,7 +101,7 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     const cardPlayability = canPlayCard(
       card,
       currentPhase,
-      playerState.gas,
+      playerState.eth,
       activePlayer,
       currentPlayer,
       isGameActive
@@ -115,8 +115,8 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
       return 'card-not-your-turn'
     }
     
-    if (cardPlayability.gas === 'insufficient') {
-      return 'card-insufficient-gas'
+    if (cardPlayability.eth === 'insufficient') {
+      return 'card-insufficient-eth'
     }
     
     if (cardPlayability.phase === 'wrong-phase') {
@@ -130,7 +130,7 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     const cardPlayability = canPlayCard(
       card,
       currentPhase,
-      playerState.gas,
+      playerState.eth,
       activePlayer,
       currentPlayer,
       isGameActive

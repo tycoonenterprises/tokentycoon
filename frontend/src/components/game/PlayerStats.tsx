@@ -4,9 +4,11 @@ export function PlayerStats() {
   const { 
     players, 
     currentTurn, 
+    turnNumber,
     currentPhase, 
     activePlayer,
-    isGameActive 
+    isGameActive,
+    isGameStarted
   } = useGameStore()
 
   const { player1, player2 } = players
@@ -21,12 +23,12 @@ export function PlayerStats() {
         {/* Game Status */}
         <div className="text-center mb-4">
           <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
-            <span>Turn {currentTurn}</span>
+            <span>Turn {turnNumber}</span>
             <span>•</span>
             <span>{formatPhase(currentPhase)} Phase</span>
             <span>•</span>
-            <span className={`font-medium ${isGameActive ? 'text-eth-success' : 'text-eth-danger'}`}>
-              {isGameActive ? 'Game Active' : 'Game Inactive'}
+            <span className={`font-medium ${isGameStarted ? 'text-eth-success' : 'text-yellow-500'}`}>
+              {isGameStarted ? 'Game Started' : 'Practice Mode'}
             </span>
           </div>
         </div>
@@ -59,9 +61,9 @@ export function PlayerStats() {
               </div>
               
               <div>
-                <div className="text-sm text-gray-400">Gas</div>
+                <div className="text-sm text-gray-400">ETH</div>
                 <div className="text-xl font-bold text-eth-secondary">
-                  {player1.gas} / {player1.maxGas}
+                  {player1.eth}
                 </div>
               </div>
               
@@ -107,9 +109,9 @@ export function PlayerStats() {
               </div>
               
               <div>
-                <div className="text-sm text-gray-400">Gas</div>
+                <div className="text-sm text-gray-400">ETH</div>
                 <div className="text-xl font-bold text-eth-secondary">
-                  {player2.gas} / {player2.maxGas}
+                  {player2.eth}
                 </div>
               </div>
               
