@@ -18,6 +18,7 @@ interface TransactionStore {
   updateTransaction: (id: string, updates: Partial<TransactionRecord>) => void;
   clearTransactions: () => void;
   getTotalGasCost: () => bigint;
+  getTotalGasUsed: () => bigint;
 }
 
 export const useTransactionStore = create<TransactionStore>((set, get) => ({
@@ -43,5 +44,12 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
     return state.transactions
       .filter(tx => tx.status === 'success')
       .reduce((total, tx) => total + tx.totalCost, 0n);
+  },
+  
+  getTotalGasUsed: () => {
+    const state = get();
+    return state.transactions
+      .filter(tx => tx.status === 'success')
+      .reduce((total, tx) => total + tx.gasUsed, 0n);
   }
 }));

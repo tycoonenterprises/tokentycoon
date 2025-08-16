@@ -33,7 +33,7 @@ export const ContractDebugPanel: React.FC<ContractDebugPanelProps> = ({
   const eventIdCounter = useRef(0);
   
   // Get transaction data from useGameEngine hook
-  const { transactions, totalGasCost, clearTransactions } = useGameEngine();
+  const { transactions, totalGasUsed, clearTransactions } = useGameEngine();
 
   const addEvent = (event: Omit<DebugEvent, 'id' | 'timestamp'>) => {
     const newEvent: DebugEvent = {
@@ -360,9 +360,9 @@ export const ContractDebugPanel: React.FC<ContractDebugPanelProps> = ({
             <span className="font-semibold text-white">Contract Debug</span>
             <div className="flex items-center gap-2">
               <span className="text-xs text-gray-400">({transactions.length} tx)</span>
-              {totalGasCost > 0n && (
+              {totalGasUsed > 0n && (
                 <span className="text-xs text-cyan-400 font-mono">
-                  {formatGas(totalGasCost)}
+                  {totalGasUsed.toLocaleString()} gas
                 </span>
               )}
             </div>
@@ -406,9 +406,9 @@ export const ContractDebugPanel: React.FC<ContractDebugPanelProps> = ({
                 {/* Summary */}
                 <div className="p-3 bg-gray-800/50">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-gray-300">Total Gas Cost:</span>
+                    <span className="text-sm text-gray-300">Total Gas Used:</span>
                     <span className="text-sm font-mono text-cyan-400">
-                      {formatGas(totalGasCost)}
+                      {totalGasUsed.toLocaleString()} gas
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
@@ -479,10 +479,10 @@ export const ContractDebugPanel: React.FC<ContractDebugPanelProps> = ({
                             {tx.status === 'success' && tx.gasUsed > 0n && (
                               <div className="flex justify-between">
                                 <span>
-                                  <span className="text-gray-500">Gas:</span> {tx.gasUsed.toString()}
+                                  <span className="text-gray-500">Gas:</span> {tx.gasUsed.toLocaleString()}
                                 </span>
-                                <span className="text-cyan-400 font-mono">
-                                  {formatGas(tx.totalCost)}
+                                <span className="text-gray-500 text-[10px]">
+                                  ({formatGas(tx.totalCost)})
                                 </span>
                               </div>
                             )}

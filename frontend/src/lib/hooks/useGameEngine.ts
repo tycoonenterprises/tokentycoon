@@ -447,7 +447,9 @@ export const useGameEngine = () => {
   const transactions = useTransactionStore(state => state.transactions)
   const clearTransactions = useTransactionStore(state => state.clearTransactions)
   const getTotalGasCost = useTransactionStore(state => state.getTotalGasCost)
+  const getTotalGasUsed = useTransactionStore(state => state.getTotalGasUsed)
   const totalGasCost = getTotalGasCost()
+  const totalGasUsed = getTotalGasUsed()
 
   return {
     // Data
@@ -458,6 +460,7 @@ export const useGameEngine = () => {
     // Transaction tracking
     transactions,
     totalGasCost,
+    totalGasUsed,
     clearTransactions,
     
     // Loading states - use Privy's pending state
