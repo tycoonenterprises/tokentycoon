@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Overflow Demo - Interactive Cards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/token-tycoon-v2.css">
+    <link rel="stylesheet" href="css/card-abilities.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #0A0E27 0%, #1A1E3A 100%);
+            font-family: 'Orbitron', sans-serif;
+            padding: 2rem;
+        }
+        
+        .demo-title {
+            color: #00D9FF;
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px #00D9FF;
+            text-align: center;
+        }
+        
+        .demo-subtitle {
+            color: #F0F0F0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 3rem;
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        .cards-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 4rem;
+            justify-items: center;
+            max-width: 1400px;
+        }
+        
+        /* Enhanced card name visibility */
+        .card-name {
+            background: linear-gradient(135deg, 
+                rgba(0, 217, 255, 0.3), 
+                rgba(0, 0, 0, 0.95), 
+                rgba(0, 217, 255, 0.3)) !important;
+            border: 4px solid #00D9FF !important;
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.8) !important;
+        }
+        
+        .name-text {
+            font-size: 1.3rem !important;
+            color: #FFFFFF !important;
+            text-shadow: 
+                0 0 15px #00D9FF,
+                2px 2px 4px rgba(0, 0, 0, 1) !important;
+            text-transform: uppercase !important;
+        }
+        
+        /* Demo-specific styling */
+        .demo-card {
+            position: relative;
+        }
+        
+        .demo-card::after {
+            content: 'Try clicking the rules text! 👆';
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 165, 0, 0.9);
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            animation: demoHint 2s ease-in-out infinite;
+            z-index: 100;
+        }
+        
+        @keyframes demoHint {
+            0%, 70%, 100% { opacity: 0.8; transform: translateX(-50%) translateY(0); }
+            35% { opacity: 1; transform: translateX(-50%) translateY(-5px); }
+        }
+        
+        /* Enhanced visual feedback */
+        .card-rules-text.has-overflow {
+            animation: overflowPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes overflowPulse {
+            0%, 80%, 100% { border-color: rgba(0, 217, 255, 0.4); }
+            40% { border-color: rgba(255, 165, 0, 0.8); }
+        }
+    </style>
+</head>
+<body class="cyberpunk-theme">
+    <div class="demo-title">Interactive Text Overflow Demo</div>
+    <div class="demo-subtitle">
+        Cards with long descriptions show visual hints when text is cut off. 
+        <strong>Click the rules text</strong> to expand and see the full description!
+    </div>
+    
+    <div class="cards-showcase">
+        
+        <!-- Card with Long Description - Will Show Overflow -->
+        <div class="card eoa-card premium-tier demo-card" data-card-name="Advanced Multi-sig" data-type="EOA" data-cost="4">
+            
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">4</span>
+                </div>
+                <div class="card-type eoa-type">
+                    <span class="type-icon">👤</span>
+                    <span class="type-label">EOA</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Advanced Multi-sig</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                            <div style="width: 50px; height: 40px; background: linear-gradient(135deg, #555, #333); border: 3px solid #FFA500; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                <div style="width: 35px; height: 28px; background: #222; border: 2px solid #FFA500; border-radius: 4px; position: relative;">
+                                    <div style="width: 6px; height: 6px; background: #FFA500; border-radius: 50%; position: absolute; right: 4px; top: 50%; transform: translateY(-50%);"></div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 6px;">
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                                    <div style="width: 8px; height: 8px; background: #00D9FF; border-radius: 50%;"></div>
+                                    <div style="width: 2px; height: 8px; background: #FFA500; border-radius: 1px;"></div>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                                    <div style="width: 8px; height: 8px; background: #00D9FF; border-radius: 50%;"></div>
+                                    <div style="width: 2px; height: 8px; background: #FFA500; border-radius: 1px;"></div>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                                    <div style="width: 8px; height: 8px; background: #00D9FF; border-radius: 50%;"></div>
+                                    <div style="width: 2px; height: 8px; background: #FFA500; border-radius: 1px;"></div>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                                    <div style="width: 8px; height: 8px; background: #00D9FF; border-radius: 50%;"></div>
+                                    <div style="width: 2px; height: 8px; background: #FFA500; border-radius: 1px;"></div>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 2px;">
+                                    <div style="width: 8px; height: 8px; background: #00D9FF; border-radius: 50%;"></div>
+                                    <div style="width: 2px; height: 8px; background: #FFA500; border-radius: 1px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Storage max 12. Requires 3 of 5 signatures for any transaction. The first time each turn this would be stolen from or destroyed, prevent it. At the start of your turn, if this wallet has 8+ ETH, gain 1 additional ETH from interest. When an opponent plays an Action targeting this wallet, you may pay 2 ETH to counter it completely. This wallet cannot be targeted by cards that cost 2 ETH or less.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic storage-mechanic">
+                        <span class="mechanic-symbol">🏦</span>
+                        <span class="mechanic-text">Store up to 12 ETH</span>
+                    </div>
+                    <div class="ability-mechanic protection-mechanic">
+                        <span class="mechanic-symbol">🛡️</span>
+                        <span class="mechanic-text">Multi-signature protection</span>
+                    </div>
+                    <div class="ability-mechanic income-mechanic">
+                        <span class="mechanic-symbol">💰</span>
+                        <span class="mechanic-text">Interest on 8+ ETH</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item storage-stat">
+                        <span class="stat-symbol">🏦</span>
+                        <span class="stat-value">12</span>
+                    </div>
+                    <div class="stat-item protection-stat">
+                        <span class="stat-symbol">🛡️</span>
+                        <span class="stat-value">3/5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card with Medium Description -->
+        <div class="card action-card premium-tier" data-card-name="Complex Hack" data-type="Action" data-cost="5">
+            
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">5</span>
+                </div>
+                <div class="card-type action-type">
+                    <span class="type-icon">⚡</span>
+                    <span class="type-label">Action</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Complex Hack</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div style="width: 20px; height: 20px; background: #00D9FF; border: 2px solid #627EEA; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: white; font-weight: bold;">ETH</div>
+                                <div style="width: 25px; height: 3px; background: linear-gradient(90deg, #00D9FF, #FF0044); animation: hackGlitch 1s infinite;"></div>
+                                <div style="width: 20px; height: 20px; background: #00D9FF; border: 2px solid #627EEA; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 8px; color: white; font-weight: bold;">APP</div>
+                            </div>
+                            <div style="color: #FF0044; font-size: 8px; font-weight: bold; animation: blink 0.5s infinite;">⚠️ MULTI-VECTOR ATTACK ⚠️</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Destroy up to 2 target DeFi protocols on different chains. If you destroy exactly 2, draw 2 cards. For each protocol destroyed this way, steal 2 ETH from its owner.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic destroy-mechanic">
+                        <span class="mechanic-symbol">💥</span>
+                        <span class="mechanic-text">Destroy up to 2 targets</span>
+                    </div>
+                    <div class="ability-mechanic draw-mechanic">
+                        <span class="mechanic-symbol">📄</span>
+                        <span class="mechanic-text">Conditional card draw</span>
+                    </div>
+                    <div class="ability-mechanic steal-mechanic">
+                        <span class="mechanic-symbol">🔥</span>
+                        <span class="mechanic-text">Steal 2 ETH per target</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item destroy-stat">
+                        <span class="stat-symbol">💥</span>
+                        <span class="stat-value">2</span>
+                    </div>
+                    <div class="stat-item steal-stat">
+                        <span class="stat-symbol">🔥</span>
+                        <span class="stat-value">2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Card with Short Description (No Overflow) -->
+        <div class="card defi-card standard-tier" data-card-name="Simple Pool" data-type="DeFi" data-cost="2">
+            
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">2</span>
+                </div>
+                <div class="card-type defi-type">
+                    <span class="type-icon">💎</span>
+                    <span class="type-label">DeFi</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Simple Pool</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                            <div style="width: 25px; height: 25px; border: 2px solid #FFA500; border-radius: 50%; background: radial-gradient(circle, rgba(255,165,0,0.3), transparent);"></div>
+                            <div style="color: #00D9FF; font-size: 14px;">💧</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Gain 1 ETH per turn.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic income-mechanic">
+                        <span class="mechanic-symbol">💰</span>
+                        <span class="mechanic-text">+1 ETH per turn</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item income-stat">
+                        <span class="stat-symbol">💰</span>
+                        <span class="stat-value">1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <style>
+        @keyframes hackGlitch {
+            0%, 90%, 100% { background: linear-gradient(90deg, #00D9FF, #FF0044); }
+            10%, 30%, 50%, 70% { background: linear-gradient(90deg, #FF0044, #FF6B00); }
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+    </style>
+
+    <script src="js/text-overflow-handler.js"></script>
+</body>
+</html>

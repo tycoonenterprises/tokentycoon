@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Titles Test - Prominent Display</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/token-tycoon-v2.css">
+    <link rel="stylesheet" href="css/card-abilities.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #0A0E27 0%, #1A1E3A 100%);
+            font-family: 'Orbitron', sans-serif;
+            padding: 2rem;
+        }
+        
+        .test-title {
+            color: #00D9FF;
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px #00D9FF;
+            text-align: center;
+        }
+        
+        .cards-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 4rem;
+            justify-items: center;
+            max-width: 1400px;
+        }
+        
+        /* FORCE CARD TITLES TO BE ULTRA-VISIBLE */
+        .card-name {
+            position: relative !important;
+            padding: 1rem 1.5rem !important;
+            height: 45px !important;
+            flex-shrink: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: linear-gradient(135deg, 
+                rgba(0, 217, 255, 0.3), 
+                rgba(0, 0, 0, 0.95), 
+                rgba(0, 217, 255, 0.3)) !important;
+            backdrop-filter: blur(10px) !important;
+            border: 4px solid #00D9FF !important;
+            margin: 0.5rem !important;
+            border-radius: 15px !important;
+            box-shadow: 
+                0 0 30px rgba(0, 217, 255, 0.8),
+                inset 0 0 20px rgba(0, 217, 255, 0.2) !important;
+            z-index: 100 !important;
+        }
+        
+        .name-text {
+            font-size: 1.3rem !important;
+            font-weight: 900 !important;
+            text-align: center !important;
+            color: #FFFFFF !important;
+            text-shadow: 
+                0 0 15px #00D9FF,
+                0 0 30px #00D9FF,
+                2px 2px 4px rgba(0, 0, 0, 1),
+                -1px -1px 2px rgba(0, 0, 0, 1) !important;
+            z-index: 101 !important;
+            letter-spacing: 0.08em !important;
+            text-transform: uppercase !important;
+            display: block !important;
+            width: 100% !important;
+            line-height: 1.2 !important;
+        }
+        
+        /* Ensure card titles are above everything else */
+        .card-name::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00D9FF, #8B00FF, #FFA500, #00D9FF);
+            border-radius: 17px;
+            z-index: -1;
+            animation: titleGlow 3s linear infinite;
+        }
+        
+        @keyframes titleGlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        
+        /* Enhanced art visibility */
+        .literal-art {
+            background: rgba(0, 0, 0, 0.4) !important;
+            border-radius: 8px !important;
+            padding: 15px !important;
+            border: 2px solid rgba(0, 217, 255, 0.3) !important;
+        }
+        
+        /* Better rules text */
+        .card-rules-text {
+            background: rgba(0, 0, 0, 0.95) !important;
+            border: 3px solid rgba(0, 217, 255, 0.6) !important;
+            font-size: 0.9rem !important;
+            padding: 1rem !important;
+        }
+        
+        .description-text {
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            font-size: 0.95rem !important;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 1) !important;
+        }
+        
+        /* Better stats */
+        .card-stats-footer {
+            background: rgba(0, 0, 0, 0.95) !important;
+            border-top: 3px solid rgba(0, 217, 255, 0.7) !important;
+        }
+        
+        /* Literal art styles */
+        .uniswap-interface {
+            background: rgba(10, 14, 39, 0.95);
+            border: 3px solid #00D9FF;
+            border-radius: 12px;
+            padding: 15px;
+            width: 120px;
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.5);
+        }
+        
+        .token-pair {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+        }
+        
+        .token {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .token-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid;
+        }
+        
+        .eth-icon { background: #627EEA; border-color: #627EEA; }
+        .usdc-icon { background: #2775CA; border-color: #2775CA; }
+        
+        .token-label {
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .swap-arrow {
+            font-size: 18px;
+            color: #00D9FF;
+            font-weight: bold;
+            text-align: center;
+            animation: arrowPulse 2s infinite;
+        }
+        
+        .pool-label {
+            background: linear-gradient(45deg, #FFA500, #8B00FF);
+            border-radius: 8px;
+            padding: 5px 12px;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 8px;
+        }
+        
+        @keyframes arrowPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        /* Bridge hack art */
+        .bridge-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .bridge-connection {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .blockchain {
+            width: 28px;
+            height: 28px;
+            background: #00D9FF;
+            border: 3px solid #627EEA;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 9px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .bridge-link {
+            width: 35px;
+            height: 4px;
+            background: linear-gradient(90deg, #00D9FF, #FF0044);
+            animation: bridgeGlitch 1s infinite;
+            border-radius: 2px;
+        }
+        
+        .exploit-warning {
+            color: #FF0044;
+            font-size: 10px;
+            font-weight: bold;
+            animation: warningBlink 0.6s infinite;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        @keyframes bridgeGlitch {
+            0%, 80%, 100% { background: linear-gradient(90deg, #00D9FF, #FF0044); }
+            10%, 30%, 50%, 70% { background: linear-gradient(90deg, #FF0044, #FF6B00); }
+        }
+        
+        @keyframes warningBlink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.4; }
+        }
+        
+        /* Multi-sig art */
+        .multisig-visual {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .safe-vault {
+            width: 60px;
+            height: 48px;
+            background: linear-gradient(135deg, #555555, #333333);
+            border: 4px solid #FFA500;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .vault-door {
+            width: 42px;
+            height: 32px;
+            background: #222222;
+            border: 2px solid #FFA500;
+            border-radius: 6px;
+            position: relative;
+        }
+        
+        .door-handle {
+            width: 8px;
+            height: 8px;
+            background: #FFA500;
+            border-radius: 50%;
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .signers {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .signer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        .user-avatar {
+            width: 12px;
+            height: 12px;
+            background: #00D9FF;
+            border-radius: 50% 50% 0 0;
+        }
+        
+        .user-key {
+            width: 3px;
+            height: 10px;
+            background: #FFA500;
+            border-radius: 1px;
+        }
+    </style>
+</head>
+<body class="cyberpunk-theme">
+    <div class="test-title">CARD TITLES ARE NOW ULTRA-VISIBLE</div>
+    <div class="cards-showcase">
+        
+        <!-- Uniswap Card with PROMINENT Title -->
+        <div class="card defi-card standard-tier" data-card-name="Uniswap" data-type="DeFi" data-cost="2">
+            
+            <!-- Header: Cost + Type -->
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">2</span>
+                </div>
+                <div class="card-type defi-type">
+                    <span class="type-icon">💎</span>
+                    <span class="type-label">DeFi</span>
+                </div>
+            </div>
+            
+            <!-- CARD TITLE - ULTRA PROMINENT -->
+            <div class="card-name">
+                <span class="name-text">UNISWAP</span>
+            </div>
+            
+            <!-- Literal Art -->
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div class="uniswap-interface">
+                            <div class="token-pair">
+                                <div class="token">
+                                    <div class="token-icon eth-icon"></div>
+                                    <span class="token-label">ETH</span>
+                                </div>
+                                <span style="color: #888; font-size: 12px;">1.5</span>
+                            </div>
+                            <div class="swap-arrow">⇅</div>
+                            <div class="token-pair">
+                                <div class="token">
+                                    <div class="token-icon usdc-icon"></div>
+                                    <span class="token-label">USDC</span>
+                                </div>
+                                <span style="color: #888; font-size: 12px;">3750</span>
+                            </div>
+                            <div class="pool-label">LIQUIDITY POOL</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rules Text -->
+            <div class="card-rules-text">
+                <p class="description-text">Gain 1 ETH per turn per ETH stored here.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic yield-mechanic">
+                        <span class="mechanic-symbol">📈</span>
+                        <span class="mechanic-text">+1 ETH per turn per ETH stored</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Stats Footer -->
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item yield-stat">
+                        <span class="stat-symbol">📈</span>
+                        <span class="stat-value">1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bridge Hack Card with PROMINENT Title -->
+        <div class="card action-card legendary-tier" data-card-name="Bridge Hack" data-type="Action" data-cost="5">
+            
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">5</span>
+                </div>
+                <div class="card-type action-type">
+                    <span class="type-icon">⚡</span>
+                    <span class="type-label">Action</span>
+                </div>
+            </div>
+            
+            <!-- CARD TITLE - ULTRA PROMINENT -->
+            <div class="card-name">
+                <span class="name-text">BRIDGE HACK</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div class="bridge-visual">
+                            <div class="bridge-connection">
+                                <div class="blockchain">ETH</div>
+                                <div class="bridge-link"></div>
+                                <div class="blockchain">BSC</div>
+                            </div>
+                            <div class="exploit-warning">
+                                ⚠️ BRIDGE EXPLOITED ⚠️
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Destroy target chain and all DeFi Protocols on it.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic destroy-mechanic">
+                        <span class="mechanic-symbol">💥</span>
+                        <span class="mechanic-text">Destroy 1 target</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item destroy-stat">
+                        <span class="stat-symbol">💥</span>
+                        <span class="stat-value">1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Multi-sig Wallet Card with PROMINENT Title -->
+        <div class="card eoa-card standard-tier" data-card-name="Multi-sig Wallet" data-type="EOA" data-cost="3">
+            
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">3</span>
+                </div>
+                <div class="card-type eoa-type">
+                    <span class="type-icon">👤</span>
+                    <span class="type-label">EOA</span>
+                </div>
+            </div>
+            
+            <!-- CARD TITLE - ULTRA PROMINENT -->
+            <div class="card-name">
+                <span class="name-text">MULTI-SIG WALLET</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div class="multisig-visual">
+                            <div class="safe-vault">
+                                <div class="vault-door">
+                                    <div class="door-handle"></div>
+                                </div>
+                            </div>
+                            <div class="signers">
+                                <div class="signer">
+                                    <div class="user-avatar"></div>
+                                    <div class="user-key"></div>
+                                </div>
+                                <div class="signer">
+                                    <div class="user-avatar"></div>
+                                    <div class="user-key"></div>
+                                </div>
+                                <div class="signer">
+                                    <div class="user-avatar"></div>
+                                    <div class="user-key"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Storage max 8. First attack each turn is prevented.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic storage-mechanic">
+                        <span class="mechanic-symbol">🏦</span>
+                        <span class="mechanic-text">Store up to 8 ETH</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item storage-stat">
+                        <span class="stat-symbol">🏦</span>
+                        <span class="stat-value">8</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

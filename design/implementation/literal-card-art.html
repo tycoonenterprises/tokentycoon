@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Literal Card Art - Recognizable Icons</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/token-tycoon-v2.css">
+    <link rel="stylesheet" href="css/card-abilities.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #0A0E27 0%, #1A1E3A 100%);
+            font-family: 'Orbitron', sans-serif;
+            padding: 2rem;
+        }
+        
+        .showcase-title {
+            color: #00D9FF;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px #00D9FF;
+            text-align: center;
+        }
+        
+        .cards-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 3rem;
+            justify-items: center;
+            max-width: 1200px;
+        }
+        
+        /* Literal Art Styles */
+        .literal-art {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        /* Uniswap - DEX Interface */
+        .uniswap-dex {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .swap-interface {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00D9FF;
+            border-radius: 12px;
+            padding: 15px;
+            width: 120px;
+        }
+        
+        .token-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+        }
+        
+        .token-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid;
+        }
+        
+        .eth-token { background: #627EEA; border-color: #627EEA; }
+        .usdc-token { background: #2775CA; border-color: #2775CA; }
+        
+        .swap-arrow {
+            font-size: 16px;
+            color: #00D9FF;
+            animation: bounce 2s infinite;
+        }
+        
+        .liquidity-pool {
+            background: linear-gradient(45deg, #FFA500, #8B00FF);
+            border-radius: 8px;
+            padding: 5px 10px;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        /* Bridge Hack - Literal Bridge Being Hacked */
+        .bridge-hack {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .bridge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chain-block {
+            width: 25px;
+            height: 25px;
+            background: #00D9FF;
+            border: 2px solid #627EEA;
+            border-radius: 4px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+        }
+        
+        .bridge-connection {
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #00D9FF, #FF0044);
+            position: relative;
+            animation: hackGlitch 1s infinite;
+        }
+        
+        .hack-warning {
+            color: #FF0044;
+            font-size: 12px;
+            animation: blink 0.5s infinite;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Multi-sig Wallet - Literal Vault with Keys */
+        .multisig-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .vault {
+            width: 60px;
+            height: 50px;
+            background: linear-gradient(135deg, #4A4A4A, #2A2A2A);
+            border: 3px solid #FFA500;
+            border-radius: 8px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .vault-door {
+            width: 40px;
+            height: 35px;
+            background: #1A1A1A;
+            border: 2px solid #FFA500;
+            border-radius: 6px;
+            position: relative;
+        }
+        
+        .vault-handle {
+            width: 8px;
+            height: 8px;
+            background: #FFA500;
+            border-radius: 50%;
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .key-holders {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .key-person {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        
+        .person-icon {
+            width: 12px;
+            height: 12px;
+            background: #00D9FF;
+            border-radius: 50% 50% 0 0;
+        }
+        
+        .key {
+            width: 3px;
+            height: 10px;
+            background: #FFA500;
+            border-radius: 1px;
+        }
+        
+        /* Ethereum Mainnet - Literal Network */
+        .ethereum-network {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .eth-logo {
+            width: 40px;
+            height: 40px;
+            background: #627EEA;
+            clip-path: polygon(50% 0%, 0% 50%, 50% 100%, 100% 50%);
+            position: relative;
+        }
+        
+        .network-nodes {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .validator-node {
+            width: 12px;
+            height: 12px;
+            background: #00D9FF;
+            border: 2px solid #FFA500;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .network-label {
+            font-size: 8px;
+            color: #00D9FF;
+            font-weight: bold;
+        }
+        
+        /* Flash Loan - Money with Timer */
+        .flash-loan {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .money-stack {
+            display: flex;
+            gap: 3px;
+        }
+        
+        .money-bill {
+            width: 20px;
+            height: 12px;
+            background: #00AA00;
+            border: 1px solid #006600;
+            border-radius: 2px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: white;
+        }
+        
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #FF0044;
+            font-size: 10px;
+        }
+        
+        .clock {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #FF0044;
+            border-radius: 50%;
+            position: relative;
+        }
+        
+        .clock-hand {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1px;
+            height: 6px;
+            background: #FF0044;
+            transform-origin: bottom;
+            transform: translate(-50%, -100%) rotate(90deg);
+            animation: tick 1s linear infinite;
+        }
+        
+        /* Animations */
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-5px); }
+            60% { transform: translateY(-3px); }
+        }
+        
+        @keyframes hackGlitch {
+            0%, 90%, 100% { background: linear-gradient(90deg, #00D9FF, #FF0044); }
+            10%, 30%, 50%, 70% { background: linear-gradient(90deg, #FF0044, #00D9FF); }
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+        
+        @keyframes tick {
+            0% { transform: translate(-50%, -100%) rotate(0deg); }
+            100% { transform: translate(-50%, -100%) rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="cyberpunk-theme">
+    <div class="showcase-title">Literal Card Art - Recognizable Icons</div>
+    <div class="cards-showcase">
+        
+        <!-- Uniswap - DEX Interface -->
+        <div class="card defi-card standard-tier" data-card-name="Uniswap" data-type="DeFi" data-cost="2">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">2</span>
+                </div>
+                <div class="card-type defi-type">
+                    <span class="type-icon">💎</span>
+                    <span class="type-label">DeFi</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Uniswap</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div class="uniswap-dex">
+                            <div class="swap-interface">
+                                <div class="token-row">
+                                    <div class="token-icon eth-token"></div>
+                                    <span style="color: white; font-size: 10px;">ETH</span>
+                                </div>
+                                <div class="swap-arrow">⇅</div>
+                                <div class="token-row">
+                                    <div class="token-icon usdc-token"></div>
+                                    <span style="color: white; font-size: 10px;">USDC</span>
+                                </div>
+                            </div>
+                            <div class="liquidity-pool">LIQUIDITY</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Gain 1 ETH per turn per ETH stored here.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic yield-mechanic">
+                        <span class="mechanic-symbol">📈</span>
+                        <span class="mechanic-text">+1 ETH per turn per ETH stored here</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item yield-stat">
+                        <span class="stat-symbol">📈</span>
+                        <span class="stat-value">1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bridge Hack - Literal Bridge Attack -->
+        <div class="card action-card legendary-tier" data-card-name="Bridge Hack" data-type="Action" data-cost="5">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">5</span>
+                </div>
+                <div class="card-type action-type">
+                    <span class="type-icon">⚡</span>
+                    <span class="type-label">Action</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Bridge Hack</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div class="bridge-hack">
+                            <div class="bridge">
+                                <div class="chain-block">ETH</div>
+                                <div class="bridge-connection"></div>
+                                <div class="chain-block">BSC</div>
+                            </div>
+                            <div class="hack-warning">
+                                ⚠️ EXPLOITED
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Destroy target chain and all DeFi Protocols on it.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic destroy-mechanic">
+                        <span class="mechanic-symbol">💥</span>
+                        <span class="mechanic-text">Destroy 1 target</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item destroy-stat">
+                        <span class="stat-symbol">💥</span>
+                        <span class="stat-value">1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Multi-sig Wallet - Literal Vault -->
+        <div class="card eoa-card standard-tier" data-card-name="Multi-sig Wallet" data-type="EOA" data-cost="3">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">3</span>
+                </div>
+                <div class="card-type eoa-type">
+                    <span class="type-icon">👤</span>
+                    <span class="type-label">EOA</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Multi-sig Wallet</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div class="multisig-display">
+                            <div class="vault">
+                                <div class="vault-door">
+                                    <div class="vault-handle"></div>
+                                </div>
+                            </div>
+                            <div class="key-holders">
+                                <div class="key-person">
+                                    <div class="person-icon"></div>
+                                    <div class="key"></div>
+                                </div>
+                                <div class="key-person">
+                                    <div class="person-icon"></div>
+                                    <div class="key"></div>
+                                </div>
+                                <div class="key-person">
+                                    <div class="person-icon"></div>
+                                    <div class="key"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Storage max 8. The first time each turn this would be stolen from or destroyed, prevent it.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic storage-mechanic">
+                        <span class="mechanic-symbol">🏦</span>
+                        <span class="mechanic-text">Store up to 8 ETH</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item storage-stat">
+                        <span class="stat-symbol">🏦</span>
+                        <span class="stat-value">8</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ethereum Mainnet - Network Visualization -->
+        <div class="card chain-card premium-tier" data-card-name="Ethereum Mainnet" data-type="Chain" data-cost="5">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">5</span>
+                </div>
+                <div class="card-type chain-type">
+                    <span class="type-icon">⛓️</span>
+                    <span class="type-label">Chain</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Ethereum Mainnet</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div class="ethereum-network">
+                            <div class="eth-logo"></div>
+                            <div class="network-nodes">
+                                <div class="validator-node"></div>
+                                <div class="validator-node"></div>
+                                <div class="validator-node"></div>
+                                <div class="validator-node"></div>
+                                <div class="validator-node"></div>
+                                <div class="validator-node"></div>
+                            </div>
+                            <div class="network-label">MAINNET</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Generates 2 ETH per turn.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic income-mechanic">
+                        <span class="mechanic-symbol">💰</span>
+                        <span class="mechanic-text">+2 ETH per turn</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item income-stat">
+                        <span class="stat-symbol">💰</span>
+                        <span class="stat-value">2</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Flash Loan - Money with Timer -->
+        <div class="card action-card premium-tier" data-card-name="Flash Loan" data-type="Action" data-cost="3">
+            <div class="card-header">
+                <div class="card-cost">
+                    <span class="cost-value">3</span>
+                </div>
+                <div class="card-type action-type">
+                    <span class="type-icon">⚡</span>
+                    <span class="type-label">Action</span>
+                </div>
+            </div>
+            
+            <div class="card-name">
+                <span class="name-text">Flash Loan</span>
+            </div>
+            
+            <div class="card-art">
+                <div class="art-frame">
+                    <div class="literal-art">
+                        <div class="flash-loan">
+                            <div class="money-stack">
+                                <div class="money-bill">$</div>
+                                <div class="money-bill">$</div>
+                                <div class="money-bill">$</div>
+                            </div>
+                            <div class="timer">
+                                <div class="clock">
+                                    <div class="clock-hand"></div>
+                                </div>
+                                <span>1 TURN</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-rules-text">
+                <p class="description-text">Gain 10 ETH. Repay 10 ETH next turn.</p>
+                <div class="abilities-text">
+                    <div class="ability-mechanic income-mechanic">
+                        <span class="mechanic-symbol">💰</span>
+                        <span class="mechanic-text">Gain 10 ETH</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card-stats-footer">
+                <div class="stats-bar">
+                    <div class="stat-item income-stat">
+                        <span class="stat-symbol">💰</span>
+                        <span class="stat-value">10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>

@@ -254,7 +254,7 @@ body {
   width: var(--card-width);
   height: var(--card-height);
   background: linear-gradient(145deg, var(--color-navy-deep), var(--color-navy-light));
-  border: 3px solid;
+  border: 3px solid rgba(0, 217, 255, 0.5);
   border-radius: var(--card-border-radius);
   position: relative;
   overflow: hidden;
@@ -266,12 +266,12 @@ body {
   font-family: var(--font-primary);
   z-index: var(--z-card-base);
   
-  /* MTG-style card layout structure */
-  --header-height: 35px;
-  --name-height: 30px;
-  --art-height: 130px;
-  --rules-min-height: 90px;
-  --footer-height: 45px;
+  /* Clean MTG-style layout with proper spacing */
+  --header-height: 45px;
+  --name-height: 35px;
+  --art-height: 140px;
+  --rules-height: 85px;
+  --footer-height: 40px;
 }
 
 .card:hover {
@@ -300,26 +300,21 @@ body {
 .card-cost {
   display: flex;
   align-items: center;
-  gap: 0.2rem;
-  background: rgba(0, 0, 0, 0.8);
-  border: 2px solid var(--color-cyan-electric);
-  border-radius: 50%;
-  width: 28px;
-  height: 28px;
   justify-content: center;
+  background: rgba(0, 0, 0, 0.9);
+  border: 3px solid var(--color-cyan-electric);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
   font-weight: 900;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
+  box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
 }
 
 .cost-value {
   color: var(--color-cyan-electric);
-  text-shadow: 0 0 5px var(--color-cyan-electric);
-}
-
-.cost-symbol {
-  color: var(--color-amber-neon);
-  font-size: 0.7rem;
-  margin-left: -2px;
+  text-shadow: 0 0 10px var(--color-cyan-electric);
+  line-height: 1;
 }
 
 .card-type {
@@ -347,25 +342,33 @@ body {
 /* ===== CARD NAME ===== */
 .card-name {
   position: relative;
-  padding: 0.4rem 0.5rem;
+  padding: 0.8rem 1rem;
   height: var(--name-height);
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(3px);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(10, 14, 39, 0.95));
+  backdrop-filter: blur(8px);
+  border: 2px solid var(--color-cyan-electric);
+  margin: 0.3rem;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.4);
+  z-index: 10;
 }
 
 .name-text {
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 900;
   text-align: center;
   color: var(--color-text-primary);
-  text-shadow: 0 0 10px currentColor;
+  text-shadow: 
+    0 0 10px var(--color-cyan-electric),
+    0 0 20px rgba(0, 217, 255, 0.8),
+    1px 1px 2px rgba(0, 0, 0, 0.8);
   z-index: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 /* ===== CARD ART ===== */
