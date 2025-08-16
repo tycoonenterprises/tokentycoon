@@ -20,6 +20,7 @@ contract GameEngineTest is Test {
     uint256 public uniswapCardId;
     uint256 public validatorCardId;
     uint256 public whitepaperCardId;
+    uint256 public aaveCardId;
 
     event GameCreated(uint256 indexed gameId, address indexed creator, uint256 deckId);
     event GameJoined(uint256 indexed gameId, address indexed player, uint256 deckId);
@@ -30,6 +31,7 @@ contract GameEngineTest is Test {
     event TurnEnded(uint256 indexed gameId, address indexed player);
     event ResourcesGained(uint256 indexed gameId, address indexed player, uint256 amount);
     event UpkeepTriggered(uint256 indexed gameId, uint256 cardInstanceId, string abilityName);
+    event ETHStaked(uint256 indexed gameId, address indexed player, uint256 cardInstanceId, uint256 amount);
 
     function setUp() public {
         // Deploy registries
@@ -106,18 +108,42 @@ contract GameEngineTest is Test {
             whitepaperAbilityValues
         );
         
+        // Add Aave with yield ability (DeFi card)
+        string[] memory aaveAbilityNames = new string[](1);
+        aaveAbilityNames[0] = "yield";
+        
+        string[][] memory aaveAbilityKeys = new string[][](1);
+        aaveAbilityKeys[0] = new string[](1);
+        aaveAbilityKeys[0][0] = "amount";
+        
+        string[][] memory aaveAbilityValues = new string[][](1);
+        aaveAbilityValues[0] = new string[](1);
+        aaveAbilityValues[0][0] = "2"; // 2x yield on staked ETH
+        
+        aaveCardId = cardRegistry.addCard(
+            "Aave",
+            "Lending protocol with yield",
+            2,
+            CardRegistry.CardType.DeFi,
+            aaveAbilityNames,
+            aaveAbilityKeys,
+            aaveAbilityValues
+        );
+        
         // Create a test deck
-        string[] memory cardNames = new string[](4);
+        string[] memory cardNames = new string[](5);
         cardNames[0] = "Polygon";
         cardNames[1] = "Uniswap";
         cardNames[2] = "Validator Node";
         cardNames[3] = "Read a Whitepaper";
+        cardNames[4] = "Aave";
         
-        uint256[] memory cardCounts = new uint256[](4);
+        uint256[] memory cardCounts = new uint256[](5);
         cardCounts[0] = 10;
-        cardCounts[1] = 10;
+        cardCounts[1] = 5;
         cardCounts[2] = 5;
         cardCounts[3] = 5;
+        cardCounts[4] = 5;
         
         testDeckId = deckRegistry.addDeck("Test Deck", "A test deck", cardNames, cardCounts);
     }
@@ -447,6 +473,153 @@ contract GameEngineTest is Test {
         assertEq(battlefield.length, 1);
     }
 
+    function testStakeETHOnDeFiCard() public {
+        vm.prank(player1);
+        uint256 gameId = gameEngine.createGame(testDeckId);
+        
+        vm.prank(player2);
+        gameEngine.joinGame(gameId, testDeckId);
+        
+        vm.prank(player1);
+        gameEngine.startGame(gameId);
+        
+        // Find and play a Uniswap card (DeFi type)
+        uint256[] memory hand = gameEngine.getPlayerHand(gameId, player1);
+        uint256 uniswapIndex = type(uint256).max;
+        
+        for (uint256 i = 0; i < hand.length; i++) {
+            if (hand[i] == uniswapCardId) {
+                uniswapIndex = i;
+                break;
+            }
+        }
+        
+        if (uniswapIndex != type(uint256).max) {
+            // Play Uniswap
+            vm.prank(player1);
+            gameEngine.playCard(gameId, uniswapIndex);
+            
+            // Get the card instance ID (it's 0 since it's the first card played)
+            uint256 instanceId = 0;
+            
+            // Player has 2 ETH left (4 - 2 for Uniswap cost)
+            // Stake 1 ETH on the card
+            vm.prank(player1);
+            vm.expectEmit(true, true, false, true);
+            emit ETHStaked(gameId, player1, instanceId, 1);
+            gameEngine.stakeETH(gameId, instanceId, 1);
+            
+            // Check the card has staked ETH
+            GameEngine.CardInstance memory instance = gameEngine.getCardInstance(instanceId);
+            assertEq(instance.stakedETH, 1);
+            
+            // Check player ETH reduced
+            GameEngine.GameView memory gameView = gameEngine.getGameState(gameId);
+            assertEq(gameView.player1ETH, 1); // 4 - 2 (card cost) - 1 (staked)
+        }
+    }
+    
+    function testCannotStakeOnNonDeFiCard() public {
+        vm.prank(player1);
+        uint256 gameId = gameEngine.createGame(testDeckId);
+        
+        vm.prank(player2);
+        gameEngine.joinGame(gameId, testDeckId);
+        
+        vm.prank(player1);
+        gameEngine.startGame(gameId);
+        
+        // Find and play a Polygon card (Chain type, not DeFi)
+        uint256[] memory hand = gameEngine.getPlayerHand(gameId, player1);
+        for (uint256 i = 0; i < hand.length; i++) {
+            if (hand[i] == polygonCardId) {
+                vm.prank(player1);
+                gameEngine.playCard(gameId, i);
+                
+                // Try to stake on non-DeFi card
+                vm.prank(player1);
+                vm.expectRevert(GameEngine.NotDeFiCard.selector);
+                gameEngine.stakeETH(gameId, 0, 1);
+                break;
+            }
+        }
+    }
+    
+    function testYieldWithStakedETH() public {
+        vm.prank(player1);
+        uint256 gameId = gameEngine.createGame(testDeckId);
+        
+        vm.prank(player2);
+        gameEngine.joinGame(gameId, testDeckId);
+        
+        vm.prank(player1);
+        gameEngine.startGame(gameId);
+        
+        // Find and play an Aave card (DeFi with yield ability)
+        uint256[] memory hand = gameEngine.getPlayerHand(gameId, player1);
+        uint256 aaveIndex = type(uint256).max;
+        
+        for (uint256 i = 0; i < hand.length; i++) {
+            if (hand[i] == aaveCardId) {
+                aaveIndex = i;
+                break;
+            }
+        }
+        
+        if (aaveIndex != type(uint256).max) {
+            // Play Aave
+            vm.prank(player1);
+            gameEngine.playCard(gameId, aaveIndex);
+            
+            // Player has 2 ETH left (4 - 2 for Aave cost)
+            // Stake 1 ETH on the card
+            vm.prank(player1);
+            gameEngine.stakeETH(gameId, 0, 1);
+            
+            // End turn
+            vm.prank(player1);
+            gameEngine.endTurn(gameId);
+            
+            // Player 2 ends turn
+            vm.prank(player2);
+            gameEngine.endTurn(gameId);
+            
+            // Now it's player 1's turn again
+            // Check ETH gained from yield (1 ETH staked * 2 yield = 2 ETH)
+            GameEngine.GameView memory gameView = gameEngine.getGameState(gameId);
+            
+            // Player should have: 1 (remaining) + 1 (upkeep) + 2 (yield) = 4 ETH
+            assertEq(gameView.player1ETH, 4);
+        }
+    }
+    
+    function testCannotStakeMoreETHThanAvailable() public {
+        vm.prank(player1);
+        uint256 gameId = gameEngine.createGame(testDeckId);
+        
+        vm.prank(player2);
+        gameEngine.joinGame(gameId, testDeckId);
+        
+        vm.prank(player1);
+        gameEngine.startGame(gameId);
+        
+        // Find and play a Uniswap card
+        uint256[] memory hand = gameEngine.getPlayerHand(gameId, player1);
+        for (uint256 i = 0; i < hand.length; i++) {
+            if (hand[i] == uniswapCardId) {
+                vm.prank(player1);
+                gameEngine.playCard(gameId, i);
+                
+                // Player has 2 ETH left (4 - 2 for Uniswap cost)
+                // Try to stake 3 ETH (more than available)
+                vm.prank(player1);
+                vm.expectRevert(GameEngine.InsufficientResources.selector);
+                gameEngine.stakeETH(gameId, 0, 3);
+                break;
+            }
+        }
+    }
+    
     function testFirstTurnNoDrawPhase() public {
         vm.prank(player1);
         uint256 gameId = gameEngine.createGame(testDeckId);

@@ -16,6 +16,7 @@ contract GameEngine {
         uint256 instanceId;
         address owner;
         uint256 turnPlayed;
+        uint256 stakedETH;       // ETH staked on this card (for DeFi cards)
     }
     
     struct PlayerState {
@@ -86,6 +87,7 @@ contract GameEngine {
     event TurnEnded(uint256 indexed gameId, address indexed player);
     event ResourcesGained(uint256 indexed gameId, address indexed player, uint256 amount);
     event UpkeepTriggered(uint256 indexed gameId, uint256 cardInstanceId, string abilityName);
+    event ETHStaked(uint256 indexed gameId, address indexed player, uint256 cardInstanceId, uint256 amount);
     
     error GameNotFound();
     error GameAlreadyStarted();
@@ -100,6 +102,10 @@ contract GameEngine {
     error InsufficientResources();
     error CardNotInHand();
     error GameFinished();
+    error InvalidStakeAmount();
+    error CardNotOnBattlefield();
+    error NotDeFiCard();
+    error NotCardOwner();
     
     constructor(address _cardRegistry, address _deckRegistry) {
         cardRegistry = CardRegistry(_cardRegistry);
@@ -240,18 +246,65 @@ contract GameEngine {
                 }
             }
         } else if (keccak256(bytes(ability.name)) == keccak256(bytes("yield"))) {
-            // Yield ability - gain ETH per card stored (simplified for now)
-            for (uint256 i = 0; i < ability.options.length; i++) {
-                if (keccak256(bytes(ability.options[i].key)) == keccak256(bytes("amount"))) {
-                    uint256 amount = _parseUint(ability.options[i].value);
-                    // For now, just give the base amount
-                    playerState.eth += amount;
-                    emit ResourcesGained(game.gameId, playerState.player, amount);
-                    emit UpkeepTriggered(game.gameId, instance.instanceId, "yield");
-                    break;
+            // Yield ability - gain ETH based on staked amount
+            if (instance.stakedETH > 0) {
+                for (uint256 i = 0; i < ability.options.length; i++) {
+                    if (keccak256(bytes(ability.options[i].key)) == keccak256(bytes("amount"))) {
+                        uint256 yieldRate = _parseUint(ability.options[i].value);
+                        uint256 yieldAmount = instance.stakedETH * yieldRate;
+                        playerState.eth += yieldAmount;
+                        emit ResourcesGained(game.gameId, playerState.player, yieldAmount);
+                        emit UpkeepTriggered(game.gameId, instance.instanceId, "yield");
+                        break;
+                    }
                 }
             }
         }
+    }
+    
+    // ========== STAKING ==========
+    
+    function stakeETH(uint256 _gameId, uint256 _instanceId, uint256 _amount) external {
+        Game storage game = games[_gameId];
+        
+        if (!game.isStarted) revert GameNotStarted();
+        if (game.isFinished) revert GameFinished();
+        if (_amount == 0) revert InvalidStakeAmount();
+        
+        CardInstance storage instance = cardInstances[_instanceId];
+        if (instance.owner != msg.sender) revert NotCardOwner();
+        
+        // Check card is DeFi type
+        CardRegistry.Card memory card = cardRegistry.getCard(instance.cardId);
+        if (card.cardType != CardRegistry.CardType.DeFi) revert NotDeFiCard();
+        
+        // Check player has enough ETH
+        PlayerState storage playerState;
+        if (msg.sender == game.player1) {
+            playerState = game.player1State;
+        } else if (msg.sender == game.player2) {
+            playerState = game.player2State;
+        } else {
+            revert NotInGame();
+        }
+        
+        if (playerState.eth < _amount) revert InsufficientResources();
+        
+        // Check card is on player's battlefield
+        bool foundOnBattlefield = false;
+        for (uint256 i = 0; i < playerState.battlefield.length; i++) {
+            if (playerState.battlefield[i] == _instanceId) {
+                foundOnBattlefield = true;
+                break;
+            }
+        }
+        if (!foundOnBattlefield) revert CardNotOnBattlefield();
+        
+        // Stake the ETH
+        playerState.eth -= _amount;
+        instance.stakedETH += _amount;
+        
+        emit ETHStaked(_gameId, msg.sender, _instanceId, _amount);
     }
     
     // ========== PLAY PHASE ==========
@@ -289,7 +342,8 @@ contract GameEngine {
                 cardId: cardId,
                 instanceId: instanceId,
                 owner: msg.sender,
-                turnPlayed: game.turnNumber
+                turnPlayed: game.turnNumber,
+                stakedETH: 0
             });
             
             playerState.battlefield.push(instanceId);
@@ -379,6 +433,10 @@ contract GameEngine {
         } else {
             revert NotInGame();
         }
+    }
+    
+    function getCardInstance(uint256 _instanceId) external view returns (CardInstance memory) {
+        return cardInstances[_instanceId];
     }
     
     function getGameState(uint256 _gameId) external view returns (GameView memory) {
