@@ -322,7 +322,7 @@ export const ContractDebugPanel: React.FC<ContractDebugPanelProps> = ({
   };
 
   return (
-    <div className="fixed top-4 right-4 z-50 w-96 max-w-[90vw]">
+    <div className="fixed bottom-4 right-4 z-50 w-96 max-w-[90vw]">
       <div className="bg-gray-900 border border-gray-700 rounded-lg shadow-xl">
         <button
           onClick={() => setIsOpen(!isOpen)}
