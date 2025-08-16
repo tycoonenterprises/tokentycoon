@@ -408,17 +408,27 @@ export const useGameStore = create<GameState & GameActions>()(
           return Number(value) || 0
         }
         
-        // Get the actual player addresses from current state or gameView
-        const { players } = get()
-        const player1Id = players.player1.id || gameView.player1
-        const player2Id = players.player2.id || gameView.player2
+        // Get the actual player addresses from gameView (these are the source of truth from contract)
+        const player1Id = gameView.player1
+        const player2Id = gameView.player2
+        
+        // Convert currentTurn to number first to ensure correct comparison
+        const currentTurnNumber = convertBigInt(gameView.currentTurn)
         
         // Set activePlayer to the actual address of the current turn player
-        const activePlayer = gameView.currentTurn === 0 ? player1Id : player2Id
+        // currentTurn from contract: 0 = player1's turn, 1 = player2's turn
+        const activePlayer = currentTurnNumber === 0 ? player1Id : player2Id
+        
+        console.log('updateGameFromContract - Turn sync:', {
+          currentTurn: currentTurnNumber,
+          player1: player1Id,
+          player2: player2Id,
+          activePlayer
+        })
         
         set({
           gameId: convertBigInt(gameView.gameId),
-          currentTurn: convertBigInt(gameView.currentTurn),
+          currentTurn: currentTurnNumber,
           turnNumber: convertBigInt(gameView.turnNumber),
           activePlayer,
           needsToDraw: gameView.needsToDraw || false,

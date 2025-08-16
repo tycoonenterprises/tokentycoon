@@ -42,7 +42,7 @@ export function PrivyDebugInfo() {
   )
 
   return (
-    <div className="fixed bottom-4 left-4 z-50 w-96 max-w-[90vw] bg-gray-900 border border-gray-700 rounded-lg shadow-xl">
+    <div className="fixed top-4 left-4 z-50 w-96 max-w-[90vw] bg-gray-900 border border-gray-700 rounded-lg shadow-xl">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-3 hover:bg-gray-800 transition-colors"

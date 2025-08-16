@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DndContext, DragOverlay, closestCenter, useDroppable, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
@@ -10,6 +10,7 @@ import { HotWallet } from './HotWallet'
 import { CardImage } from '@/components/ui/CardImage'
 import { useGameEngine } from '@/lib/hooks/useGameEngine'
 import { useWallets } from '@privy-io/react-auth'
+import { usePrivy } from '@privy-io/react-auth'
 
 interface WalletCardFooterProps {
   card: Card
@@ -449,12 +450,18 @@ export function DragDropGameBoard() {
     playCard,
     playCardByIndex,
     moveCard,
-    gameId 
+    gameId,
+    needsToDraw,
+    currentTurn 
   } = useGameStore()
   
   const { wallets } = useWallets()
+  const { user } = usePrivy()
+  const { endTurn, drawToStartTurn, getDetailedGameState, updateGameFromContract } = useGameEngine()
   const [activeId, setActiveId] = useState<string | null>(null)
   const [draggedCard, setDraggedCard] = useState<Card | null>(null)
+  const [isEndingTurn, setIsEndingTurn] = useState(false)
+  const [isDrawing, setIsDrawing] = useState(false)
 
   const { player1, player2 } = players
   
@@ -466,8 +473,65 @@ export function DragDropGameBoard() {
   const isViewingPlayer1 = userAddress?.toLowerCase() === player1.id?.toLowerCase()
   const currentViewingPlayer = isViewingPlayer1 ? 'player1' : 'player2'
   
-  // Only allow playing cards if it's your turn
-  const canPlayCards = activePlayer === userAddress
+  // Poll game state every second to stay in sync with contract
+  useEffect(() => {
+    if (!gameId || gameId === null || gameId === undefined) return
+    
+    let lastTurnNumber = -1
+    let lastActivePlayer = ''
+    
+    const pollGameState = async () => {
+      try {
+        const gameState = await getDetailedGameState(gameId)
+        if (gameState) {
+          // Only log if something changed
+          const turnChanged = gameState.turnNumber !== lastTurnNumber
+          const activePlayerChanged = gameState.activePlayer !== lastActivePlayer
+          
+          if (turnChanged || activePlayerChanged) {
+            console.log('Game state changed:', {
+              turnNumber: gameState.turnNumber,
+              currentTurn: gameState.currentTurn,
+              activePlayer: gameState.activePlayer,
+              needsToDraw: gameState.needsToDraw
+            })
+            lastTurnNumber = gameState.turnNumber
+            lastActivePlayer = gameState.activePlayer
+          }
+          
+          updateGameFromContract(gameState)
+        }
+      } catch (error) {
+        // Only log errors occasionally to avoid spam
+        if (Math.random() < 0.1) {
+          console.error('Error polling game state:', error)
+        }
+      }
+    }
+    
+    // Poll immediately
+    pollGameState()
+    
+    // Set up interval to poll every second
+    const intervalId = setInterval(pollGameState, 1000)
+    
+    // Cleanup
+    return () => clearInterval(intervalId)
+  }, [gameId, getDetailedGameState, updateGameFromContract])
+  
+  // Only log turn info occasionally to avoid spam
+  if (Math.random() < 0.05) {
+    console.log('Turn Info:', {
+      currentTurn,
+      activePlayer,
+      userAddress,
+      player1Id: player1.id,
+      player2Id: player2.id
+    })
+  }
+  
+  // Simply check if the current user's address matches the activePlayer
+  const canPlayCards = activePlayer?.toLowerCase() === userAddress?.toLowerCase()
   
   // Determine which player's perspective we're showing
   const playerHand = isViewingPlayer1 ? player1 : player2
@@ -550,18 +614,65 @@ export function DragDropGameBoard() {
     if (source === 'hand') {
       const canDrag = canPlayCards && playerHand.eth >= card.cost
       // Debug logging
-      console.log('Drag check:', {
-        cardName: card.name,
-        cardCost: card.cost,
-        canPlayCards,
-        playerETH: playerHand.eth,
-        activePlayer,
-        currentViewingPlayer,
-        canDrag
-      })
       return canDrag
     }
     return false // Board cards can't be moved yet
+  }
+
+  // Handle draw card to start turn
+  const handleDrawToStartTurn = async () => {
+    if (gameId === null || gameId === undefined || !canPlayCards || !needsToDraw) return
+    
+    try {
+      setIsDrawing(true)
+      await drawToStartTurn(gameId)
+      console.log('Draw to start turn completed')
+      // Game state will be automatically refreshed by the polling interval
+    } catch (error) {
+      console.error('Failed to draw to start turn:', error)
+    } finally {
+      setIsDrawing(false)
+    }
+  }
+
+  // Handle end turn
+  const handleEndTurn = async () => {
+    console.log('End turn button clicked', {
+      gameId,
+      canPlayCards,
+      needsToDraw,
+      currentViewingPlayer,
+      activePlayer,
+      userAddress
+    })
+    
+    if (gameId === null || gameId === undefined) {
+      console.error('No gameId available')
+      return
+    }
+    
+    // Basic validation
+    if (!canPlayCards) {
+      console.error('Not your turn')
+      return
+    }
+    
+    if (needsToDraw) {
+      console.error('Need to draw first')
+      return
+    }
+    
+    try {
+      setIsEndingTurn(true)
+      console.log('Calling endTurn contract function with gameId:', gameId)
+      const result = await endTurn(gameId)
+      console.log('Turn ended successfully, result:', result)
+      // Game state will be automatically refreshed by the polling interval
+    } catch (error) {
+      console.error('Failed to end turn:', error)
+    } finally {
+      setIsEndingTurn(false)
+    }
   }
 
   return (
@@ -731,6 +842,65 @@ export function DragDropGameBoard() {
         position="lower-left"
       />
       
+
+      {/* Draw Card button - always visible on the left side */}
+      <div className="fixed bottom-40 left-4 z-20">
+        <button
+          onClick={handleDrawToStartTurn}
+          disabled={isDrawing || !canPlayCards || !needsToDraw}
+          className={`px-10 py-6 rounded-xl
+                   text-white font-bold text-xl
+                   transform transition-all duration-300
+                   flex items-center justify-center gap-3
+                   shadow-lg
+                   ${canPlayCards && needsToDraw && !isDrawing
+                     ? 'bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 hover:scale-110 glow-pulse-blue cursor-pointer'
+                     : 'bg-gray-700 opacity-60 cursor-not-allowed'
+                   }`}
+        >
+          {isDrawing ? (
+            <>
+              <span className="animate-spin text-2xl">⏳</span>
+              <span>Drawing...</span>
+            </>
+          ) : (
+            <>
+              <span className="text-3xl">🃏</span>
+              <span className="text-xl">Draw Card</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* End Turn button - always visible on the right side */}
+      <div className="fixed bottom-40 right-4 z-20">
+        <button
+          type="button"
+          onClick={handleEndTurn}
+          disabled={isEndingTurn || !canPlayCards || needsToDraw}
+          className={`px-8 py-5 rounded-xl
+                   text-white font-bold text-lg
+                   transform transition-all duration-300
+                   flex items-center justify-center gap-3
+                   shadow-lg
+                   ${canPlayCards && !needsToDraw && !isEndingTurn
+                     ? 'bg-gradient-to-r from-red-600 to-red-700 hover:scale-105 glow-pulse-red cursor-pointer'
+                     : 'bg-gray-700 opacity-60 cursor-not-allowed'
+                   }`}
+        >
+          {isEndingTurn ? (
+            <>
+              <span className="animate-spin text-xl">⏳</span>
+              <span>Ending Turn...</span>
+            </>
+          ) : (
+            <>
+              <span className="text-xl">⏸️</span>
+              <span>End Turn</span>
+            </>
+          )}
+        </button>
+      </div>
 
       {/* Player's wallet controls (lower right) */}
       <div className="fixed bottom-4 right-4 z-10 flex flex-col gap-3">

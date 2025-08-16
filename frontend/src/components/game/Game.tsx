@@ -454,26 +454,6 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
               </>
             ) : (
               <div className="flex items-center gap-2">
-                {/* Draw Card button when turn needs to be started */}
-                {needsToDraw && activePlayer === user?.wallet?.address && (
-                  <button
-                    onClick={handleDrawToStartTurn}
-                    className="btn-primary text-sm animate-pulse"
-                  >
-                    🃏 Draw Card to Start Turn
-                  </button>
-                )}
-                
-                {/* Only show End Turn button if not waiting to draw and it's your turn */}
-                {!needsToDraw && activePlayer === user?.wallet?.address && (
-                  <button
-                    onClick={handleEndTurn}
-                    className="btn-primary text-sm"
-                  >
-                    End Turn
-                  </button>
-                )}
-                
                 <button
                   onClick={handleGetGameState}
                   className="btn-secondary text-sm"
@@ -612,12 +592,19 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
           <div className="text-sm text-white">
             <div className="font-bold">TURN ACTIVE</div>
             <div className="text-gray-400 text-xs">
-              {needsToDraw && activePlayer === user?.wallet?.address
-                ? '🃏 Draw card to start turn'
-                : activePlayer === user?.wallet?.address
-                  ? 'Your turn' 
-                  : "Opponent's turn"
-              }
+              {(() => {
+                const privyWallet = wallets.find(w => w.walletClientType === 'privy')
+                const userAddress = privyWallet?.address?.toLowerCase()
+                const isMyTurn = activePlayer?.toLowerCase() === userAddress
+                
+                if (isMyTurn && needsToDraw) {
+                  return '🃏 Draw card to start turn'
+                } else if (isMyTurn) {
+                  return 'Your turn'
+                } else {
+                  return "Opponent's turn"
+                }
+              })()}
             </div>
           </div>
         </div>
