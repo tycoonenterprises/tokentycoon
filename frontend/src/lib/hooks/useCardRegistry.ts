@@ -1,7 +1,7 @@
 import { useReadContract, useWriteContract } from 'wagmi'
 import { CONTRACT_ADDRESSES } from '@/lib/web3/config'
 import { CardRegistryABI } from '@/lib/contracts/CardRegistryABI'
-import { ContractCard } from '@/lib/types/contracts'
+import { ContractCard } from '@/stores/gameStore'
 
 export const useCardRegistry = () => {
   // Read functions
