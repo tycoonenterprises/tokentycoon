@@ -15,7 +15,7 @@
       "name": "Uniswap",
       "description": "Gain <1> per turn per <> stored here",
       "cost": 2,
-      "cardType": "Defi",
+      "cardType": "DeFi",
       "abilities": {
         "yield": {
           "amount": 1

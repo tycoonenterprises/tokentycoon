@@ -1,0 +1,16 @@
+{
+  "name": "ethereum-card-game",
+  "version": "1.0.0",
+  "description": "Onchain trading card game deployment scripts",
+  "type": "module",
+  "scripts": {
+    "deploy": "node scripts/deploy.js",
+    "deploy:cards": "node scripts/deployCards.js"
+  },
+  "dependencies": {
+    "viem": "^2.7.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5"
+  }
+}
