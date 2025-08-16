@@ -8,6 +8,42 @@ import { DeckElement } from './DeckElement'
 import { ColdStorage } from './ColdStorage'
 import { HotWallet } from './HotWallet'
 
+interface WalletCardFooterProps {
+  card: Card
+  playerId: string
+  playerETH: number
+  isActivePlayer: boolean
+}
+
+function WalletCardFooter({ card, playerId, playerETH, isActivePlayer }: WalletCardFooterProps) {
+  const { depositETHToWalletCard } = useGameStore()
+  
+  const handleDeposit = () => {
+    if (isActivePlayer && playerETH >= 1) {
+      depositETHToWalletCard(playerId, card.id, 1)
+    }
+  }
+
+  return (
+    <div className="p-2 border-t border-gray-600">
+      <div className="text-center">
+        <div className="text-xs text-gray-400">ETH Balance</div>
+        <div className="text-sm font-bold text-eth-secondary">
+          {card.heldETH || 0} ETH
+        </div>
+        {isActivePlayer && playerETH >= 1 && (
+          <button
+            onClick={handleDeposit}
+            className="mt-1 text-xs bg-eth-secondary hover:bg-eth-primary px-2 py-1 rounded transition-colors"
+          >
+            +1 ETH
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
 interface DraggableCardProps {
   card: Card
   playerId: string
@@ -189,15 +225,22 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
         )}
       </div>
 
-      {/* Card Footer - Power/Toughness for units */}
-      {card.type === 'unit' && card.power !== undefined && card.toughness !== undefined && (
+      {/* Card Footer - Power/Toughness for units or ETH balance for wallet cards */}
+      {card.type === 'unit' && card.power !== undefined && card.toughness !== undefined ? (
         <div className="p-2 border-t border-gray-600">
           <div className="flex justify-between text-sm font-bold">
             <span className="text-eth-danger">{card.power}</span>
             <span className="text-eth-success">{card.toughness}</span>
           </div>
         </div>
-      )}
+      ) : (card.type === 'EOA' || card.name.toLowerCase().includes('wallet')) && source === 'board' ? (
+        <WalletCardFooter 
+          card={card}
+          playerId={playerId}
+          playerETH={playerETH}
+          isActivePlayer={isActivePlayer}
+        />
+      ) : null}
     </div>
   )
 }

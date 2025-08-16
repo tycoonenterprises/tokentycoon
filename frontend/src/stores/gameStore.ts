@@ -13,6 +13,7 @@ export interface Card {
   abilities?: string // Abilities from contract
   stakedETH?: number // For DeFi cards
   yieldAmount?: number // Yield multiplier for DeFi cards
+  heldETH?: number // For wallet/EOA cards that can hold ETH
 }
 
 // Convert contract enum to string
@@ -122,6 +123,8 @@ export interface GameActions {
   updatePlayerBalance: (playerId: string, amount: number) => void
   transferToColdStorage: (playerId: string, amount: number) => void
   transferFromColdStorage: (playerId: string, amount: number) => void
+  transferFromWalletCardToColdStorage: (playerId: string, cardId: string, amount: number) => void
+  depositETHToWalletCard: (playerId: string, cardId: string, amount: number) => void
   
   // Card registry actions
   loadCardsFromBlockchain: (contractCards: ContractCard[]) => void
@@ -518,7 +521,10 @@ export const useGameStore = create<GameState & GameActions>()(
         
         if (card.type === 'unit' || card.type === 'EOA' || card.type === 'Chain' || card.type === 'DeFi') {
           // Place permanent cards on board
-          const newBoard = [...player.board, card]
+          const cardToPlay = card.type === 'EOA' || card.name.toLowerCase().includes('wallet') 
+            ? { ...card, heldETH: 0 } // Initialize wallet cards with 0 ETH
+            : card
+          const newBoard = [...player.board, cardToPlay]
           set({
             players: {
               ...players,
@@ -686,6 +692,63 @@ export const useGameStore = create<GameState & GameActions>()(
                 ...player,
                 eth: player.eth + amount,
                 coldStorage: player.coldStorage - amount,
+              },
+            },
+          })
+        }
+      },
+
+      transferFromWalletCardToColdStorage: (playerId: string, cardId: string, amount: number) => {
+        const { players } = get()
+        const player = players[playerId as keyof typeof players]
+        const card = player.board.find(c => c.id === cardId)
+        
+        if (card && card.heldETH && card.heldETH >= amount) {
+          const updatedBoard = player.board.map(c => 
+            c.id === cardId 
+              ? { ...c, heldETH: (c.heldETH || 0) - amount }
+              : c
+          )
+          
+          const newColdStorage = player.coldStorage + amount
+          
+          set({
+            players: {
+              ...players,
+              [playerId]: {
+                ...player,
+                board: updatedBoard,
+                coldStorage: newColdStorage,
+              },
+            },
+          })
+          
+          // Check for cold storage win condition
+          if (newColdStorage >= 10) {
+            get().endGame(playerId)
+          }
+        }
+      },
+
+      depositETHToWalletCard: (playerId: string, cardId: string, amount: number) => {
+        const { players } = get()
+        const player = players[playerId as keyof typeof players]
+        const card = player.board.find(c => c.id === cardId)
+        
+        if (card && (card.type === 'EOA' || card.name.toLowerCase().includes('wallet')) && player.eth >= amount) {
+          const updatedBoard = player.board.map(c => 
+            c.id === cardId 
+              ? { ...c, heldETH: (c.heldETH || 0) + amount }
+              : c
+          )
+          
+          set({
+            players: {
+              ...players,
+              [playerId]: {
+                ...player,
+                eth: player.eth - amount,
+                board: updatedBoard,
               },
             },
           })
