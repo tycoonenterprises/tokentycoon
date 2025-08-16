@@ -33,9 +33,13 @@ function DraggableCard({ card, playerId, source, canDrag }: DraggableCardProps) 
   }
 
   const getTypeColor = (type: string) => {
-    switch (type) {
+    switch (type.toLowerCase()) {
       case 'unit': return 'border-eth-success'
+      case 'eoa': return 'border-eth-success'
       case 'spell': return 'border-eth-primary'
+      case 'action': return 'border-eth-primary'
+      case 'chain': return 'border-eth-secondary'
+      case 'defi': return 'border-purple-500'
       case 'resource': return 'border-eth-secondary'
       case 'upgrade': return 'border-purple-500'
       default: return 'border-gray-500'
@@ -43,9 +47,13 @@ function DraggableCard({ card, playerId, source, canDrag }: DraggableCardProps) 
   }
 
   const getTypeIcon = (type: string) => {
-    switch (type) {
+    switch (type.toLowerCase()) {
       case 'unit': return '⚔️'
+      case 'eoa': return '👤'
       case 'spell': return '✨'
+      case 'action': return '⚡'
+      case 'chain': return '🔗'
+      case 'defi': return '💰'
       case 'resource': return '⛽'
       case 'upgrade': return '🔧'
       default: return '❓'
@@ -71,9 +79,9 @@ function DraggableCard({ card, playerId, source, canDrag }: DraggableCardProps) 
             <span className="mr-1">{getTypeIcon(card.type)}</span>
             {source === 'hand' && card.type.toUpperCase()}
           </div>
-          {card.cost.gas && (
+          {card.cost > 0 && (
             <div className="bg-eth-secondary text-xs px-2 py-1 rounded-full font-bold">
-              {card.cost.gas}
+              {card.cost}
             </div>
           )}
         </div>
@@ -193,7 +201,7 @@ export function DragDropGameBoard() {
 
     // Handle card play from hand to board
     if (source === 'hand' && overId === 'player1-board' && playerId === 'player1') {
-      if (canPlayCards && card.cost.gas && player1.gas >= card.cost.gas) {
+      if (canPlayCards && player1.eth >= card.cost) {
         playCard(playerId, card.id)
       }
     }
@@ -208,7 +216,7 @@ export function DragDropGameBoard() {
   const canDragCard = (card: Card, source: 'hand' | 'board', playerId: string) => {
     if (playerId !== 'player1') return false // Only allow player 1 to drag for now
     if (source === 'hand') {
-      return canPlayCards && card.cost.gas !== undefined && player1.gas >= card.cost.gas
+      return canPlayCards && player1.eth >= card.cost
     }
     return false // Board cards can't be moved yet
   }
@@ -328,7 +336,7 @@ export function DragDropGameBoard() {
                 
                 {canPlayCards && (
                   <div className="mt-3 text-xs text-gray-400">
-                    💡 Drag cards from hand to board to play them. Gas available: {player1.gas}
+                    💡 Drag cards from hand to board to play them. ETH available: {player1.eth}
                   </div>
                 )}
               </div>

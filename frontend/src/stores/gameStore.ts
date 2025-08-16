@@ -352,11 +352,36 @@ export const useGameStore = create<GameState & GameActions>()(
       },
 
       endTurn: () => {
-        // In the new system, turn ending is handled by the contract
-        // This function is mainly for UI state management
-        // The actual turn ending will call updateGameFromContract
-        console.log('Turn ended - contract should handle the transition')
-        set({ currentPhase: 'main' }) // Reset to main phase for now
+        const { activePlayer, players, turnNumber, isGameStarted } = get()
+        
+        // In practice mode (when not connected to contract), simulate turn progression
+        if (!isGameStarted) {
+          const newActivePlayer = activePlayer === 'player1' ? 'player2' : 'player1'
+          const newTurnNumber = activePlayer === 'player2' ? turnNumber + 1 : turnNumber
+          
+          // Give ETH to the new active player (simulate upkeep)
+          const currentPlayer = players[newActivePlayer as keyof typeof players]
+          
+          set({
+            activePlayer: newActivePlayer,
+            currentTurn: newActivePlayer === 'player1' ? 0 : 1,
+            turnNumber: newTurnNumber,
+            currentPhase: 'main', // Skip draw/upkeep phases in practice mode
+            players: {
+              ...players,
+              [newActivePlayer]: {
+                ...currentPlayer,
+                eth: currentPlayer.eth + 1, // Gain 1 ETH per turn
+              },
+            },
+          })
+          
+          // Auto-draw a card for the new player
+          get().drawCard(newActivePlayer)
+        } else {
+          // In contract mode, this would trigger the blockchain transaction
+          console.log('Turn ended - contract should handle the transition')
+        }
       },
 
       playCard: (playerId: string, cardId: string, targetId?: string) => {
