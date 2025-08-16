@@ -1,4 +1,4 @@
-.PHONY: help anvil deploy deploy-local stop test build clean
+.PHONY: help anvil deploy deploy-local stop test build clean ui
 
 # Default Anvil private key for testing (account #0)
 ANVIL_PRIVATE_KEY := 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
@@ -91,6 +91,10 @@ dev: ## Start Anvil and deploy (keeps Anvil in foreground)
 	echo "Deploying contracts, cards, and decks..."; \
 	node scripts/deployAll.js; \
 	wait $$ANVIL_PID
+
+ui: ## Start the frontend development server
+	@echo "Starting frontend development server..."
+	@cd frontend && npm run dev
 
 verify-deployment: ## Verify contract deployment on localhost
 	@echo "Verifying deployment..."

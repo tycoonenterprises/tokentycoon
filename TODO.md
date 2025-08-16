@@ -9,6 +9,8 @@
 * Leaderboard
 * Demo mode working with one "player" switching between player hands and playing to watch mechanics working
 * Generate designs for cards Philipp entered 
+* Real time UI updates from on chain events
+* Optimize card loading
 
 
 Extra Credit:

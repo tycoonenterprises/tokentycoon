@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { X, Search, Filter } from 'lucide-react';
 import { CardImage } from '@/components/ui/CardImage';
+import { useCardRegistry } from '@/lib/hooks/useCardRegistry';
+import type { ContractCard } from '@/lib/types/contracts';
 
 interface CardsPageProps {
   onClose: () => void;
@@ -9,62 +11,14 @@ interface CardsPageProps {
 type CardType = 'Chain' | 'DeFi' | 'EOA' | 'Action';
 
 export const CardsPage: React.FC<CardsPageProps> = ({ onClose }) => {
-  const [cards, setCards] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { cards: contractCards, isLoadingCards, refetchCards } = useCardRegistry();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<CardType | 'All'>('All');
-  const [selectedCard, setSelectedCard] = useState<any>(null);
+  const [selectedCard, setSelectedCard] = useState<ContractCard | null>(null);
 
-  useEffect(() => {
-    // Just use mock data for now to avoid contract issues
-    setLoading(true);
-    // Simulate loading delay
-    setTimeout(() => {
-      setCards(getMockCards());
-      setLoading(false);
-    }, 500);
-  }, []);
+  // Convert contract cards to display format
+  const cards = contractCards || [];
 
-  const getMockCards = () => {
-    // Mock data matching the card files we found
-    const cardNames = [
-      '51 Percent Attack', 'Aave', 'Altcoin Validator', 'Ape FOMO', 'Arbitrum',
-      'Attend a Conference', 'Auditor', 'Base', 'Bridge Exploit', 'Bug Bounty',
-      'Cold Storage', 'Crypto Whale', 'Curve', 'DAO Hack', 'DeFi Llama Research',
-      'Diamond DAO', 'Diamond Hands', 'Dune Research', 'Dust Attack', 'EIP 1559 Burn',
-      'Ethena', 'Exit Scam', 'Flash Loan', 'Flashbots', 'Flow', 'Force Sell',
-      'Fork', 'Front Run Bot', 'Gas Fee Spike', 'Gas War', 'Gasless Transaction',
-      'Governance Vote', 'Hard Fork', 'Insurance', 'Invalid Op Code', 'Jito',
-      'Jupiter', 'Lido', 'Liquidation Cascade', 'Liquidity Mining', 'Lost Keys',
-      'MEV Extractor', 'Morpho', 'Multi Sig Wallet', 'NFT Rugpull', 'Oracles',
-      'Pendle', 'Polygon', 'Ponzinomics', 'Proof of Stake', 'Proof of Work',
-      'Pump and Dump', 'Ragequit', 'Re-entrant Attack', 'Read a Whitepaper',
-      'Rocketpool Validator', 'Rollup Wars', 'Sandwich Attack', 'Secret Key Leak',
-      'Sequencer Outage', 'Sharding', 'Slashing', 'Soft Fork', 'Testnet',
-      'Time Bomb Stablecoin', 'Uniswap', 'Validator Cluster', 'Validator Node',
-      'Vitalik Tweet', 'Wallet', 'Wormhole', 'Yield Aggregator'
-    ];
-
-    return cardNames.map((name, index) => ({
-      id: index + 1,
-      name,
-      description: `${name} card description`,
-      cost: Math.floor(Math.random() * 5) + 1,
-      cardType: ['Chain', 'DeFi', 'EOA', 'Action'][Math.floor(Math.random() * 4)] as CardType,
-      abilities: [],
-      imagePath: `/cards/${name.toLowerCase().replace(/\s+/g, '-')}.svg`
-    }));
-  };
-
-  const cardTypeToEnum = (type: string): number => {
-    switch (type) {
-      case 'Chain': return 0;
-      case 'DeFi': return 1;
-      case 'EOA': return 2;
-      case 'Action': return 3;
-      default: return 0;
-    }
-  };
 
   const enumToCardType = (enumValue: number): CardType => {
     switch (enumValue) {
@@ -79,7 +33,7 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose }) => {
   const filteredCards = cards.filter(card => {
     const matchesSearch = card.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           card.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const cardType = typeof card.cardType === 'number' ? enumToCardType(card.cardType) : card.cardType;
+    const cardType = enumToCardType(card.cardType);
     const matchesType = selectedType === 'All' || cardType === selectedType;
     return matchesSearch && matchesType;
   });
@@ -148,14 +102,14 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose }) => {
 
         {/* Cards Grid */}
         <div className="flex-1 overflow-y-auto p-4">
-          {loading ? (
+          {isLoadingCards ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-white">Loading cards from contract...</div>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
               {filteredCards.map(card => {
-                const cardType = typeof card.cardType === 'number' ? enumToCardType(card.cardType) : card.cardType;
+                const cardType = enumToCardType(card.cardType);
                 return (
                   <div
                     key={card.id}
@@ -220,9 +174,9 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose }) => {
                     <h3 className="text-2xl font-bold text-white mb-2">{selectedCard.name}</h3>
                     <div className="flex items-center gap-3">
                       <span className={`px-3 py-1 rounded text-white ${
-                        getTypeColor(typeof selectedCard.cardType === 'number' ? enumToCardType(selectedCard.cardType) : selectedCard.cardType)
+                        getTypeColor(enumToCardType(selectedCard.cardType))
                       }`}>
-                        {typeof selectedCard.cardType === 'number' ? enumToCardType(selectedCard.cardType) : selectedCard.cardType}
+                        {enumToCardType(selectedCard.cardType)}
                       </span>
                       <span className="text-cyan-400 font-semibold">Cost: {selectedCard.cost} ETH</span>
                     </div>
@@ -248,9 +202,9 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose }) => {
                         <div key={index} className="bg-gray-800 rounded p-3">
                           <div className="font-medium text-cyan-400 mb-1">{ability.name}</div>
                           <div className="text-sm text-gray-400">
-                            {ability.keys && ability.values && ability.keys.map((key: string, i: number) => (
+                            {ability.options && ability.options.map((option: any, i: number) => (
                               <div key={i}>
-                                <span className="text-gray-500">{key}:</span> {ability.values[i]}
+                                <span className="text-gray-500">{option.key}:</span> {option.value}
                               </div>
                             ))}
                           </div>

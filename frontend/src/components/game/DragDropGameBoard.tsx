@@ -328,6 +328,7 @@ export function DragDropGameBoard() {
     isDemoMode,
     currentPhase,
     playCard,
+    playCardByIndex,
     moveCard 
   } = useGameStore()
   
@@ -377,7 +378,14 @@ export function DragDropGameBoard() {
     const targetBoard = `${currentViewingPlayer}-board`
     if (source === 'hand' && overId === targetBoard && playerId === currentViewingPlayer) {
       if (canPlayCards && playerHand.eth >= card.cost) {
-        playCard(playerId, card.id)
+        // Find the card index in the player's hand for contract call
+        const cardIndex = playerHand.hand.findIndex(c => c.id === card.id)
+        if (cardIndex !== -1) {
+          console.log(`Playing card ${card.name} at index ${cardIndex}`)
+          playCardByIndex(playerId, cardIndex)
+        } else {
+          console.error('Card not found in hand:', card.id)
+        }
       }
     }
     

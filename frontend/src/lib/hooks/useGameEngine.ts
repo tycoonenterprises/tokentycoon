@@ -114,6 +114,57 @@ export const useGameEngine = () => {
     })
   }
 
+  const endTurn = async (gameId: number) => {
+    try {
+      console.log(`Ending turn for game ${gameId}`)
+      const result = await privyWriteContract({
+        address: CONTRACT_ADDRESSES.GAME_ENGINE,
+        abi: GameEngineABI,
+        functionName: 'endTurn',
+        args: [BigInt(gameId)],
+      })
+      console.log('Turn ended successfully:', result)
+      return result
+    } catch (error) {
+      console.error('Error ending turn:', error)
+      throw error
+    }
+  }
+
+  const playCard = async (gameId: number, cardIndex: number) => {
+    try {
+      console.log(`Playing card at index ${cardIndex} for game ${gameId}`)
+      const result = await privyWriteContract({
+        address: CONTRACT_ADDRESSES.GAME_ENGINE,
+        abi: GameEngineABI,
+        functionName: 'playCard',
+        args: [BigInt(gameId), BigInt(cardIndex)],
+      })
+      console.log('Card played successfully:', result)
+      return result
+    } catch (error) {
+      console.error('Error playing card:', error)
+      throw error
+    }
+  }
+
+  const stakeETH = async (gameId: number, instanceId: number, amount: number) => {
+    try {
+      console.log(`Staking ${amount} ETH on instance ${instanceId} for game ${gameId}`)
+      const result = await privyWriteContract({
+        address: CONTRACT_ADDRESSES.GAME_ENGINE,
+        abi: GameEngineABI,
+        functionName: 'stakeETH',
+        args: [BigInt(gameId), BigInt(instanceId), BigInt(amount)],
+      })
+      console.log('ETH staked successfully:', result)
+      return result
+    } catch (error) {
+      console.error('Error staking ETH:', error)
+      throw error
+    }
+  }
+
   // Helper function to get active games from the blockchain
   const getActiveGames = async (minutesAgo: number = 30) => {
     try {
@@ -180,6 +231,25 @@ export const useGameEngine = () => {
     } catch (error) {
       console.error('Error fetching active games:', error)
       return []
+    }
+  }
+
+  // Helper function to get detailed game state using contract's getGameState function
+  const getDetailedGameState = async (gameId: number) => {
+    try {
+      const { readContract } = await import('wagmi/actions')
+      const gameStateView = await readContract(wagmiConfig, {
+        address: CONTRACT_ADDRESSES.GAME_ENGINE,
+        abi: GameEngineABI,
+        functionName: 'getGameState',
+        args: [BigInt(gameId)],
+      })
+      
+      console.log('Detailed game state from contract:', gameStateView)
+      return gameStateView
+    } catch (error) {
+      console.error('Error fetching detailed game state:', error)
+      return null
     }
   }
 
@@ -278,8 +348,12 @@ export const useGameEngine = () => {
     joinGame,
     startGame,
     drawCard,
+    endTurn,
+    playCard,
+    stakeETH,
     getActiveGames,
     getGameState,
+    getDetailedGameState,
     refetchMyGames,
     refetchAvailableGames,
   }

@@ -12,7 +12,8 @@ export function DeckElement({ playerId, position }: DeckElementProps) {
     currentPhase, 
     viewingPlayer,
     isDemoMode,
-    drawCard 
+    drawCard,
+    nextPhase 
   } = useGameStore()
   
   const player = players[playerId as keyof typeof players]
@@ -22,7 +23,10 @@ export function DeckElement({ playerId, position }: DeckElementProps) {
   
   const handleDeckClick = () => {
     if (canDraw && deckSize > 0) {
-      drawCard(playerId)
+      // In contract mode, drawing happens automatically when the turn starts
+      // So clicking the deck should advance to next phase (which triggers drawing in contract)
+      console.log('Advancing phase - drawing will happen automatically via contract')
+      nextPhase()
     }
   }
 

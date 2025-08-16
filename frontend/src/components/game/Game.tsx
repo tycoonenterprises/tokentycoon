@@ -10,6 +10,11 @@ import { PlayPage } from './PlayPage'
 import { ContractDebugPanel } from '@/components/debug/ContractDebugPanel'
 import { PrivyDebugInfo } from '@/components/debug/PrivyDebugInfo'
 import { useSearchParams } from 'react-router-dom'
+import { useGameEngine } from '@/lib/hooks/useGameEngine'
+import { watchContractEvent } from 'wagmi/actions'
+import { wagmiConfig } from '@/lib/web3/wagmiConfig'
+import { CONTRACT_ADDRESSES } from '@/lib/web3/config'
+import { GameEngineABI } from '@/lib/contracts/GameEngineABI'
 
 export function Game() {
   const { logout, user } = usePrivy()
@@ -24,8 +29,15 @@ export function Game() {
     currentPhase, 
     activePlayer,
     isDemoMode,
-    winner 
+    winner,
+    setContractFunctions,
+    setContractGameId,
+    gameId,
+    updateGameFromContract
   } = useGameStore()
+  
+  // Get contract functions
+  const { endTurn, playCard, getDetailedGameState } = useGameEngine()
   
   const [showWeb3Panel, setShowWeb3Panel] = useState(false)
   const [showDeckBuilder, setShowDeckBuilder] = useState(false)
@@ -34,6 +46,15 @@ export function Game() {
   const [currentGameId, setCurrentGameId] = useState<number | null>(null)
   const [customDeck, setCustomDeck] = useState<Card[] | null>(null)
   
+  // Set up contract functions in game store
+  useEffect(() => {
+    setContractFunctions({
+      endTurn,
+      playCard,
+      getDetailedGameState
+    })
+  }, [endTurn, playCard, getDetailedGameState, setContractFunctions])
+
   // Check URL parameters on mount to restore PlayPage state
   useEffect(() => {
     const viewParam = searchParams.get('view')
@@ -42,8 +63,107 @@ export function Game() {
     // If there's a view parameter or gameId, show the PlayPage
     if (viewParam || gameIdParam) {
       setShowPlayPage(true)
+      
+      // If there's a gameId, set it in the store
+      if (gameIdParam) {
+        const gameId = parseInt(gameIdParam)
+        if (!isNaN(gameId)) {
+          setContractGameId(gameId)
+        }
+      }
     }
-  }, []) // Only run on mount
+  }, [searchParams, setContractGameId]) // Only run when search params change
+
+  // Set up event listeners for the current game
+  useEffect(() => {
+    if (!gameId) return
+
+    console.log('Setting up event listeners for game', gameId)
+
+    // Listen for game events that affect the current game
+    const unsubscribeEvents = [
+      // Turn events
+      watchContractEvent(wagmiConfig, {
+        address: CONTRACT_ADDRESSES.GAME_ENGINE,
+        abi: GameEngineABI,
+        eventName: 'TurnStarted',
+        args: { gameId: BigInt(gameId) },
+        onLogs: (logs) => {
+          console.log('TurnStarted event:', logs)
+          // Refresh game state
+          setTimeout(() => {
+            if (getDetailedGameState) {
+              getDetailedGameState(gameId).then(state => {
+                if (state) updateGameFromContract(state)
+              })
+            }
+          }, 1000)
+        }
+      }),
+
+      watchContractEvent(wagmiConfig, {
+        address: CONTRACT_ADDRESSES.GAME_ENGINE,
+        abi: GameEngineABI,
+        eventName: 'TurnEnded',
+        args: { gameId: BigInt(gameId) },
+        onLogs: (logs) => {
+          console.log('TurnEnded event:', logs)
+          // Refresh game state
+          setTimeout(() => {
+            if (getDetailedGameState) {
+              getDetailedGameState(gameId).then(state => {
+                if (state) updateGameFromContract(state)
+              })
+            }
+          }, 1000)
+        }
+      }),
+
+      // Card events
+      watchContractEvent(wagmiConfig, {
+        address: CONTRACT_ADDRESSES.GAME_ENGINE,
+        abi: GameEngineABI,
+        eventName: 'CardPlayed',
+        args: { gameId: BigInt(gameId) },
+        onLogs: (logs) => {
+          console.log('CardPlayed event:', logs)
+          // Refresh game state
+          setTimeout(() => {
+            if (getDetailedGameState) {
+              getDetailedGameState(gameId).then(state => {
+                if (state) updateGameFromContract(state)
+              })
+            }
+          }, 1000)
+        }
+      }),
+
+      // Resource events
+      watchContractEvent(wagmiConfig, {
+        address: CONTRACT_ADDRESSES.GAME_ENGINE,
+        abi: GameEngineABI,
+        eventName: 'ResourcesGained',
+        args: { gameId: BigInt(gameId) },
+        onLogs: (logs) => {
+          console.log('ResourcesGained event:', logs)
+          // Refresh game state
+          setTimeout(() => {
+            if (getDetailedGameState) {
+              getDetailedGameState(gameId).then(state => {
+                if (state) updateGameFromContract(state)
+              })
+            }
+          }, 1000)
+        }
+      })
+    ]
+
+    // Cleanup function
+    return () => {
+      console.log('Cleaning up event listeners for game', gameId)
+      unsubscribeEvents.forEach(unsubscribe => unsubscribe())
+    }
+  }, [gameId, getDetailedGameState, updateGameFromContract])
 
   const handleStartGame = () => {
     startGame(user?.id || 'player1', 'player2')

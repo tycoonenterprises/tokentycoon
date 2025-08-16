@@ -107,7 +107,7 @@ export interface GameActions {
   switchViewingPlayer: () => void
   endGame: (winnerId?: string) => void
   nextPhase: () => void
-  endTurn: () => void
+  endTurn: (useContract?: boolean) => void
   
   // Blockchain integration
   updateGameFromContract: (gameView: any) => void // Update from contract GameView
@@ -116,6 +116,7 @@ export interface GameActions {
   
   // Card actions
   playCard: (playerId: string, cardId: string, targetId?: string) => void
+  playCardByIndex: (playerId: string, cardIndex: number) => void
   drawCard: (playerId: string) => void
   moveCard: (playerId: string, cardId: string, from: 'hand' | 'board', to: 'hand' | 'board') => void
   
@@ -134,6 +135,14 @@ export interface GameActions {
   
   // Reset
   resetGame: () => void
+
+  // Contract integration
+  setContractGameId: (gameId: number) => void
+  setContractFunctions: (functions: {
+    endTurn?: (gameId: number) => Promise<any>
+    playCard?: (gameId: number, cardIndex: number) => Promise<any>
+    getDetailedGameState?: (gameId: number) => Promise<any>
+  }) => void
 }
 
 // Mock cards for testing when blockchain isn't connected
@@ -205,6 +214,13 @@ const getRandomCards = (availableCards: Card[], count: number): Card[] => {
   return shuffled.slice(0, count)
 }
 
+// Contract functions type
+type ContractFunctions = {
+  endTurn?: (gameId: number) => Promise<any>
+  playCard?: (gameId: number, cardIndex: number) => Promise<any>
+  getDetailedGameState?: (gameId: number) => Promise<any>
+}
+
 const initialState: GameState = {
   matchId: null,
   gameId: null,
@@ -252,7 +268,11 @@ const initialState: GameState = {
 
 export const useGameStore = create<GameState & GameActions>()(
   devtools(
-    (set, get) => ({
+    (set, get) => {
+      // Internal contract functions storage
+      let contractFunctions: ContractFunctions = {}
+
+      return {
       ...initialState,
 
 
@@ -350,6 +370,7 @@ export const useGameStore = create<GameState & GameActions>()(
       },
 
       // Update game state from contract GameView
+      // This function receives real ETH balances from the smart contract
       updateGameFromContract: (gameView: any) => {
         const activePlayer = gameView.currentTurn === 0 ? 'player1' : 'player2'
         set({
@@ -483,35 +504,32 @@ export const useGameStore = create<GameState & GameActions>()(
         }
       },
 
-      endTurn: () => {
-        const { activePlayer, players, turnNumber, isGameStarted, isDemoMode, viewingPlayer } = get()
+      endTurn: async (useContract = true) => {
+        const { gameId, isDemoMode, viewingPlayer } = get()
         
-        // In practice/demo mode (when not connected to contract), simulate turn progression
-        if (!isGameStarted || isDemoMode) {
-          const newActivePlayer = activePlayer === 'player1' ? 'player2' : 'player1'
-          const newTurnNumber = activePlayer === 'player2' ? turnNumber + 1 : turnNumber
-          
-          // Give ETH to the new active player (simulate upkeep)
-          const currentPlayer = players[newActivePlayer as keyof typeof players]
-          
-          set({
-            activePlayer: newActivePlayer,
-            currentTurn: newActivePlayer === 'player1' ? 0 : 1,
-            turnNumber: newTurnNumber,
-            currentPhase: newTurnNumber === 1 && newActivePlayer === 'player1' ? 'main' : 'draw', // First player's first turn skips draw
-            viewingPlayer: isDemoMode ? newActivePlayer : viewingPlayer, // Auto-switch viewing in demo mode
-            players: {
-              ...players,
-              [newActivePlayer]: {
-                ...currentPlayer,
-                eth: currentPlayer.eth + 1, // Gain 1 ETH per turn
-                coldStorageWithdrawnThisTurn: 0, // Reset withdrawal limit for new turn
-              },
-            },
-          })
+        // Always use contract now (even in demo mode)
+        if (useContract && contractFunctions.endTurn && gameId !== null) {
+          try {
+            console.log('Ending turn using contract for game', gameId)
+            await contractFunctions.endTurn(gameId)
+            
+            // Wait a moment then refresh game state from contract
+            setTimeout(async () => {
+              if (contractFunctions.getDetailedGameState) {
+                const gameStateView = await contractFunctions.getDetailedGameState(gameId)
+                if (gameStateView) {
+                  get().updateGameFromContract(gameStateView)
+                }
+              }
+            }, 2000)
+            
+          } catch (error) {
+            console.error('Contract endTurn failed:', error)
+            // Could fallback to local simulation on error, but user wants on-chain
+            throw error
+          }
         } else {
-          // In contract mode, this would trigger the blockchain transaction
-          console.log('Turn ended - contract should handle the transition')
+          console.warn('Cannot end turn: missing contract functions or gameId')
         }
       },
 
@@ -569,36 +587,46 @@ export const useGameStore = create<GameState & GameActions>()(
         }
       },
 
-      drawCard: (playerId: string) => {
-        const { players, currentPhase } = get()
-        const player = players[playerId as keyof typeof players]
+      playCardByIndex: async (playerId: string, cardIndex: number) => {
+        const { gameId } = get()
         
-        if (player.deck.length === 0) {
-          console.warn('Cannot draw card: deck is empty')
-          return
+        // Always use contract for card playing
+        if (contractFunctions.playCard && gameId !== null) {
+          try {
+            console.log(`Playing card at index ${cardIndex} using contract for game ${gameId}`)
+            await contractFunctions.playCard(gameId, cardIndex)
+            
+            // Wait a moment then refresh game state from contract
+            setTimeout(async () => {
+              if (contractFunctions.getDetailedGameState) {
+                const gameStateView = await contractFunctions.getDetailedGameState(gameId)
+                if (gameStateView) {
+                  get().updateGameFromContract(gameStateView)
+                }
+              }
+            }, 2000)
+            
+          } catch (error) {
+            console.error('Contract playCard failed:', error)
+            throw error
+          }
+        } else {
+          console.warn('Cannot play card: missing contract functions or gameId')
         }
+      },
+
+      drawCard: async (playerId: string) => {
+        const { gameId } = get()
         
-        const newCard = player.deck[0]
-        const newDeck = player.deck.slice(1)
+        // Note: Drawing is handled automatically by the contract during turn phases
+        // This function exists for manual drawing scenarios, but typically not needed
+        // since the contract handles draw phase automatically
+        console.log('Manual draw card requested - this may not be needed with contract integration')
         
-        set({
-          players: {
-            ...players,
-            [playerId]: {
-              ...player,
-              hand: [...player.hand, newCard],
-              deck: newDeck,
-              deckRemaining: newDeck.length,
-            },
-          },
-          // Automatically transition from draw phase to main phase after drawing
-          currentPhase: currentPhase === 'draw' ? 'main' : currentPhase,
-        })
-        
-        // Check for cold storage win condition
-        if (player.coldStorage >= 10) {
-          get().endGame(playerId)
-        }
+        // If we need manual drawing in the future, we can use:
+        // if (contractFunctions.drawCard && gameId !== null) {
+        //   await contractFunctions.drawCard(gameId)
+        // }
       },
 
       moveCard: (playerId: string, cardId: string, from: 'hand' | 'board', to: 'hand' | 'board') => {
@@ -627,18 +655,9 @@ export const useGameStore = create<GameState & GameActions>()(
       },
 
       updatePlayerETH: (playerId: string, amount: number) => {
-        const { players } = get()
-        const player = players[playerId as keyof typeof players]
-        
-        set({
-          players: {
-            ...players,
-            [playerId]: {
-              ...player,
-              eth: Math.max(0, player.eth + amount),
-            },
-          },
-        })
+        // ETH resources are now managed by the contract
+        // This function is kept for backwards compatibility but does nothing
+        console.log(`updatePlayerETH called for ${playerId} with ${amount} - handled by contract`)
       },
 
       updatePlayerBalance: (playerId: string, amount: number) => {
@@ -664,6 +683,8 @@ export const useGameStore = create<GameState & GameActions>()(
       },
 
       transferToColdStorage: (playerId: string, amount: number) => {
+        // Cold storage is a UI-only feature for now
+        // Keep local simulation until contract supports it
         const { players } = get()
         const player = players[playerId as keyof typeof players]
         
@@ -775,6 +796,17 @@ export const useGameStore = create<GameState & GameActions>()(
           availableCards, // Preserve loaded cards
         })
       },
+
+      // Contract integration functions
+      setContractGameId: (gameId: number) => {
+        set({ gameId })
+      },
+
+      setContractFunctions: (functions: ContractFunctions) => {
+        contractFunctions = { ...contractFunctions, ...functions }
+        console.log('Contract functions updated:', contractFunctions)
+      },
+      }
     }),
     { name: 'game-store' }
   )

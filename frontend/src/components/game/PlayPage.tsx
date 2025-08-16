@@ -125,29 +125,58 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
     }
   }, [view]);
 
-  // Poll for game state updates when in lobby
+  // Use event-driven updates instead of polling when in lobby
   useEffect(() => {
     if (view === 'lobby' && currentGameId !== null) {
-      // Poll every 2 seconds for game state updates
-      const interval = setInterval(async () => {
-        const state = await getGameState(currentGameId);
-        console.log('Polling - Updated game state:', state);
-        setGameState(state);
-        
-        // Check if game has actually started (not just ready)
-        if (state?.isStarted === true) {
-          clearInterval(interval);
-          // Clear URL params and start the game
-          setSearchParams(new URLSearchParams());
-          onGameStart(currentGameId);
-        }
-      }, 2000);
+      console.log('Setting up event listeners for lobby game', currentGameId)
       
       // Initial fetch
       getGameState(currentGameId).then(setGameState);
       
+      // Set up event listeners for game changes
+      const { watchContractEvent } = require('wagmi/actions')
+      const { wagmiConfig } = require('@/lib/web3/wagmiConfig')
+      const { CONTRACT_ADDRESSES } = require('@/lib/web3/config')
+      const { GameEngineABI } = require('@/lib/contracts/GameEngineABI')
+      
+      const unsubscribeEvents = [
+        // Listen for GameJoined events
+        watchContractEvent(wagmiConfig, {
+          address: CONTRACT_ADDRESSES.GAME_ENGINE,
+          abi: GameEngineABI,
+          eventName: 'GameJoined',
+          args: { gameId: BigInt(currentGameId) },
+          onLogs: async (logs: any[]) => {
+            console.log('GameJoined event detected:', logs)
+            const state = await getGameState(currentGameId);
+            setGameState(state);
+          }
+        }),
+        
+        // Listen for GameStarted events
+        watchContractEvent(wagmiConfig, {
+          address: CONTRACT_ADDRESSES.GAME_ENGINE,
+          abi: GameEngineABI,
+          eventName: 'GameStarted',
+          args: { gameId: BigInt(currentGameId) },
+          onLogs: async (logs: any[]) => {
+            console.log('GameStarted event detected:', logs)
+            const state = await getGameState(currentGameId);
+            setGameState(state);
+            
+            // Game has started, transition to the game
+            if (state?.isStarted === true) {
+              // Clear URL params and start the game
+              setSearchParams(new URLSearchParams());
+              onGameStart(currentGameId);
+            }
+          }
+        })
+      ]
+      
       return () => {
-        clearInterval(interval);
+        console.log('Cleaning up lobby event listeners')
+        unsubscribeEvents.forEach(unsubscribe => unsubscribe())
       };
     }
   }, [view, currentGameId]); // Remove unstable dependencies
