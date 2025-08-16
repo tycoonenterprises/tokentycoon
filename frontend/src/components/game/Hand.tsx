@@ -30,6 +30,9 @@ function GameCard({ card, playerId, onPlay }: CardProps) {
     },
   })
 
+  // Override DnD kit's cursor when disabled
+  const cursorStyle = canPlay ? 'cursor-grab' : 'cursor-not-allowed'
+
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'unit': return 'border-eth-success'
@@ -59,7 +62,7 @@ function GameCard({ card, playerId, onPlay }: CardProps) {
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-      className={`relative w-32 h-44 card transition-all duration-200 ${
+      className={`relative w-32 h-44 card transition-all duration-200 ${cursorStyle} ${
         isHovered && !isDragging ? 'transform -translate-y-2 scale-105' : ''
       } ${isDragging ? 'card-dragging' : ''} ${getTypeColor(card.type)} ${playabilityClass}`}
       onMouseEnter={() => setIsHovered(true)}

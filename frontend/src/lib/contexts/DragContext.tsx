@@ -111,12 +111,25 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     const cardPlayability = canPlayCard(
       card,
       'main', // Always allow playing cards now - no phases
-      playerState.eth,
+      playerState?.eth || 0,
       activePlayer,
       currentPlayer,
       isGameActive,
       needsToDraw
     )
+
+    console.log('🎯 Card Playability Debug:', {
+      cardName: card.name,
+      cardCost: card.cost,
+      playerETH: playerState?.eth,
+      activePlayer,
+      currentPlayer,
+      userAddress,
+      isViewingPlayer1,
+      canPlay: cardPlayability.canPlay,
+      reasons: cardPlayability.reasons,
+      resultClass: cardPlayability.canPlay ? 'card-playable' : 'card-not-playable'
+    })
 
     if (cardPlayability.canPlay) {
       return 'card-playable'
@@ -135,7 +148,7 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     }
     
     return 'card-not-playable'
-  }, [playerState.eth, activePlayer, currentPlayer, isGameActive, needsToDraw])
+  }, [playerState?.eth, activePlayer, currentPlayer, isGameActive, needsToDraw, userAddress, isViewingPlayer1])
 
   const isCardPlayable = useCallback((card: Card): boolean => {
     const cardPlayability = canPlayCard(
