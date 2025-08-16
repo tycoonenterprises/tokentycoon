@@ -37,7 +37,7 @@ export function Game() {
   } = useGameStore()
   
   // Get contract functions
-  const { endTurn, playCard, getDetailedGameState } = useGameEngine()
+  const { endTurn, playCard, stakeETH, getDetailedGameState } = useGameEngine()
   
   const [showWeb3Panel, setShowWeb3Panel] = useState(false)
   const [showDeckBuilder, setShowDeckBuilder] = useState(false)
@@ -51,9 +51,10 @@ export function Game() {
     setContractFunctions({
       endTurn,
       playCard,
+      stakeETH,
       getDetailedGameState
     })
-  }, [endTurn, playCard, getDetailedGameState, setContractFunctions])
+  }, [endTurn, playCard, stakeETH, getDetailedGameState, setContractFunctions])
 
   // Check URL parameters on mount to restore PlayPage state
   useEffect(() => {
@@ -147,6 +148,44 @@ export function Game() {
         onLogs: (logs) => {
           console.log('ResourcesGained event:', logs)
           // Refresh game state
+          setTimeout(() => {
+            if (getDetailedGameState) {
+              getDetailedGameState(gameId).then(state => {
+                if (state) updateGameFromContract(state)
+              })
+            }
+          }, 1000)
+        }
+      }),
+
+      // Ability events
+      watchContractEvent(wagmiConfig, {
+        address: CONTRACT_ADDRESSES.GAME_ENGINE,
+        abi: GameEngineABI,
+        eventName: 'UpkeepTriggered',
+        args: { gameId: BigInt(gameId) },
+        onLogs: (logs) => {
+          console.log('UpkeepTriggered event (ability processed):', logs)
+          // Refresh game state to get updated resources
+          setTimeout(() => {
+            if (getDetailedGameState) {
+              getDetailedGameState(gameId).then(state => {
+                if (state) updateGameFromContract(state)
+              })
+            }
+          }, 1000)
+        }
+      }),
+
+      // Card draw events
+      watchContractEvent(wagmiConfig, {
+        address: CONTRACT_ADDRESSES.GAME_ENGINE,
+        abi: GameEngineABI,
+        eventName: 'CardDrawn',
+        args: { gameId: BigInt(gameId) },
+        onLogs: (logs) => {
+          console.log('CardDrawn event (ability effect):', logs)
+          // Refresh game state to get updated hand
           setTimeout(() => {
             if (getDetailedGameState) {
               getDetailedGameState(gameId).then(state => {

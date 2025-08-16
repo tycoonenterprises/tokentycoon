@@ -141,6 +141,7 @@ export interface GameActions {
   setContractFunctions: (functions: {
     endTurn?: (gameId: number) => Promise<any>
     playCard?: (gameId: number, cardIndex: number) => Promise<any>
+    stakeETH?: (gameId: number, instanceId: number, amount: number) => Promise<any>
     getDetailedGameState?: (gameId: number) => Promise<any>
   }) => void
 }
@@ -218,6 +219,7 @@ const getRandomCards = (availableCards: Card[], count: number): Card[] => {
 type ContractFunctions = {
   endTurn?: (gameId: number) => Promise<any>
   playCard?: (gameId: number, cardIndex: number) => Promise<any>
+  stakeETH?: (gameId: number, instanceId: number, amount: number) => Promise<any>
   getDetailedGameState?: (gameId: number) => Promise<any>
 }
 
@@ -564,15 +566,9 @@ export const useGameStore = create<GameState & GameActions>()(
             },
           })
         } else if (card.type === 'Action') {
-          // Handle Action card effects (they don't go to battlefield)
-          // Apply card-specific effects based on abilities
-          if (card.abilities === 'draw') {
-            // Draw a card effect
-            get().drawCard(playerId)
-          } else if (card.abilities === 'income') {
-            // Income effect - add ETH
-            get().updatePlayerETH(playerId, 1)
-          }
+          // Action card effects are handled by the smart contract
+          // No local simulation needed - contract processes abilities automatically
+          console.log(`Action card ${card.name} played - effects handled by contract`)
           
           set({
             players: {
@@ -807,7 +803,7 @@ export const useGameStore = create<GameState & GameActions>()(
         console.log('Contract functions updated:', contractFunctions)
       },
       }
-    }),
+    },
     { name: 'game-store' }
   )
 )

@@ -8,6 +8,7 @@ import { DeckElement } from './DeckElement'
 import { ColdStorage } from './ColdStorage'
 import { HotWallet } from './HotWallet'
 import { CardImage } from '@/components/ui/CardImage'
+import { useGameEngine } from '@/lib/hooks/useGameEngine'
 
 interface WalletCardFooterProps {
   card: Card
@@ -45,6 +46,118 @@ function WalletCardFooter({ card, playerId, playerETH, isActivePlayer }: WalletC
   )
 }
 
+interface DeFiCardFooterProps {
+  card: Card
+  playerId: string
+  playerETH: number
+  isActivePlayer: boolean
+  gameId: number | null
+}
+
+function DeFiCardFooter({ card, playerId, playerETH, isActivePlayer, gameId }: DeFiCardFooterProps) {
+  const { stakeETH } = useGameEngine()
+  const [showStakeModal, setShowStakeModal] = useState(false)
+  const [stakeAmount, setStakeAmount] = useState(1)
+  const [isStaking, setIsStaking] = useState(false)
+  
+  // For now we'll track staked ETH locally since we need cardInstance data
+  // In full implementation, this would come from contract state
+  const stakedETH = card.stakedETH || 0
+  const yieldAmount = card.yieldAmount || 1 // Default 1x multiplier
+
+  const handleStake = async () => {
+    if (isActivePlayer && playerETH >= stakeAmount && gameId) {
+      setIsStaking(true)
+      try {
+        // Note: This would need the actual card instance ID from the contract
+        // For demo purposes, we'll use a placeholder instanceId
+        // In full implementation, card instances would have their own IDs from the contract
+        const cardInstanceId = parseInt(card.id.split('-').pop() || '0')
+        
+        await stakeETH(gameId, cardInstanceId, stakeAmount)
+        console.log(`Successfully staked ${stakeAmount} ETH on DeFi card ${card.name}`)
+        setShowStakeModal(false)
+      } catch (error) {
+        console.error('Failed to stake ETH:', error)
+      } finally {
+        setIsStaking(false)
+      }
+    }
+  }
+
+  return (
+    <>
+      <div className="p-2 border-t border-gray-600">
+        <div className="text-center">
+          <div className="text-xs text-gray-400">Staked ETH</div>
+          <div className="text-sm font-bold text-purple-400">
+            {stakedETH} ETH
+          </div>
+          {stakedETH > 0 && (
+            <div className="text-xs text-gray-400">
+              Yield: {yieldAmount}x per turn
+            </div>
+          )}
+          {isActivePlayer && playerETH >= 1 && (
+            <button
+              onClick={() => setShowStakeModal(true)}
+              className="mt-1 text-xs bg-purple-600 hover:bg-purple-500 px-2 py-1 rounded transition-colors"
+            >
+              Stake ETH
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Staking Modal */}
+      {showStakeModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 w-80">
+            <h3 className="text-lg font-bold text-white mb-4">Stake ETH on {card.name}</h3>
+            
+            <div className="space-y-4">
+              <div className="text-sm text-gray-300">
+                Staked ETH earns yield during upkeep phases
+              </div>
+              
+              <div>
+                <label className="block text-sm text-gray-300 mb-2">
+                  Stake Amount (ETH)
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max={playerETH}
+                  value={stakeAmount}
+                  onChange={(e) => setStakeAmount(Number(e.target.value))}
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleStake}
+                  disabled={playerETH < stakeAmount || isStaking}
+                  className="flex-1 bg-purple-600 hover:bg-purple-500 py-2 rounded font-semibold disabled:opacity-50"
+                >
+                  {isStaking ? 'Staking...' : `Stake ${stakeAmount} ETH`}
+                </button>
+                <button
+                  onClick={() => setShowStakeModal(false)}
+                  disabled={isStaking}
+                  className="flex-1 bg-gray-700 hover:bg-gray-600 py-2 rounded disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
 interface DraggableCardProps {
   card: Card
   playerId: string
@@ -56,9 +169,10 @@ interface ExtendedDraggableCardProps extends DraggableCardProps {
   playerETH: number
   isActivePlayer: boolean
   currentPhase: string
+  gameId: number | null
 }
 
-function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, currentPhase }: ExtendedDraggableCardProps) {
+function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, currentPhase, gameId }: ExtendedDraggableCardProps) {
   const {
     attributes,
     listeners,
@@ -246,7 +360,7 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
         )}
       </div>
 
-      {/* Card Footer - Power/Toughness for units or ETH balance for wallet cards */}
+      {/* Card Footer - Power/Toughness for units, ETH balance for wallet cards, or staking for DeFi cards */}
       {card.type === 'unit' && card.power !== undefined && card.toughness !== undefined ? (
         <div className="p-2 border-t border-gray-600">
           <div className="flex justify-between text-sm font-bold">
@@ -260,6 +374,14 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
           playerId={playerId}
           playerETH={playerETH}
           isActivePlayer={isActivePlayer}
+        />
+      ) : card.type === 'DeFi' && source === 'board' ? (
+        <DeFiCardFooter 
+          card={card}
+          playerId={playerId}
+          playerETH={playerETH}
+          isActivePlayer={isActivePlayer}
+          gameId={gameId}
         />
       ) : null}
     </div>
@@ -329,7 +451,8 @@ export function DragDropGameBoard() {
     currentPhase,
     playCard,
     playCardByIndex,
-    moveCard 
+    moveCard,
+    gameId 
   } = useGameStore()
   
   const [activeId, setActiveId] = useState<string | null>(null)
@@ -507,6 +630,7 @@ export function DragDropGameBoard() {
                     playerETH={playerHand.eth}
                     isActivePlayer={activePlayer === currentViewingPlayer}
                     currentPhase={currentPhase}
+                    gameId={gameId}
                   />
                 ))}
               </SortableContext>
@@ -550,6 +674,7 @@ export function DragDropGameBoard() {
                         playerETH={playerHand.eth}
                         isActivePlayer={activePlayer === currentViewingPlayer}
                         currentPhase={currentPhase}
+                        gameId={gameId}
                       />
                     ))}
                   </SortableContext>
