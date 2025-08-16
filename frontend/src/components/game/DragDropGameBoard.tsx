@@ -298,29 +298,40 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
       {...(canDrag ? listeners : {})}
       className={`${cardSize} flex-shrink-0 card transition-all duration-200 ${getTypeColor(card.type)} ${visualState.className} ${isDragging ? 'z-50' : ''}`}
     >
-      {/* Card Header */}
-      <div className="p-2 border-b border-gray-600">
-        <div className="flex items-center justify-between">
-          <div className="text-xs text-gray-400 flex items-center">
-            <span className="mr-1">{getTypeIcon(card.type)}</span>
-            {source === 'hand' && card.type.toUpperCase()}
-          </div>
-          {card.cost > 0 && (
-            <div className={`text-xs px-2 py-1 rounded-full font-bold ${
-              cardState === 'cant-afford' 
-                ? 'bg-red-600 text-red-200 border border-red-400' 
-                : 'bg-eth-secondary text-white'
-            }`}>
-              {card.cost} ETH
-              {cardState === 'cant-afford' && source === 'hand' && (
-                <div className="text-xs text-red-300 mt-1">
-                  Need {card.cost - playerETH} more
-                </div>
-              )}
+      {/* Card Header - Only show full header for hand cards */}
+      {source === 'hand' && (
+        <div className="p-2 border-b border-gray-600">
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-gray-400 flex items-center">
+              <span className="mr-1">{getTypeIcon(card.type)}</span>
+              {card.type.toUpperCase()}
             </div>
-          )}
+            {card.cost > 0 && (
+              <div className={`text-xs px-2 py-1 rounded-full font-bold ${
+                cardState === 'cant-afford' 
+                  ? 'bg-red-600 text-red-200 border border-red-400' 
+                  : 'bg-eth-secondary text-white'
+              }`}>
+                {card.cost} ETH
+                {cardState === 'cant-afford' && (
+                  <div className="text-xs text-red-300 mt-1">
+                    Need {card.cost - playerETH} more
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
+      
+      {/* Cost overlay for board cards */}
+      {source === 'board' && card.cost > 0 && (
+        <div className="absolute top-1 right-1 z-10">
+          <div className="bg-eth-secondary text-white text-xs px-1.5 py-0.5 rounded-full font-bold shadow-lg">
+            {card.cost}
+          </div>
+        </div>
+      )}
 
       {/* Card Body */}
       <div className="flex-1 relative">
@@ -363,14 +374,12 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
             </div>
           </div>
         ) : (
-          // Compact view for board
-          <div className="p-1 h-full">
-            <CardImage 
-              card={card} 
-              className="w-full h-full rounded"
-              fallbackIcon={getTypeIcon(card.type)}
-            />
-          </div>
+          // Compact view for board - CardImage fills the entire container
+          <CardImage 
+            card={card} 
+            className="w-full h-full rounded"
+            fallbackIcon={getTypeIcon(card.type)}
+          />
         )}
       </div>
 
