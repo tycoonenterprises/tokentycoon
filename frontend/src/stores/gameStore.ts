@@ -67,6 +67,7 @@ export interface PlayerState {
   balance: number // Player's life/health (for game end condition)
   eth: number // ETH resources for paying card costs
   coldStorage: number // ETH in cold storage (win condition: 10 ETH)
+  coldStorageWithdrawnThisTurn: number // Track ETH withdrawn from cold storage this turn
   hand: Card[]
   board: Card[]
   deck: Card[] // Actual deck cards for drawing
@@ -219,6 +220,7 @@ const initialState: GameState = {
       balance: 20, // Health/life points
       eth: 3, // Starting ETH resources
       coldStorage: 0, // ETH in cold storage
+      coldStorageWithdrawnThisTurn: 0, // Reset each turn
       hand: [],
       board: [],
       deck: [],
@@ -230,6 +232,7 @@ const initialState: GameState = {
       balance: 20, // Health/life points
       eth: 3, // Starting ETH resources
       coldStorage: 0, // ETH in cold storage
+      coldStorageWithdrawnThisTurn: 0, // Reset each turn
       hand: [],
       board: [],
       deck: [],
@@ -272,6 +275,7 @@ export const useGameStore = create<GameState & GameActions>()(
               balance: 20,
               eth: 3,
               coldStorage: 0,
+              coldStorageWithdrawnThisTurn: 0,
               hand: player1Deck.slice(0, 5),
               board: [],
               deck: player1Deck.slice(5),
@@ -283,6 +287,7 @@ export const useGameStore = create<GameState & GameActions>()(
               balance: 20,
               eth: 3,
               coldStorage: 0,
+              coldStorageWithdrawnThisTurn: 0,
               hand: player2Deck.slice(0, 5),
               board: [],
               deck: player2Deck.slice(5),
@@ -312,6 +317,7 @@ export const useGameStore = create<GameState & GameActions>()(
               balance: 20,
               eth: 3,
               coldStorage: 0,
+              coldStorageWithdrawnThisTurn: 0,
               hand: player1Deck.slice(0, 5),
               board: [],
               deck: player1Deck.slice(5),
@@ -323,6 +329,7 @@ export const useGameStore = create<GameState & GameActions>()(
               balance: 20,
               eth: 3,
               coldStorage: 0,
+              coldStorageWithdrawnThisTurn: 0,
               hand: player2Deck.slice(0, 5),
               board: [],
               deck: player2Deck.slice(5),
@@ -498,6 +505,7 @@ export const useGameStore = create<GameState & GameActions>()(
               [newActivePlayer]: {
                 ...currentPlayer,
                 eth: currentPlayer.eth + 1, // Gain 1 ETH per turn
+                coldStorageWithdrawnThisTurn: 0, // Reset withdrawal limit for new turn
               },
             },
           })
@@ -684,14 +692,19 @@ export const useGameStore = create<GameState & GameActions>()(
         const { players } = get()
         const player = players[playerId as keyof typeof players]
         
-        if (player.coldStorage >= amount) {
+        // Enforce 1 ETH per turn withdrawal limit
+        const maxWithdrawal = 1 - player.coldStorageWithdrawnThisTurn
+        const actualAmount = Math.min(amount, maxWithdrawal, player.coldStorage)
+        
+        if (actualAmount > 0) {
           set({
             players: {
               ...players,
               [playerId]: {
                 ...player,
-                eth: player.eth + amount,
-                coldStorage: player.coldStorage - amount,
+                eth: player.eth + actualAmount,
+                coldStorage: player.coldStorage - actualAmount,
+                coldStorageWithdrawnThisTurn: player.coldStorageWithdrawnThisTurn + actualAmount,
               },
             },
           })

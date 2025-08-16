@@ -26,6 +26,8 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
   
   const coldStorageBalance = player?.coldStorage || 0
   const hotWalletBalance = player?.eth || 0
+  const withdrawnThisTurn = player?.coldStorageWithdrawnThisTurn || 0
+  const remainingWithdrawal = Math.max(0, 1 - withdrawnThisTurn)
   const winAmount = 10 // 10 ETH wins the game
   
   // Find wallet cards on the board that have ETH
@@ -60,7 +62,7 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
   }
 
   const handleTransferFromColdStorage = () => {
-    if (canTransfer && coldStorageBalance >= transferAmount) {
+    if (canTransfer && coldStorageBalance >= transferAmount && remainingWithdrawal >= transferAmount) {
       transferFromColdStorage(playerId, transferAmount)
       setShowTransferModal(false)
       setTransferAmount(1)
@@ -183,6 +185,28 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
                 </div>
               </div>
 
+              {/* Withdrawal Limit Warning */}
+              {withdrawnThisTurn > 0 && (
+                <div className="bg-yellow-900/30 border border-yellow-600 rounded p-2 text-center">
+                  <div className="text-yellow-400 text-xs font-semibold">
+                    ⚠️ Cold Storage Limit: {withdrawnThisTurn}/1 ETH withdrawn this turn
+                  </div>
+                  {remainingWithdrawal === 0 && (
+                    <div className="text-red-400 text-xs mt-1">
+                      No more withdrawals allowed this turn
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {withdrawnThisTurn === 0 && (
+                <div className="bg-blue-900/30 border border-blue-600 rounded p-2 text-center">
+                  <div className="text-blue-400 text-xs">
+                    🏦 Cold Storage Withdrawal: {remainingWithdrawal} ETH allowed this turn
+                  </div>
+                </div>
+              )}
+
               {/* Total Available */}
               {(walletCards.length > 0) && (
                 <div className="text-center text-sm text-gray-400">
@@ -198,7 +222,7 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
                 <input
                   type="number"
                   min="1"
-                  max={Math.max(getSelectedSourceBalance(), coldStorageBalance)}
+                  max={Math.max(getSelectedSourceBalance(), Math.min(coldStorageBalance, remainingWithdrawal))}
                   value={transferAmount}
                   onChange={(e) => setTransferAmount(Number(e.target.value))}
                   className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
@@ -216,10 +240,13 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
                 </button>
                 <button
                   onClick={handleTransferFromColdStorage}
-                  disabled={coldStorageBalance < transferAmount}
+                  disabled={coldStorageBalance < transferAmount || remainingWithdrawal < transferAmount}
                   className="flex-1 btn-secondary text-sm py-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   → Hot Wallet
+                  {remainingWithdrawal < transferAmount && remainingWithdrawal < coldStorageBalance && (
+                    <div className="text-xs mt-1">Limit: {remainingWithdrawal} ETH</div>
+                  )}
                 </button>
               </div>
 
