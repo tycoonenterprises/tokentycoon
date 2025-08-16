@@ -96,3 +96,4 @@ Tests use Foundry's forge-std testing framework. Key test patterns:
 - **Stack too deep**: Enable optimizer with via-ir in foundry.toml
 - **Chain ID errors**: Use custom Anvil chain definition in deployment scripts
 - **Random hands in tests**: Use conditional checks since hands are shuffled
+- Before you make a commit, always update relevant CLAUDE.md files with information about what you've just built so a future claude instance can easily understand the current state of the system.

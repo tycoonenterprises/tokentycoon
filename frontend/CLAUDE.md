@@ -216,5 +216,50 @@ This implementation successfully delivers:
 5. **Production Ready**: Built, tested, and ready for deployment
 
 The application is now ready for connection to your local development network on localhost:8545 and can be extended with real smart contracts for full blockchain functionality.
+
+## 🎮 Recent Additions
+
+### Cards Page
+- **Location**: `src/components/game/CardsPage.tsx`
+- **Features**: 
+  - Displays all 72 cards from the game
+  - Card images served from `/public/design/all-cards/` (symlinked to design folder)
+  - Search and filter by card type (Chain, DeFi, EOA, Action)
+  - Detailed card view modal with abilities
+  - Currently uses mock data, ready for contract integration
+
+### Play Page (Onchain Multiplayer)
+- **Location**: `src/components/game/PlayPage.tsx`
+- **Features**:
+  - Create new games onchain with selected deck
+  - Browse and join games created in last 30 minutes
+  - Game lobby system with player status
+  - Deck selection before game starts
+  - Host can start game when both players ready
+  - Polls game state every 2 seconds in lobby
+
+### Game Lobby
+- **Location**: `src/components/game/GameLobby.tsx`
+- **Features**:
+  - Shows both players and their selected decks
+  - Visual indicators for host (crown icon)
+  - Ready status when both players joined
+  - Start game button for host only
+
+### Enhanced Hooks
+- **useGameEngine**: Added methods for creating, joining, starting games, and fetching game state
+- **useDeckRegistry**: Added `getAvailableDecks()` method for deck selection
+- **useCardRegistry**: Fixed infinite loop issues with proper ref usage
+
+### UI Updates
+- Added "Play" button (primary) next to "Practice" button (secondary) in header
+- Debug panels moved to bottom corners (Privy bottom-left, Contract bottom-right)
+- Fixed CardLoader infinite loop with useRef tracking
+
+### Known Issues Fixed
+- CardLoader infinite render loop resolved using refs
+- CardsPage fetch loop fixed by using mock data
+- Image paths corrected with public directory symlink
 - make sure you make git commits at every meaningful step.  They should be authored by me--not claude code
 - always  read the Makefile and use the make targets where applicalbe always
+- Always use privy embedded wallet for making transactions

@@ -6,6 +6,7 @@ import { DragDropGameBoard } from './DragDropGameBoard'
 import { Web3Actions } from './Web3Actions'
 import { DeckBuilder } from './DeckBuilder'
 import { CardsPage } from './CardsPage'
+import { PlayPage } from './PlayPage'
 import { ContractDebugPanel } from '@/components/debug/ContractDebugPanel'
 import { PrivyDebugInfo } from '@/components/debug/PrivyDebugInfo'
 
@@ -24,6 +25,8 @@ export function Game() {
   const [showWeb3Panel, setShowWeb3Panel] = useState(false)
   const [showDeckBuilder, setShowDeckBuilder] = useState(false)
   const [showCardsPage, setShowCardsPage] = useState(false)
+  const [showPlayPage, setShowPlayPage] = useState(false)
+  const [currentGameId, setCurrentGameId] = useState<number | null>(null)
   const [customDeck, setCustomDeck] = useState<Card[] | null>(null)
 
   const handleStartGame = () => {
@@ -49,6 +52,14 @@ export function Game() {
   const handleLogout = () => {
     resetGame()
     logout()
+  }
+
+  const handleOnchainGameStart = (gameId: number) => {
+    setCurrentGameId(gameId)
+    setShowPlayPage(false)
+    // Here we would load the game state from the blockchain
+    // and start the game with the decks from the smart contract
+    startGame(user?.id || 'player1', 'player2')
   }
 
   return (
@@ -79,12 +90,20 @@ export function Game() {
             </button>
             
             {!isGameActive ? (
-              <button
-                onClick={handleStartGame}
-                className="btn-primary"
-              >
-                Practice
-              </button>
+              <>
+                <button
+                  onClick={() => setShowPlayPage(true)}
+                  className="btn-primary"
+                >
+                  🎮 Play
+                </button>
+                <button
+                  onClick={handleStartGame}
+                  className="btn-secondary text-sm"
+                >
+                  Practice
+                </button>
+              </>
             ) : (
               <div className="flex items-center gap-2">
                 <button
@@ -221,6 +240,14 @@ export function Game() {
       {/* Cards Page Modal */}
       {showCardsPage && (
         <CardsPage onClose={() => setShowCardsPage(false)} />
+      )}
+
+      {/* Play Page Modal */}
+      {showPlayPage && (
+        <PlayPage 
+          onClose={() => setShowPlayPage(false)} 
+          onGameStart={handleOnchainGameStart}
+        />
       )}
 
       {/* Debug Panels */}
