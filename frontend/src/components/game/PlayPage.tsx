@@ -4,11 +4,11 @@ import { useGameEngine } from '@/lib/hooks/useGameEngine';
 import { useDeckRegistry } from '@/lib/hooks/useDeckRegistry';
 import { X, Plus, Users, Clock, Loader2 } from 'lucide-react';
 import { GameLobby } from './GameLobby';
-import { useSearchParams } from 'react-router-dom';
 
 interface PlayPageProps {
-  onClose: () => void;
-  onGameStart: (gameId: number) => void;
+  onClose?: () => void;
+  onGameStart?: (gameId: number) => void;
+  initialView?: 'menu' | 'create' | 'join' | 'lobby';
 }
 
 interface GameInfo {
@@ -20,13 +20,17 @@ interface GameInfo {
   deckIds: { player1: number; player2: number };
 }
 
-export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
+export const PlayPage: React.FC<PlayPageProps> = ({ 
+  onClose = () => window.location.hash = '#/', 
+  onGameStart = (gameId) => window.location.hash = `#/game/${gameId}`,
+  initialView = 'menu' 
+}) => {
   const { user } = usePrivy();
   const { wallets } = useWallets();
   // Get the Privy embedded wallet address
   const privyWallet = wallets.find(w => w.walletClientType === 'privy');
   const address = privyWallet?.address;
-  const [searchParams, setSearchParams] = useSearchParams();
+  const hasStartedGame = React.useRef(false);
   const { 
     createGame, 
     joinGame, 
@@ -39,7 +43,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
   } = useGameEngine();
   const { decks, deckCount, isLoadingDecks } = useDeckRegistry();
   
-  const [view, setView] = useState<'menu' | 'create' | 'join' | 'lobby'>('menu');
+  const [view, setView] = useState<'menu' | 'create' | 'join' | 'lobby'>(initialView);
   const [availableGames, setAvailableGames] = useState<GameInfo[]>([]);
   const [currentGameId, setCurrentGameId] = useState<number | null>(null);
   const [selectedDeckId, setSelectedDeckId] = useState<number>(0); // Deck IDs start at 0
@@ -47,59 +51,6 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
   const [gameState, setGameState] = useState<any>(null);
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
 
-  // Update URL when view or game ID changes
-  useEffect(() => {
-    const params = new URLSearchParams();
-    
-    if (view !== 'menu') {
-      params.set('view', view);
-    }
-    
-    if (currentGameId !== null) {
-      params.set('gameId', currentGameId.toString());
-    }
-    
-    setSearchParams(params);
-  }, [view, currentGameId, setSearchParams]);
-
-  // Load state from URL on mount
-  useEffect(() => {
-    const loadFromUrl = async () => {
-      const viewParam = searchParams.get('view');
-      const gameIdParam = searchParams.get('gameId');
-      
-      // Set view from URL
-      if (viewParam && ['create', 'join', 'lobby'].includes(viewParam)) {
-        setView(viewParam as any);
-      }
-      
-      // Load game state if gameId is in URL
-      if (gameIdParam) {
-        const gameId = parseInt(gameIdParam);
-        if (!isNaN(gameId)) {
-          setCurrentGameId(gameId);
-          
-          // If view is lobby or we have a game ID, fetch the game state
-          if (viewParam === 'lobby' || gameIdParam) {
-            try {
-              const state = await getGameState(gameId);
-              console.log('Loaded game state from URL:', state);
-              setGameState(state);
-              
-              // Force lobby view if we have a game ID
-              if (state) {
-                setView('lobby');
-              }
-            } catch (error) {
-              console.error('Error loading game state from URL:', error);
-            }
-          }
-        }
-      }
-    };
-    
-    loadFromUrl();
-  }, []); // Only run on mount
 
   // Format decks for display (deck IDs start at 0)
   const availableDecks = React.useMemo(() => {
@@ -125,32 +76,6 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
     }
   }, [view]);
 
-  // Poll for game state updates when in lobby
-  useEffect(() => {
-    if (view === 'lobby' && currentGameId !== null) {
-      // Poll every 2 seconds for game state updates
-      const interval = setInterval(async () => {
-        const state = await getGameState(currentGameId);
-        console.log('Polling - Updated game state:', state);
-        setGameState(state);
-        
-        // Check if game has actually started (not just ready)
-        if (state?.isStarted === true) {
-          clearInterval(interval);
-          // Clear URL params and start the game
-          setSearchParams(new URLSearchParams());
-          onGameStart(currentGameId);
-        }
-      }, 2000);
-      
-      // Initial fetch
-      getGameState(currentGameId).then(setGameState);
-      
-      return () => {
-        clearInterval(interval);
-      };
-    }
-  }, [view, currentGameId]); // Remove unstable dependencies
 
   const loadAvailableGames = async () => {
     setLoadingGames(true);
@@ -175,12 +100,8 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
       console.log('Created game with ID:', gameId);
       
       if (gameId !== undefined && gameId !== null) {
-        setCurrentGameId(gameId);
-        // Fetch the initial game state after creating
-        const initialState = await getGameState(gameId);
-        console.log('Initial game state after creation:', initialState);
-        setGameState(initialState);
-        setView('lobby');
+        // Redirect to lobby
+        window.location.hash = `#/lobby/${gameId}`;
       }
     } catch (error) {
       console.error('Error creating game:', error);
@@ -193,14 +114,12 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
       console.log('Joining game:', gameId, 'with deck:', selectedDeckId);
       console.log('Current wallet address:', address);
       await joinGame(gameId, selectedDeckId);
-      setCurrentGameId(gameId);
+      
       // Wait a bit for the transaction to be mined
       await new Promise(resolve => setTimeout(resolve, 2000));
-      // Fetch the updated game state after joining
-      const updatedState = await getGameState(gameId);
-      console.log('Game state after joining:', updatedState);
-      setGameState(updatedState);
-      setView('lobby');
+      
+      // Redirect to lobby
+      window.location.hash = `#/lobby/${gameId}`;
     } catch (error) {
       console.error('Error joining game:', error);
       alert('Failed to join game. Please try again.');
@@ -211,11 +130,16 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
     if (currentGameId === null) return;
     
     try {
-      await startGame(currentGameId);
-      // The polling interval will detect when game starts and call onGameStart
+      setIsStartingGame(true);
+      const result = await startGame(currentGameId);
+      console.log('Game started successfully:', result);
+      
+      // Navigate to the game page after successful start with a flag
+      window.location.hash = `#/game/${currentGameId}?started=true`;
     } catch (error) {
       console.error('Error starting game:', error);
       alert('Failed to start game. Make sure both players have joined.');
+      setIsStartingGame(false);
     }
   };
 
@@ -227,8 +151,6 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
   };
 
   const handleClose = () => {
-    // Clear URL parameters when closing
-    setSearchParams(new URLSearchParams());
     onClose();
   };
 

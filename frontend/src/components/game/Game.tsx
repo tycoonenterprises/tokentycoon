@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { usePrivy, useWallets } from '@privy-io/react-auth'
 import { useGameStore, type Card } from '@/stores/gameStore'
 import { PlayerStats } from './PlayerStats'
@@ -17,7 +17,12 @@ import { wagmiConfig } from '@/lib/web3/wagmiConfig'
 import { CONTRACT_ADDRESSES } from '@/lib/web3/config'
 import { GameEngineABI } from '@/lib/contracts/GameEngineABI'
 
-export function Game() {
+interface GameProps {
+  isRouted?: boolean;
+  routedGameId?: number;
+}
+
+export function Game({ isRouted = false, routedGameId }: GameProps) {
   const { logout, user } = usePrivy()
   const { wallets } = useWallets()
   const [searchParams] = useSearchParams()
@@ -25,7 +30,9 @@ export function Game() {
     startGame,
     resetGame, 
     isGameActive, 
+    isGameStarted,
     activePlayer,
+    activateOnchainGame,
     winner,
     setContractFunctions,
     setContractGameId,
@@ -45,6 +52,7 @@ export function Game() {
   const [showPlayPage, setShowPlayPage] = useState(false)
   const [currentGameId, setCurrentGameId] = useState<number | null>(null)
   const [customDeck, setCustomDeck] = useState<Card[] | null>(null)
+  const hasLoadedFromUrl = useRef(false)
   
   // Set up contract functions in game store
   useEffect(() => {
@@ -277,9 +285,10 @@ export function Game() {
     logout()
   }
 
-  const handleOnchainGameStart = async (gameId: number) => {
+  const handleOnchainGameStart = useCallback(async (gameId: number) => {
+    console.log('handleOnchainGameStart called with gameId:', gameId)
     setCurrentGameId(gameId)
-    setShowPlayPage(false)
+    setShowPlayPage(false) // Close the PlayPage modal
     setContractGameId(gameId)
     
     // Update URL to keep the gameId
@@ -291,27 +300,36 @@ export function Game() {
     // Get the current user's wallet address
     const privyWallet = wallets.find(w => w.walletClientType === 'privy')
     const userAddress = privyWallet?.address
+    console.log('Current user address:', userAddress)
     
     // Load the game state from the blockchain
     if (getDetailedGameState && getFullGameState) {
       try {
         const gameStateView = await getDetailedGameState(gameId)
         if (gameStateView) {
-          console.log('Game started, loading state from contract:', gameStateView)
+          console.log('Game state loaded from contract:', gameStateView)
+          console.log('Is game started?', gameStateView.isStarted)
+          
+          // Update the contract state first
           updateGameFromContract(gameStateView)
           
           // Set player IDs from the contract addresses
           const player1Address = gameStateView.player1
           const player2Address = gameStateView.player2
           
-          // Start the game with actual player addresses
-          startGame(player1Address, player2Address)
+          console.log('Player 1:', player1Address)
+          console.log('Player 2:', player2Address)
+          
+          // Use activateOnchainGame instead of startGame to preserve contract data
+          console.log('Activating onchain game without overwriting contract data')
+          activateOnchainGame(player1Address, player2Address)
           
           // Set the viewing player based on which player the current user is
           if (userAddress) {
             if (userAddress.toLowerCase() === player1Address.toLowerCase()) {
+              console.log('Current user is player 1')
               // Current user is player1
-              // viewingPlayer should already be set to 'player1' by startGame
+              // viewingPlayer should already be set to player1
             } else if (userAddress.toLowerCase() === player2Address.toLowerCase()) {
               // Current user is player2 - viewing will be handled by DragDropGameBoard
             }
@@ -320,52 +338,76 @@ export function Game() {
           // Load full game state including hands and battlefield
           console.log('Loading full game state including hands and battlefield...')
           await getFullGameState(gameId)
+          console.log('Full game state loaded')
+        } else {
+          console.error('No game state returned from contract')
         }
       } catch (error) {
         console.error('Error loading game state:', error)
       }
+    } else {
+      console.error('Missing contract functions:', { getDetailedGameState: !!getDetailedGameState, getFullGameState: !!getFullGameState })
     }
-  }
+  }, [wallets, getDetailedGameState, getFullGameState, updateGameFromContract, activateOnchainGame, setContractGameId])
 
-  // Check URL parameters on mount to restore game state
+  // Single source of truth for URL-based game loading
   useEffect(() => {
-    const viewParam = searchParams.get('view')
     const gameIdParam = searchParams.get('gameId')
     
-    // If there's a gameId in the URL, we need to load the game from the contract
+    // If there's a gameId in URL, that takes precedence over everything
     if (gameIdParam) {
-      const gameId = parseInt(gameIdParam)
-      if (!isNaN(gameId)) {
-        console.log('Found gameId in URL, loading game:', gameId)
-        setContractGameId(gameId)
+      const urlGameId = parseInt(gameIdParam)
+      
+      // Only load if it's a different game or first load
+      if (!isNaN(urlGameId) && (urlGameId !== gameId || !hasLoadedFromUrl.current)) {
+        hasLoadedFromUrl.current = true
+        console.log('=== LOADING GAME FROM URL ===')
+        console.log('Game ID:', urlGameId)
+        
+        // Never show PlayPage when we have a direct game URL
+        setShowPlayPage(false)
+        setContractGameId(urlGameId)
         
         // Load the game state from the blockchain
         if (getDetailedGameState) {
-          getDetailedGameState(gameId).then(gameStateView => {
+          getDetailedGameState(urlGameId).then(async gameStateView => {
             if (gameStateView) {
-              console.log('Loaded game state from contract:', gameStateView)
+              console.log('Game state loaded:', gameStateView)
               
-              // Check if the game has started
+              // Always handle it as an onchain game when we have a gameId in URL
               if (gameStateView.isStarted) {
-                // Game has started, load it directly into the game view
-                handleOnchainGameStart(gameId)
+                console.log('Game is started, loading full game')
+                await handleOnchainGameStart(urlGameId)
               } else {
-                // Game hasn't started yet, show the PlayPage/lobby
+                console.log('Game not started yet, showing lobby')
+                // For games that aren't started, show the PlayPage lobby
                 setShowPlayPage(true)
               }
+            } else {
+              console.error('No game found with ID:', urlGameId)
+              // Reset if game doesn't exist
+              resetGame()
+              hasLoadedFromUrl.current = false
             }
           }).catch(error => {
-            console.error('Failed to load game from URL parameter:', error)
-            // Still show the PlayPage so user can see the error or try again
-            setShowPlayPage(true)
+            console.error('Failed to load game:', error)
+            resetGame()
+            hasLoadedFromUrl.current = false
           })
         }
       }
-    } else if (viewParam) {
-      // Just a view parameter without gameId
-      setShowPlayPage(true)
+    } else {
+      // No gameId in URL - check for other params
+      const viewParam = searchParams.get('view')
+      if (viewParam === 'lobby' || viewParam === 'create' || viewParam === 'join') {
+        setShowPlayPage(true)
+      } else {
+        // No URL params - reset everything
+        hasLoadedFromUrl.current = false
+        // Don't auto-close PlayPage here, let user control it
+      }
     }
-  }, [searchParams, getDetailedGameState, startGame, wallets, setContractGameId, updateGameFromContract])
+  }, [searchParams]) // Only depend on URL changes
 
   return (
     <div className="min-h-screen bg-eth-dark flex flex-col">
@@ -464,8 +506,18 @@ export function Game() {
       <div className="flex-1 flex">
         {/* Main Game Area */}
         <div className="flex-1 flex flex-col">
-          {!isGameActive && !winner ? (
-            // Welcome Screen
+          {/* Priority 1: If we're routed and loading, or have a gameId from URL and game is loading */}
+          {(isRouted || gameId) && !isGameActive && !winner ? (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center text-white">
+                <div className="text-2xl mb-4">Loading Game #{routedGameId || gameId || 'from blockchain'}...</div>
+                <div className="text-sm text-gray-400">
+                  Fetching game state from blockchain...
+                </div>
+              </div>
+            </div>
+          ) : !isGameActive && !winner && !isRouted && !gameId ? (
+            // Welcome Screen (only show if no gameId)
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center">
                 <div className="text-6xl mb-6">🃏</div>
@@ -527,9 +579,22 @@ export function Game() {
                 </div>
               </div>
             </div>
-          ) : (
+          ) : isGameActive ? (
             // Active Game
             <DragDropGameBoard />
+          ) : (
+            // Fallback - this shouldn't happen
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center text-white">
+                <div className="text-2xl mb-4">Loading game state...</div>
+                <div className="text-sm text-gray-400">
+                  isGameActive: {String(isGameActive)}<br/>
+                  isGameStarted: {String(isGameStarted)}<br/>
+                  gameId: {gameId}<br/>
+                  showPlayPage: {String(showPlayPage)}
+                </div>
+              </div>
+            </div>
           )}
         </div>
 

@@ -103,6 +103,9 @@ export interface GameState {
 export interface GameActions {
   // Game management
   startGame: (player1Id: string, player2Id: string) => void
+  startDemoMode: (player1Id: string, player2Id: string) => void
+  activateOnchainGame: (player1Id: string, player2Id: string) => void
+  switchViewingPlayer: () => void
   endGame: (winnerId?: string) => void
   // nextPhase removed - turns handled by contract endTurn
   endTurn: (useContract?: boolean) => void
@@ -319,6 +322,30 @@ export const useGameStore = create<GameState & GameActions>()(
         })
       },
 
+      activateOnchainGame: (player1Id: string, player2Id: string) => {
+        // Activate game without overwriting contract data
+        // This is used when loading an onchain game that's already started
+        const currentState = get()
+        
+        set({
+          isGameActive: true,
+          isGameStarted: true,
+          activePlayer: currentState.activePlayer || player1Id, // Keep current active player from contract
+          // Keep the existing players data from contract - don't overwrite!
+          players: {
+            ...currentState.players,
+            player1: {
+              ...currentState.players.player1,
+              id: player1Id, // Just update the IDs
+            },
+            player2: {
+              ...currentState.players.player2,
+              id: player2Id,
+            },
+          },
+        })
+      },
+
       // Initialize game from contract state (for onchain games)
       initializeGameFromContract: (gameView: any) => {
         const activePlayer = gameView.currentTurn === 0 ? 'player1' : 'player2'
@@ -373,6 +400,14 @@ export const useGameStore = create<GameState & GameActions>()(
       // Update game state from contract GameView
       // This function receives real ETH balances from the smart contract
       updateGameFromContract: (gameView: any) => {
+        // Convert BigInt values to numbers
+        const convertBigInt = (value: any): number => {
+          if (typeof value === 'bigint') {
+            return Number(value)
+          }
+          return Number(value) || 0
+        }
+        
         // Get the actual player addresses from current state or gameView
         const { players } = get()
         const player1Id = players.player1.id || gameView.player1
@@ -382,9 +417,9 @@ export const useGameStore = create<GameState & GameActions>()(
         const activePlayer = gameView.currentTurn === 0 ? player1Id : player2Id
         
         set({
-          gameId: gameView.gameId,
-          currentTurn: gameView.currentTurn,
-          turnNumber: gameView.turnNumber,
+          gameId: convertBigInt(gameView.gameId),
+          currentTurn: convertBigInt(gameView.currentTurn),
+          turnNumber: convertBigInt(gameView.turnNumber),
           activePlayer,
           needsToDraw: gameView.needsToDraw || false,
           isGameStarted: gameView.isStarted,
@@ -393,16 +428,16 @@ export const useGameStore = create<GameState & GameActions>()(
             player1: {
               ...get().players.player1,
               id: player1Id, // Ensure player ID is set
-              eth: gameView.player1ETH,
-              deckRemaining: gameView.player1DeckRemaining,
-              battlefieldSize: gameView.player1BattlefieldSize,
+              eth: convertBigInt(gameView.player1ETH),
+              deckRemaining: convertBigInt(gameView.player1DeckRemaining),
+              battlefieldSize: convertBigInt(gameView.player1BattlefieldSize),
             },
             player2: {
               ...get().players.player2,
               id: player2Id, // Ensure player ID is set
-              eth: gameView.player2ETH,
-              deckRemaining: gameView.player2DeckRemaining,
-              battlefieldSize: gameView.player2BattlefieldSize,
+              eth: convertBigInt(gameView.player2ETH),
+              deckRemaining: convertBigInt(gameView.player2DeckRemaining),
+              battlefieldSize: convertBigInt(gameView.player2BattlefieldSize),
             },
           },
         })

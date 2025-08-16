@@ -385,11 +385,20 @@ export const useGameEngine = () => {
         args: [BigInt(gameId)],
       })
       
-      console.log('Detailed game state from contract:', gameStateView)
+      console.log('Game state loaded from contract for game', gameId, ':', gameStateView)
+      
+      // Debug: Check the actual values
+      if (gameStateView) {
+        console.log('getDetailedGameState debug:')
+        console.log('  isStarted:', gameStateView.isStarted, typeof gameStateView.isStarted)
+        console.log('  isFinished:', gameStateView.isFinished, typeof gameStateView.isFinished)
+        console.log('  Raw object keys:', Object.keys(gameStateView))
+      }
+      
       return gameStateView
-    } catch (error) {
-      console.error('Error fetching detailed game state:', error)
-      return null
+    } catch (error: any) {
+      console.error('Error fetching game state for game', gameId, ':', error.message)
+      throw error
     }
   }
 
@@ -410,6 +419,11 @@ export const useGameEngine = () => {
       console.log('Raw game data:', gameData)
       console.log('Type of game data:', typeof gameData)
       console.log('Is array?:', Array.isArray(gameData))
+      console.log('Length of tuple:', gameData.length)
+      console.log('All values by index:')
+      for (let i = 0; i < gameData.length; i++) {
+        console.log(`  [${i}]:`, gameData[i])
+      }
       
       if (!gameData) {
         console.log('No game data returned!')
@@ -422,27 +436,34 @@ export const useGameEngine = () => {
       console.log('Game data entries:', Object.entries(gameData))
       
       // Try accessing by index first (arrays in Solidity return as indexed)
+      // NOTE: PlayerState structs are not returned by public mappings, so indices shift!
       const gameId_ = gameData[0]
       const player1 = gameData[1]
       const player2 = gameData[2]
       const player1DeckId = gameData[3]
       const player2DeckId = gameData[4]
-      const player1State = gameData[5]
-      const player2State = gameData[6]
-      const isStarted = gameData[7]
-      const isFinished = gameData[8]
-      const currentTurn = gameData[9]
-      const turnNumber = gameData[10]
-      const createdAt = gameData[11]
-      const startedAt = gameData[12]
+      // gameData[5] and gameData[6] would be player1State and player2State but they're not returned
+      const isStarted = gameData[5]  // Shifted due to missing structs
+      const isFinished = gameData[6]  // Shifted due to missing structs
+      const currentTurn = gameData[7]  // Shifted due to missing structs
+      const turnNumber = gameData[8]  // Shifted due to missing structs
+      const needsToDraw = gameData[9]  // Shifted due to missing structs
+      const createdAt = gameData[10]  // Shifted due to missing structs
+      const startedAt = gameData[11]  // Shifted due to missing structs
       
       console.log('Parsed values:')
       console.log('  Game ID:', gameId_)
       console.log('  Player1:', player1)
       console.log('  Player2:', player2)
-      console.log('  Is Started:', isStarted)
       console.log('  Player1 Deck ID:', player1DeckId)
       console.log('  Player2 Deck ID:', player2DeckId)
+      console.log('  Is Started (index 5):', isStarted)
+      console.log('  Is Finished (index 6):', isFinished)
+      console.log('  Current Turn (index 7):', currentTurn)
+      console.log('  Turn Number (index 8):', turnNumber)
+      console.log('  needsToDraw (index 9):', needsToDraw)
+      console.log('  createdAt (index 10):', createdAt)
+      console.log('  startedAt (index 11):', startedAt)
       console.log('=======================================')
       
       // Parse the game data from contract

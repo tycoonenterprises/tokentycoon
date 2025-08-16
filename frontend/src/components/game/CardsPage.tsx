@@ -5,12 +5,12 @@ import { useCardRegistry } from '@/lib/hooks/useCardRegistry';
 import type { ContractCard } from '@/lib/types/contracts';
 
 interface CardsPageProps {
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 type CardType = 'Chain' | 'DeFi' | 'EOA' | 'Action';
 
-export const CardsPage: React.FC<CardsPageProps> = ({ onClose }) => {
+export const CardsPage: React.FC<CardsPageProps> = ({ onClose = () => window.location.hash = '#/' }) => {
   const { cards: contractCards, isLoadingCards, refetchCards } = useCardRegistry();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<CardType | 'All'>('All');

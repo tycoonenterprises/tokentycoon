@@ -23,9 +23,9 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
   const isCurrentPlayer = true // Will be enhanced with wallet address detection
   const canTransfer = activePlayer === playerId
   
-  const coldStorageBalance = player?.coldStorage || 0
-  const hotWalletBalance = player?.eth || 0
-  const withdrawnThisTurn = player?.coldStorageWithdrawnThisTurn || 0
+  const coldStorageBalance = Number(player?.coldStorage || 0)
+  const hotWalletBalance = Number(player?.eth || 0)
+  const withdrawnThisTurn = Number(player?.coldStorageWithdrawnThisTurn || 0)
   const remainingWithdrawal = Math.max(0, 1 - withdrawnThisTurn)
   const winAmount = 10 // 10 ETH wins the game
   
