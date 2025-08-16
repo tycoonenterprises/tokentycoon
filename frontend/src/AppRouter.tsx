@@ -53,6 +53,7 @@ function HomePage() {
 
 // Game page wrapper that loads game from ID
 function GamePage({ gameId }: { gameId: number }) {
+  console.log('🏁 GamePage called with gameId:', gameId)
   const { getDetailedGameState, getFullGameState } = useGameEngine()
   
   const { 
@@ -255,10 +256,12 @@ function GamePage({ gameId }: { gameId: number }) {
     )
   }
   
+  console.log('🎮 GamePage rendering Game component with:', { isRouted: true, routedGameId: gameId })
   return <Game isRouted={true} routedGameId={gameId} />
 }
 
 export function AppRouter() {
+  console.log('🌐 AppRouter: Current URL hash:', window.location.hash)
   return (
     <HashRouter>
       <Routes>
@@ -281,7 +284,10 @@ export function AppRouter() {
         
         {/* Active game */}
         <Route path="/game/:gameId" element={
-          <GameWrapper />
+          <div>
+            {console.log('🎯 Route /game/:gameId matched!')}
+            <GameWrapper />
+          </div>
         } />
         
         {/* Cards collection */}
@@ -300,9 +306,12 @@ export function AppRouter() {
 // Wrapper components to extract params
 function GameWrapper() {
   const gameId = parseInt(window.location.hash.split('/')[2])
+  console.log('🔄 GameWrapper: parsed gameId from URL:', gameId, 'from hash:', window.location.hash)
   if (isNaN(gameId)) {
+    console.log('❌ GameWrapper: gameId is NaN, redirecting to home')
     return <Navigate to="/" replace />
   }
+  console.log('✅ GameWrapper: calling GamePage with gameId:', gameId)
   return <GamePage gameId={gameId} />
 }
 

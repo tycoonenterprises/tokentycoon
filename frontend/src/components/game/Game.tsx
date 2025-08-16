@@ -431,6 +431,20 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
       <div className="flex-1 flex">
         {/* Main Game Area */}
         <div className="flex-1 flex flex-col">
+          {/* Debug current state */}
+          {(() => {
+            console.log('🔍 Game render state:', {
+              isRouted,
+              routedGameId,
+              gameId,
+              isGameActive,
+              winner,
+              condition1: (isRouted || gameId) && !isGameActive && !winner,
+              condition2: !isGameActive && !winner && !isRouted && !gameId
+            })
+            return null
+          })()}
+          
           {/* Priority 1: If we're routed and loading, or have a gameId from URL and game is loading */}
           {(isRouted || gameId) && !isGameActive && !winner ? (
             <div className="flex-1 flex items-center justify-center">
