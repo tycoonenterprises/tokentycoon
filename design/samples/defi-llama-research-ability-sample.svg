@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- Ability Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#abilityGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#6b7280" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#6b7280" stroke="#9ca3af" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">3</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="42" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#e2e8f0">DeFi Llama Research</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="75" height="20" rx="10" fill="#6b7280" stroke="#4b5563" stroke-width="1"/>
+  <text x="237" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">ABILITY</text>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- DeFi Llama Research Art -->
+  <g transform="translate(150, 165)">
+    <!-- Llama silhouette -->
+    <path d="M-15 -25 Q-10 -35 0 -35 Q10 -35 15 -25 Q15 -20 12 -15 L12 10 Q12 15 8 15 L-8 15 Q-12 15 -12 10 L-12 -15 Q-15 -20 -15 -25" fill="url(#llamaGradient)" opacity="0.9"/>
+    
+    <!-- Llama ears -->
+    <ellipse cx="-8" cy="-30" rx="3" ry="8" fill="#9ca3af" transform="rotate(-20)"/>
+    <ellipse cx="8" cy="-30" rx="3" ry="8" fill="#9ca3af" transform="rotate(20)"/>
+    
+    <!-- Llama face -->
+    <circle cx="-5" cy="-22" r="2" fill="#1a202c"/>
+    <circle cx="5" cy="-22" r="2" fill="#1a202c"/>
+    <ellipse cx="0" cy="-15" rx="3" ry="2" fill="#1a202c"/>
+    
+    <!-- Research elements -->
+    <rect x="-25" y="-10" width="12" height="16" rx="2" fill="#6366f1" stroke="#8b5cf6" stroke-width="1" opacity="0.8"/>
+    <rect x="-23" y="-8" width="8" height="1.5" rx="0.5" fill="#e2e8f0"/>
+    <rect x="-23" y="-5" width="8" height="1.5" rx="0.5" fill="#e2e8f0"/>
+    <rect x="-23" y="-2" width="8" height="1.5" rx="0.5" fill="#e2e8f0"/>
+    
+    <!-- Data charts -->
+    <g transform="translate(20, -5)">
+      <rect x="0" y="0" width="15" height="12" rx="2" fill="#4c1d95" stroke="#6b46c1" stroke-width="1" opacity="0.8"/>
+      <path d="M2 8 L4 6 L6 4 L8 7 L10 3 L12 5 L13 2" stroke="#c4b5fd" stroke-width="1.5" fill="none"/>
+    </g>
+    
+    <text x="0" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#8b5cf6">DATA ANALYSIS</text>
+  </g>
+  
+  <!-- Ability Motif Overlay -->
+  <g opacity="0.3">
+    <!-- Research books -->
+    <rect x="20" y="85" width="15" height="20" rx="2" fill="#6b7280" stroke="#9ca3af" stroke-width="1"/>
+    <rect x="22" y="87" width="11" height="2" rx="1" fill="#0f172a"/>
+    <rect x="22" y="91" width="11" height="2" rx="1" fill="#0f172a"/>
+    <rect x="22" y="95" width="11" height="2" rx="1" fill="#0f172a"/>
+    
+    <!-- Intelligence/learning icon -->
+    <circle cx="248" cy="95" r="8" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+    <path d="M245 95 L251 95 M248 92 L248 98" stroke="#9ca3af" stroke-width="1"/>
+    
+    <!-- Network connections -->
+    <circle cx="60" cy="90" r="2" fill="#6b7280"/>
+    <circle cx="70" cy="95" r="2" fill="#6b7280"/>
+    <circle cx="75" cy="85" r="2" fill="#6b7280"/>
+    <line x1="60" y1="90" x2="70" y2="95" stroke="#6b7280" stroke-width="1"/>
+    <line x1="70" y1="95" x2="75" y2="85" stroke="#6b7280" stroke-width="1"/>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="100" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="14" fill="#e2e8f0">Draw 2 cards.</text>
+  <text x="25" y="305" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8">Comprehensive DeFi protocol</text>
+  <text x="25" y="320" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8">data and analytics platform.</text>
+  <text x="25" y="340" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8">Knowledge is power.</text>
+  
+  <!-- Study Effect -->
+  <g transform="translate(15, 375)">
+    <rect width="100" height="25" rx="5" fill="#4c1d95" stroke="#6b46c1" stroke-width="1"/>
+    <text x="50" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c4b5fd">RESEARCH</text>
+  </g>
+  
+  <!-- Draw Amount -->
+  <g transform="translate(130, 375)">
+    <rect width="80" height="25" rx="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1"/>
+    <text x="40" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">Draw 2</text>
+  </g>
+  
+  <!-- Intelligence Icon -->
+  <g transform="translate(230, 375)">
+    <circle cx="12" cy="12" r="12" fill="#6b7280" stroke="#9ca3af" stroke-width="2"/>
+    <path d="M8 8 L16 8 M12 4 L12 12 M8 16 Q12 12 16 16" stroke="white" stroke-width="1.5" fill="none"/>
+  </g>
+  
+  <!-- Rarity Indicator (Uncommon) -->
+  <g transform="translate(250, 340)">
+    <polygon points="0,10 5,0 10,10 5,15" fill="#3b82f6" stroke="#60a5fa" stroke-width="1"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="abilityGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6b7280;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#4b5563;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.4" />
+    </linearGradient>
+    <linearGradient id="llamaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d1d5db;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#9ca3af;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6b7280;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

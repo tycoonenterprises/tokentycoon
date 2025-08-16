@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- Action Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#actionGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#dc2626" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#dc2626" stroke="#ef4444" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">5</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="42" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#e2e8f0">51% Attack</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="70" height="20" rx="10" fill="#dc2626" stroke="#b91c1c" stroke-width="1"/>
+  <text x="235" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">ACTION</text>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- 51% Attack Art -->
+  <g transform="translate(150, 165)">
+    <!-- Network nodes being taken over -->
+    <circle cx="-30" cy="-20" r="8" fill="#6b7280" stroke="#9ca3af" stroke-width="2"/>
+    <circle cx="0" cy="-30" r="8" fill="#6b7280" stroke="#9ca3af" stroke-width="2"/>
+    <circle cx="30" cy="-20" r="8" fill="#6b7280" stroke="#9ca3af" stroke-width="2"/>
+    <circle cx="-20" cy="10" r="8" fill="#6b7280" stroke="#9ca3af" stroke-width="2"/>
+    <circle cx="20" cy="10" r="8" fill="#6b7280" stroke="#9ca3af" stroke-width="2"/>
+    
+    <!-- Central attacking node -->
+    <circle cx="0" cy="-5" r="15" fill="#dc2626" stroke="#ef4444" stroke-width="3"/>
+    <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">51%</text>
+    
+    <!-- Attack lines -->
+    <line x1="0" y1="-5" x2="-30" y2="-20" stroke="#dc2626" stroke-width="3" opacity="0.8"/>
+    <line x1="0" y1="-5" x2="0" y2="-30" stroke="#dc2626" stroke-width="3" opacity="0.8"/>
+    <line x1="0" y1="-5" x2="30" y2="-20" stroke="#dc2626" stroke-width="3" opacity="0.8"/>
+    <line x1="0" y1="-5" x2="-20" y2="10" stroke="#dc2626" stroke-width="3" opacity="0.8"/>
+    <line x1="0" y1="-5" x2="20" y2="10" stroke="#dc2626" stroke-width="3" opacity="0.8"/>
+    
+    <!-- Hash power indicator -->
+    <text x="0" y="35" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#dc2626">MAJORITY CONTROL</text>
+  </g>
+  
+  <!-- Action Motif Overlay -->
+  <g opacity="0.4">
+    <!-- Fragmented chains -->
+    <rect x="20" y="85" width="8" height="6" rx="1" fill="#dc2626"/>
+    <rect x="32" y="90" width="8" height="6" rx="1" fill="#dc2626" transform="rotate(15 36 93)"/>
+    <rect x="44" y="88" width="8" height="6" rx="1" fill="#dc2626" transform="rotate(-10 48 91)"/>
+    
+    <!-- Warning triangle -->
+    <path d="M245 85 L255 100 L235 100 Z" fill="#f59e0b" stroke="#f97316" stroke-width="1"/>
+    <text x="245" y="96" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#0f172a">!</text>
+    
+    <!-- Flash effect -->
+    <path d="M260 90 L270 95 L265 105 L275 110 L265 115 L270 125 L260 120 L265 110 L260 105 Z" fill="#fbbf24"/>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="100" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="14" fill="#e2e8f0">Take control of target chain</text>
+  <text x="25" y="305" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8">Requires majority hash power.</text>
+  <text x="25" y="325" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8">Destroys network consensus.</text>
+  
+  <!-- One-Time Use Indicator -->
+  <g transform="translate(15, 370)">
+    <rect width="120" height="25" rx="5" fill="#7c2d12" stroke="#dc2626" stroke-width="1"/>
+    <text x="60" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#fca5a5">ONE TIME USE</text>
+  </g>
+  
+  <!-- Effect Strength -->
+  <g transform="translate(200, 370)">
+    <rect width="70" height="25" rx="5" fill="#dc2626" stroke="#ef4444" stroke-width="1"/>
+    <text x="35" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">DESTROY</text>
+  </g>
+  
+  <!-- Rarity Indicator (Epic) -->
+  <g transform="translate(250, 330)">
+    <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#8b5cf6" stroke="#a78bfa" stroke-width="1"/>
+    <circle cx="5" cy="8" r="2" fill="white"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="actionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#dc2626;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#b91c1c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.6" />
+    </linearGradient>
+  </defs>
+</svg>

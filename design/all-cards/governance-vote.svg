@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- Ability Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#abilityGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#6b7280" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#6b7280" stroke="#9ca3af" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">3</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="47" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Governance Vote</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="75" height="20" rx="10" fill="#6b7280" stroke="#4b5563" stroke-width="1"/>
+  <text x="237" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">ABILITY</text>
+  
+  <!-- Art Area with Governance Interface -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- DAO Governance Portal -->
+  <rect x="30" y="90" width="240" height="140" rx="10" fill="#111827" stroke="#374151" stroke-width="2"/>
+  
+  <!-- Title Bar -->
+  <rect x="35" y="95" width="230" height="25" rx="5" fill="#374151"/>
+  <text x="150" y="110" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#e2e8f0">DAO GOVERNANCE</text>
+  
+  <!-- Proposal -->
+  <rect x="45" y="130" width="210" height="40" rx="5" fill="#0f172a" stroke="#4b5563" stroke-width="1"/>
+  <text x="55" y="145" font-family="Arial, sans-serif" font-size="10" fill="#e2e8f0">Proposal #47: Protocol Upgrade</text>
+  <text x="55" y="160" font-family="Arial, sans-serif" font-size="9" fill="#64748b">Improve transaction efficiency by 15%</text>
+  
+  <!-- Voting Options -->
+  <g transform="translate(50, 180)">
+    <!-- Yes Vote -->
+    <rect x="0" y="0" width="60" height="25" rx="5" fill="#10b981" stroke="#34d399" stroke-width="1"/>
+    <text x="30" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">YES</text>
+    
+    <!-- No Vote -->
+    <rect x="80" y="0" width="60" height="25" rx="5" fill="#dc2626" stroke="#ef4444" stroke-width="1"/>
+    <text x="110" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">NO</text>
+    
+    <!-- Abstain -->
+    <rect x="160" y="0" width="50" height="25" rx="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1"/>
+    <text x="185" y="16" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">ABS</text>
+  </g>
+  
+  <!-- Vote Progress Bar -->
+  <g transform="translate(50, 210)">
+    <rect x="0" y="0" width="200" height="8" rx="4" fill="#374151"/>
+    <rect x="0" y="0" width="140" height="8" rx="4" fill="#10b981"/>
+    <text x="0" y="-5" font-family="Arial, sans-serif" font-size="8" fill="#64748b">70% Yes</text>
+    <text x="150" y="-5" font-family="Arial, sans-serif" font-size="8" fill="#64748b">30% No</text>
+  </g>
+  
+  <!-- Voting Power Tokens -->
+  <g opacity="0.4">
+    <circle cx="220" cy="110" r="6" fill="#fbbf24"/>
+    <text x="220" y="114" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">T</text>
+    <circle cx="235" cy="120" r="6" fill="#fbbf24"/>
+    <text x="235" y="124" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">T</text>
+    <circle cx="245" cy="135" r="6" fill="#fbbf24"/>
+    <text x="245" y="139" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">T</text>
+  </g>
+  
+  <!-- Blockchain Voting Icons -->
+  <g opacity="0.3">
+    <rect x="25" y="180" width="8" height="6" rx="1" fill="#6366f1"/>
+    <rect x="25" y="200" width="8" height="6" rx="1" fill="#6366f1"/>
+    <rect x="25" y="220" width="8" height="6" rx="1" fill="#6366f1"/>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="100" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="13" fill="#e2e8f0">Draw 2 cards. Each opponent discards 1 card.</text>
+  
+  <!-- Knowledge/Study Effect -->
+  <g transform="translate(15, 375)">
+    <rect width="100" height="25" rx="5" fill="#4c1d95" stroke="#6b46c1" stroke-width="1"/>
+    <text x="50" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#c4b5fd">GOVERN</text>
+  </g>
+  
+  <!-- Draw/Effect Amount -->
+  <g transform="translate(130, 375)">
+    <rect width="80" height="25" rx="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1"/>
+    <text x="40" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">Draw+Disc</text>
+  </g>
+  
+  <!-- Intelligence Icon -->
+  <g transform="translate(230, 375)">
+    <circle cx="12" cy="12" r="12" fill="#6b7280" stroke="#9ca3af" stroke-width="2"/>
+    <text x="12" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">🗳️</text>
+  </g>
+  
+  <!-- Rarity Indicator - Uncommon (cost 3) -->
+  <g transform="translate(250, 340)">
+    <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#06b6d4" stroke="#0891b2" stroke-width="1"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="abilityGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6b7280;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#4b5563;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.4" />
+    </linearGradient>
+  </defs>
+</svg>

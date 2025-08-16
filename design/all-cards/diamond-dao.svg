@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- DeFi Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#defiGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">4</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="47" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Diamond DAO</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="70" height="20" rx="10" fill="#059669" stroke="#047857" stroke-width="1"/>
+  <text x="235" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">DeFi</text>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Diamond DAO Art -->
+  <g transform="translate(150, 165)">
+    <!-- Diamond shape -->
+    <path d="M0,-35 L-25,0 L0,35 L25,0 Z" fill="url(#diamondGradient)" stroke="#60a5fa" stroke-width="2" opacity="0.9"/>
+    
+    <!-- Diamond facets -->
+    <path d="M0,-35 L-12.5,-17.5 L0,0 Z" fill="#93c5fd" opacity="0.7"/>
+    <path d="M0,-35 L12.5,-17.5 L0,0 Z" fill="#ddd6fe" opacity="0.6"/>
+    <path d="M0,0 L-12.5,17.5 L0,35 Z" fill="#c4b5fd" opacity="0.7"/>
+    <path d="M0,0 L12.5,17.5 L0,35 Z" fill="#a78bfa" opacity="0.8"/>
+    
+    <!-- DAO governance rings -->
+    <circle cx="0" cy="0" r="45" fill="none" stroke="#8b5cf6" stroke-width="2" opacity="0.4"/>
+    <circle cx="0" cy="0" r="55" fill="none" stroke="#a78bfa" stroke-width="1" opacity="0.3"/>
+    
+    <!-- DeFi protocol icons around the diamond -->
+    <g transform="translate(-40, -30)">
+      <rect width="12" height="10" rx="2" fill="#10b981" opacity="0.7"/>
+      <text x="6" y="7" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="white">D</text>
+    </g>
+    
+    <g transform="translate(28, -30)">
+      <rect width="12" height="10" rx="2" fill="#10b981" opacity="0.7"/>
+      <text x="6" y="7" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="white">D</text>
+    </g>
+    
+    <g transform="translate(-40, 20)">
+      <rect width="12" height="10" rx="2" fill="#10b981" opacity="0.7"/>
+      <text x="6" y="7" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="white">D</text>
+    </g>
+    
+    <g transform="translate(28, 20)">
+      <rect width="12" height="10" rx="2" fill="#10b981" opacity="0.7"/>
+      <text x="6" y="7" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="white">D</text>
+    </g>
+    
+    <!-- Yield collection lines -->
+    <path d="M-34,-25 L-15,-10" stroke="#22c55e" stroke-width="1" opacity="0.6"/>
+    <path d="M34,-25 L15,-10" stroke="#22c55e" stroke-width="1" opacity="0.6"/>
+    <path d="M-34,25 L-15,10" stroke="#22c55e" stroke-width="1" opacity="0.6"/>
+    <path d="M34,25 L15,10" stroke="#22c55e" stroke-width="1" opacity="0.6"/>
+    
+    <!-- Text -->
+    <text x="0" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#a78bfa">Scales with DeFi Count</text>
+  </g>
+  
+  <!-- DeFi Motif Overlay -->
+  <g opacity="0.3">
+    <!-- Scaling yield arrows -->
+    <path d="M20 90 L35 85 L35 95 Z" fill="#8b5cf6"/>
+    <path d="M40 85 L55 90 L40 95 Z" fill="#8b5cf6"/>
+    
+    <!-- Scaling indicator -->
+    <rect x="240" y="85" width="20" height="15" rx="3" fill="#8b5cf6" stroke="#7c3aed" stroke-width="1"/>
+    <text x="250" y="95" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" font-weight="bold" fill="white">SCALE</text>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="80" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="14" fill="#e2e8f0">Gain 1 ETH per DeFi you control.</text>
+  
+  <!-- Scaling Yield Indicator -->
+  <g transform="translate(200, 275)">
+    <rect width="60" height="25" rx="5" fill="#8b5cf6" stroke="#7c3aed" stroke-width="1"/>
+    <text x="30" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">1Ξ*</text>
+  </g>
+  
+  <!-- ETH Icon -->
+  <circle cx="120" cy="370" r="12" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+  <text x="120" y="376" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">Ξ</text>
+  
+  <!-- Rarity Indicator (Uncommon - cost 4) -->
+  <g transform="translate(250, 355)">
+    <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="diamondGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ddd6fe;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#c4b5fd;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="defiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#059669;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.8" />
+    </linearGradient>
+  </defs>
+</svg>

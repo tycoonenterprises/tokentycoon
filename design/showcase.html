@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethereum TCG - Design System Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #10b981, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+        
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .section {
+            margin-bottom: 4rem;
+        }
+        
+        .section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #f8fafc;
+        }
+        
+        .section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+        
+        .section p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #94a3b8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .design-principles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .principle-card {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid #334155;
+        }
+        
+        .principle-card h4 {
+            color: #3b82f6;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .card-type {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border-left: 4px solid;
+            text-align: center;
+        }
+        
+        .card-type.chain { border-color: #3b82f6; }
+        .card-type.defi { border-color: #10b981; }
+        .card-type.action { border-color: #dc2626; }
+        .card-type.eoa { border-color: #0891b2; }
+        .card-type.ability { border-color: #6b7280; }
+        
+        .card-type h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .card-type .color-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .chain .color-swatch { background: linear-gradient(135deg, #3b82f6, #1e40af); }
+        .defi .color-swatch { background: linear-gradient(135deg, #10b981, #f59e0b); }
+        .action .color-swatch { background: linear-gradient(135deg, #dc2626, #f59e0b); }
+        .eoa .color-swatch { background: linear-gradient(135deg, #0891b2, #fbbf24); }
+        .ability .color-swatch { background: linear-gradient(135deg, #6b7280, #6366f1); }
+        
+        .showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .card-showcase {
+            background: rgba(30, 41, 59, 0.3);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid #334155;
+            text-align: center;
+        }
+        
+        .card-showcase h4 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #f8fafc;
+        }
+        
+        .card-showcase .card-type-label {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+        
+        .chain .card-type-label { background: #3b82f6; color: white; }
+        .defi .card-type-label { background: #10b981; color: white; }
+        .action .card-type-label { background: #dc2626; color: white; }
+        .eoa .card-type-label { background: #0891b2; color: white; }
+        .ability .card-type-label { background: #6b7280; color: white; }
+        
+        .card-image {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 0.75rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .stat {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+        
+        .icon-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .icon-category {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid #334155;
+        }
+        
+        .icon-category h4 {
+            color: #3b82f6;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 1rem;
+        }
+        
+        .icon-item {
+            text-align: center;
+            padding: 1rem 0.5rem;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 0.5rem;
+        }
+        
+        .icon-item svg {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .icon-item .icon-name {
+            font-size: 0.8rem;
+            color: #94a3b8;
+        }
+        
+        .tech-specs {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid #334155;
+            margin-bottom: 3rem;
+        }
+        
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .spec-item {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+        
+        .spec-item h5 {
+            color: #10b981;
+            margin-bottom: 0.5rem;
+        }
+        
+        .workflow {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid #334155;
+        }
+        
+        .workflow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .workflow-step {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #3b82f6;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .workflow-step h5 {
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            color: #f8fafc;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 3rem 0;
+            border-top: 1px solid #334155;
+            margin-top: 4rem;
+            color: #64748b;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav {
+                gap: 1rem;
+            }
+            
+            .nav-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .showcase {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Ethereum TCG Design System</h1>
+            <p>Composable card templates and comprehensive design guide for the fully onchain trading card game</p>
+            
+            <nav class="nav">
+                <a href="#overview" class="nav-btn active">Overview</a>
+                <a href="#cards" class="nav-btn">Card Showcase</a>
+                <a href="#icons" class="nav-btn">Icons</a>
+                <a href="#templates" class="nav-btn">Templates</a>
+                <a href="#workflow" class="nav-btn">Workflow</a>
+            </nav>
+        </header>
+
+        <section id="overview" class="section">
+            <h2>Design System Overview</h2>
+            <p>A comprehensive design system for creating Ethereum-themed trading cards with cyberpunk aesthetics and high-finance elements. Built with composable SVG templates for rapid card creation while maintaining visual consistency.</p>
+            
+            <div class="design-principles">
+                <div class="principle-card">
+                    <h4>Composable Templates</h4>
+                    <p>Layered SVG templates with separate elements for background, frame, text, art, and icons allow for rapid customization and consistent styling across all card types.</p>
+                </div>
+                
+                <div class="principle-card">
+                    <h4>Cyberpunk Aesthetics</h4>
+                    <p>Futuristic design language combining blockchain iconography with high-finance themes. Dark backgrounds with neon accents create dramatic visual impact.</p>
+                </div>
+                
+                <div class="principle-card">
+                    <h4>Type-Based Hierarchy</h4>
+                    <p>Each card type uses distinct color schemes and visual motifs for instant recognition: Chain (blue), DeFi (green/orange), Action (red), EOA (cyan/gold), Ability (gray/purple).</p>
+                </div>
+                
+                <div class="principle-card">
+                    <h4>Scalable System</h4>
+                    <p>Vector-based templates support both digital and print formats. Modular icon system allows for easy expansion as new mechanics are added to the game.</p>
+                </div>
+            </div>
+            
+            <h3>Card Type Color Schemes</h3>
+            <div class="card-types">
+                <div class="card-type chain">
+                    <div class="color-swatch"></div>
+                    <h4>Chain</h4>
+                    <p>Cool blues and metallic silvers for blockchain and L2 cards</p>
+                </div>
+                
+                <div class="card-type defi">
+                    <div class="color-swatch"></div>
+                    <h4>DeFi</h4>
+                    <p>Bold greens and oranges for yield and protocol cards</p>
+                </div>
+                
+                <div class="card-type action">
+                    <div class="color-swatch"></div>
+                    <h4>Action</h4>
+                    <p>Aggressive reds for attack and disruption cards</p>
+                </div>
+                
+                <div class="card-type eoa">
+                    <div class="color-swatch"></div>
+                    <h4>EOA</h4>
+                    <p>Light blues and golds for wallet and validator cards</p>
+                </div>
+                
+                <div class="card-type ability">
+                    <div class="color-swatch"></div>
+                    <h4>Ability</h4>
+                    <p>Steely grays and neon purples for research cards</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="cards" class="section">
+            <h2>Card Showcase</h2>
+            <p>Complete sample cards demonstrating the design system applied to actual game cards from the Ethereum ecosystem.</p>
+            
+            <div class="showcase">
+                <div class="card-showcase chain">
+                    <h4>Arbitrum</h4>
+                    <div class="card-type-label">Chain</div>
+                    <img src="samples/arbitrum-chain-sample.svg" alt="Arbitrum Chain Card" class="card-image">
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-label">Cost</div>
+                            <div class="stat-value">2Ξ</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Income</div>
+                            <div class="stat-value">1Ξ/turn</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Rarity</div>
+                            <div class="stat-value">Common</div>
+                        </div>
+                    </div>
+                    <p>Layer 2 scaling solution that generates consistent ETH income for blockchain infrastructure.</p>
+                </div>
+                
+                <div class="card-showcase defi">
+                    <h4>Aave</h4>
+                    <div class="card-type-label">DeFi</div>
+                    <img src="samples/aave-defi-sample.svg" alt="Aave DeFi Card" class="card-image">
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-label">Cost</div>
+                            <div class="stat-value">4Ξ</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Yield</div>
+                            <div class="stat-value">2x staked</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Rarity</div>
+                            <div class="stat-value">Rare</div>
+                        </div>
+                    </div>
+                    <p>Decentralized lending protocol with high yield multiplier. Stake ETH to earn compound returns.</p>
+                </div>
+                
+                <div class="card-showcase action">
+                    <h4>51% Attack</h4>
+                    <div class="card-type-label">Action</div>
+                    <img src="samples/51percent-attack-action-sample.svg" alt="51% Attack Action Card" class="card-image">
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-label">Cost</div>
+                            <div class="stat-value">5Ξ</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Effect</div>
+                            <div class="stat-value">Destroy</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Rarity</div>
+                            <div class="stat-value">Epic</div>
+                        </div>
+                    </div>
+                    <p>Devastating network attack that takes control of target blockchain through majority consensus.</p>
+                </div>
+                
+                <div class="card-showcase eoa">
+                    <h4>Crypto Whale</h4>
+                    <div class="card-type-label">EOA</div>
+                    <img src="samples/crypto-whale-eoa-sample.svg" alt="Crypto Whale EOA Card" class="card-image">
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-label">Cost</div>
+                            <div class="stat-value">5Ξ</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Income</div>
+                            <div class="stat-value">1Ξ/DeFi</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Rarity</div>
+                            <div class="stat-value">Epic</div>
+                        </div>
+                    </div>
+                    <p>High net worth individual with governance control. Income scales with DeFi protocol ownership.</p>
+                </div>
+                
+                <div class="card-showcase ability">
+                    <h4>DeFi Llama Research</h4>
+                    <div class="card-type-label">Ability</div>
+                    <img src="samples/defi-llama-research-ability-sample.svg" alt="DeFi Llama Research Ability Card" class="card-image">
+                    <div class="card-stats">
+                        <div class="stat">
+                            <div class="stat-label">Cost</div>
+                            <div class="stat-value">3Ξ</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Draw</div>
+                            <div class="stat-value">2 cards</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Rarity</div>
+                            <div class="stat-value">Uncommon</div>
+                        </div>
+                    </div>
+                    <p>Comprehensive DeFi analytics platform. Knowledge gathering ability provides strategic advantage.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="icons" class="section">
+            <h2>Icon System</h2>
+            <p>Comprehensive icon set designed for consistency and scalability across all card types and game mechanics.</p>
+            
+            <div class="icon-showcase">
+                <div class="icon-category">
+                    <h4>ETH & Currency</h4>
+                    <p>Various sizes and styles of Ethereum symbols for different contexts and prominence levels.</p>
+                </div>
+                
+                <div class="icon-category">
+                    <h4>Staking & Yield</h4>
+                    <p>Lock symbols, yield indicators, and compound interest representations for DeFi mechanics.</p>
+                </div>
+                
+                <div class="icon-category">
+                    <h4>Rarity Indicators</h4>
+                    <p>Hierarchical gem system from common circles to legendary stars with increasing complexity.</p>
+                </div>
+                
+                <div class="icon-category">
+                    <h4>Status Effects</h4>
+                    <p>Shield, lightning, fire, and freeze icons for various temporary card states and abilities.</p>
+                </div>
+                
+                <div class="icon-category">
+                    <h4>Actions & Combat</h4>
+                    <p>Attack arrows, defense shields, card draw, and discard symbols for game interactions.</p>
+                </div>
+                
+                <div class="icon-category">
+                    <h4>Card Types</h4>
+                    <p>Distinct iconography for each card type: chain links, DeFi circles, action bolts, wallets, and books.</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <img src="icons/icon-set.svg" alt="Complete Icon Set" style="max-width: 100%; height: auto; border-radius: 1rem; border: 1px solid #334155;">
+            </div>
+        </section>
+
+        <section id="templates" class="section">
+            <h2>Template System</h2>
+            <p>Five base templates corresponding to each card type, designed for easy customization while maintaining visual consistency.</p>
+            
+            <div class="tech-specs">
+                <h3>Technical Specifications</h3>
+                <div class="spec-grid">
+                    <div class="spec-item">
+                        <h5>Card Dimensions</h5>
+                        <p>300x420 pixels (standard TCG proportions)<br>
+                        Art area: 270x180 pixels<br>
+                        Safe margins: 15px from edges</p>
+                    </div>
+                    
+                    <div class="spec-item">
+                        <h5>File Format</h5>
+                        <p>SVG vector format for scalability<br>
+                        RGB color space for digital<br>
+                        CMYK conversion for print</p>
+                    </div>
+                    
+                    <div class="spec-item">
+                        <h5>Typography</h5>
+                        <p>Minimum 12px text size<br>
+                        Arial/sans-serif font family<br>
+                        High contrast for readability</p>
+                    </div>
+                    
+                    <div class="spec-item">
+                        <h5>Print Requirements</h5>
+                        <p>300 DPI minimum resolution<br>
+                        3mm bleed for print production<br>
+                        Rounded corners: 15px radius</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Template Features</h3>
+            <div class="design-principles">
+                <div class="principle-card">
+                    <h4>Placeholder System</h4>
+                    <p>Each template uses standardized placeholders like {CARD_NAME}, {COST}, {DESCRIPTION} for easy batch production and automation.</p>
+                </div>
+                
+                <div class="principle-card">
+                    <h4>Layered Structure</h4>
+                    <p>Separate layers for background, frame, text, art, and icons enable non-destructive editing and component reuse.</p>
+                </div>
+                
+                <div class="principle-card">
+                    <h4>Responsive Layout</h4>
+                    <p>Elements scale proportionally and maintain legibility across different output sizes from thumbnails to print.</p>
+                </div>
+                
+                <div class="principle-card">
+                    <h4>Variant Support</h4>
+                    <p>Templates accommodate card variants within types, such as different staking mechanics or ability effects.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="workflow" class="section">
+            <h2>Design Workflow</h2>
+            <p>Streamlined process for creating new cards using the established design system and templates.</p>
+            
+            <div class="workflow">
+                <h3>Card Creation Process</h3>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <h5>Select Template</h5>
+                        <p>Choose appropriate template based on card type from game data</p>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <h5>Replace Placeholders</h5>
+                        <p>Update cost, name, description, and type-specific values</p>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <h5>Create Custom Art</h5>
+                        <p>Design 270x180px artwork following established style guide</p>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <h5>Set Rarity</h5>
+                        <p>Apply appropriate rarity indicator matching card power level</p>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">5</div>
+                        <h5>Quality Check</h5>
+                        <p>Verify readability, consistency, and technical specifications</p>
+                    </div>
+                    
+                    <div class="workflow-step">
+                        <div class="step-number">6</div>
+                        <h5>Export & Archive</h5>
+                        <p>Export final files and organize with proper naming convention</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background: rgba(30, 41, 59, 0.5); padding: 2rem; border-radius: 1rem; border: 1px solid #334155; margin-top: 2rem;">
+                <h3>Quality Standards</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+                    <div>
+                        <h5 style="color: #10b981; margin-bottom: 0.5rem;">Visual Consistency</h5>
+                        <ul style="color: #94a3b8; line-height: 1.6;">
+                            <li>Color schemes match card type</li>
+                            <li>Typography follows hierarchy</li>
+                            <li>Icon usage is consistent</li>
+                            <li>Rarity indicates power level</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h5 style="color: #10b981; margin-bottom: 0.5rem;">Technical Accuracy</h5>
+                        <ul style="color: #94a3b8; line-height: 1.6;">
+                            <li>All placeholders replaced</li>
+                            <li>Text is legible at card size</li>
+                            <li>SVG code is optimized</li>
+                            <li>Files properly named</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h5 style="color: #10b981; margin-bottom: 0.5rem;">Game Integration</h5>
+                        <ul style="color: #94a3b8; line-height: 1.6;">
+                            <li>Abilities match game mechanics</li>
+                            <li>Cost balancing is appropriate</li>
+                            <li>Art fits established lore</li>
+                            <li>Effects are clearly communicated</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="footer">
+            <p>Ethereum TCG Design System • Built for composable card creation • Cyberpunk meets DeFi</p>
+            <p>All templates, icons, and samples available in the <code>/design</code> directory</p>
+        </footer>
+    </div>
+
+    <script>
+        // Simple navigation highlighting
+        document.addEventListener('DOMContentLoaded', function() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const sections = document.querySelectorAll('.section');
+            
+            // Handle nav button clicks
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all buttons
+                    navButtons.forEach(b => b.classList.remove('active'));
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Scroll to section
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+            
+            // Update active nav on scroll
+            window.addEventListener('scroll', function() {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 100;
+                    if (window.pageYOffset >= sectionTop) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                navButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('href').substring(1) === current) {
+                        btn.classList.add('active');
+                    }
+                });
+            });
+            
+            // Card hover effects
+            const cardImages = document.querySelectorAll('.card-image');
+            cardImages.forEach(img => {
+                img.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05) rotate(2deg)';
+                });
+                
+                img.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1) rotate(0deg)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- Action Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#actionGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#dc2626" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#dc2626" stroke="#ef4444" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">2</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="38" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#e2e8f0">Gas Fee Spike</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="70" height="20" rx="10" fill="#b91c1c" stroke="#991b1b" stroke-width="1"/>
+  <text x="235" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Action</text>
+  
+  <!-- Rarity (Common) -->
+  <circle cx="275" cy="25" r="8" fill="#64748b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Gas Fee Spike Art -->
+  <g transform="translate(150, 165)">
+    <!-- Gas fee visualization -->
+    <g opacity="0.9">
+      <!-- Gas pump/meter -->
+      <g transform="translate(-30, 0)">
+        <rect x="-15" y="-25" width="30" height="50" rx="5" fill="#374151" stroke="#4b5563" stroke-width="2"/>
+        <circle cx="0" cy="0" r="12" fill="#1f2937" stroke="#374151" stroke-width="1"/>
+        <text x="0" y="5" text-anchor="middle" font-size="8" font-weight="bold" fill="#dc2626">GAS</text>
+        
+        <!-- Digital display showing high numbers -->
+        <rect x="-10" y="-35" width="20" height="8" rx="2" fill="#000" stroke="#374151" stroke-width="1"/>
+        <text x="0" y="-29" text-anchor="middle" font-size="6" font-weight="bold" fill="#dc2626">999+</text>
+      </g>
+      
+      <!-- Price spike chart -->
+      <g transform="translate(30, 0)">
+        <rect x="-20" y="-30" width="40" height="50" rx="3" fill="#1f2937" stroke="#374151" stroke-width="1"/>
+        
+        <!-- Chart axes -->
+        <line x1="-15" y1="15" x2="-15" y2="-25" stroke="#64748b" stroke-width="1"/>
+        <line x1="-15" y1="15" x2="15" y2="15" stroke="#64748b" stroke-width="1"/>
+        
+        <!-- Price spike line -->
+        <g opacity="0.9" stroke="#dc2626" stroke-width="3" fill="none">
+          <path d="M-10,10 L-5,8 L0,5 L5,-10 L10,-20"/>
+        </g>
+        
+        <!-- Spike indicators -->
+        <g opacity="0.8" fill="#dc2626">
+          <circle cx="5" cy="-10" r="2"/>
+          <circle cx="10" cy="-20" r="2"/>
+        </g>
+      </g>
+      
+      <!-- Fire/explosion effects around the spike -->
+      <g opacity="0.7">
+        <!-- Explosion bursts -->
+        <g fill="#f97316">
+          <path d="M45,-35 L55,-25 L50,-30 L60,-20 L50,-25 L55,-15 L45,-25 L50,-35"/>
+          <path d="M-55,-35 L-45,-25 L-50,-30 L-40,-20 L-50,-25 L-45,-15 L-55,-25 L-50,-35"/>
+        </g>
+        
+        <!-- Warning symbols -->
+        <text x="0" y="-45" text-anchor="middle" font-size="16" fill="#f59e0b">⚠️</text>
+        <text x="-60" y="0" font-size="12" fill="#dc2626" font-weight="bold">HIGH</text>
+        <text x="40" y="35" font-size="12" fill="#dc2626" font-weight="bold">FEES</text>
+      </g>
+      
+      <!-- Network congestion indicators -->
+      <g opacity="0.6">
+        <!-- Stuck transactions -->
+        <rect x="-70" y="20" width="15" height="8" rx="2" fill="#ef4444" opacity="0.7"/>
+        <rect x="-50" y="20" width="15" height="8" rx="2" fill="#ef4444" opacity="0.7"/>
+        <rect x="-30" y="20" width="15" height="8" rx="2" fill="#ef4444" opacity="0.7"/>
+        <text x="-40" y="40" text-anchor="middle" font-size="8" fill="#ef4444" font-weight="bold">CONGESTED</text>
+      </g>
+    </g>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="20" y="270" width="260" height="85" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Description Text -->
+  <text x="30" y="290" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#f1f5f9">Description:</text>
+  <text x="30" y="315" font-family="Arial, sans-serif" font-size="12" fill="#cbd5e1">This turn, opponent Actions cost +1 ETH.</text>
+  
+  <!-- Stats Section -->
+  <rect x="20" y="370" width="260" height="35" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="30" y="390" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#f1f5f9">Effect: Tax +1 ETH (1 turn)</text>
+  
+  <!-- Gradients -->
+  <defs>
+    <radialGradient id="actionGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#dc2626;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7f1d1d;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+</svg>

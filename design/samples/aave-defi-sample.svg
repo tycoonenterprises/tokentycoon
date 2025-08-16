@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- DeFi Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#defiGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">4</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="47" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Aave</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="70" height="20" rx="10" fill="#059669" stroke="#047857" stroke-width="1"/>
+  <text x="235" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">DeFi</text>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Aave-specific Art -->
+  <g transform="translate(150, 165)">
+    <!-- Aave ghost-like logo concept -->
+    <ellipse cx="0" cy="0" rx="35" ry="40" fill="url(#aaveGhost)" opacity="0.9"/>
+    
+    <!-- Ghost body -->
+    <path d="M-25 -20 Q-25 -35 0 -35 Q25 -35 25 -20 L25 30 Q20 25 15 30 Q10 25 5 30 Q0 25 -5 30 Q-10 25 -15 30 Q-20 25 -25 30 Z" fill="#b794f6" opacity="0.8"/>
+    
+    <!-- Eyes -->
+    <circle cx="-10" cy="-15" r="4" fill="#1a202c"/>
+    <circle cx="10" cy="-15" r="4" fill="#1a202c"/>
+    
+    <!-- Lending/borrowing symbols -->
+    <path d="M-30 10 L-20 5 L-30 0" stroke="#10b981" stroke-width="2" fill="none"/>
+    <path d="M30 0 L20 5 L30 10" stroke="#10b981" stroke-width="2" fill="none"/>
+    
+    <text x="0" y="45" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#10b981">LENDING</text>
+  </g>
+  
+  <!-- DeFi Motif Overlay -->
+  <g opacity="0.3">
+    <!-- Yield arrows -->
+    <path d="M20 90 L35 85 L35 95 Z" fill="#10b981"/>
+    <path d="M40 85 L55 90 L40 95 Z" fill="#10b981"/>
+    
+    <!-- Staking indicator -->
+    <rect x="240" y="85" width="20" height="15" rx="3" fill="#f59e0b" stroke="#f97316" stroke-width="1"/>
+    <text x="250" y="95" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white">STAKE</text>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="80" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="14" fill="#e2e8f0">Gain 2 ETH per turn per ETH</text>
+  <text x="25" y="305" font-family="Arial, sans-serif" font-size="14" fill="#e2e8f0">stored here.</text>
+  <text x="25" y="325" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8">Decentralized lending protocol</text>
+  
+  <!-- Yield Indicator -->
+  <g transform="translate(200, 275)">
+    <rect width="60" height="25" rx="5" fill="#f59e0b" stroke="#f97316" stroke-width="1"/>
+    <text x="30" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">2xΞ</text>
+  </g>
+  
+  <!-- Staking Box -->
+  <rect x="15" y="355" width="80" height="30" rx="5" fill="#374151" stroke="#6b7280" stroke-width="1"/>
+  <text x="25" y="375" font-family="Arial, sans-serif" font-size="12" fill="#e2e8f0">Staked: 0Ξ</text>
+  
+  <!-- ETH Icon -->
+  <circle cx="120" cy="370" r="12" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+  <text x="120" y="376" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">Ξ</text>
+  
+  <!-- Rarity Indicator (Rare) -->
+  <g transform="translate(250, 355)">
+    <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#fbbf24" stroke="#f59e0b" stroke-width="1"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="defiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#059669;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="aaveGhost" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#d8b4fe;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

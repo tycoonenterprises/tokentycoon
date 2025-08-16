@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- DeFi Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#defiGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">4</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="47" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Altcoin Validator</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="70" height="20" rx="10" fill="#059669" stroke="#047857" stroke-width="1"/>
+  <text x="235" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">DeFi</text>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Altcoin Validator Art -->
+  <g transform="translate(150, 165)">
+    <!-- Various altcoin symbols -->
+    <g opacity="0.8">
+      <!-- SOL -->
+      <circle cx="-50" cy="-20" r="10" fill="#9945ff"/>
+      <text x="-50" y="-15" text-anchor="middle" font-size="8" font-weight="bold" fill="white">SOL</text>
+      
+      <!-- ADA -->
+      <circle cx="0" cy="-30" r="10" fill="#0033ad"/>
+      <text x="0" y="-25" text-anchor="middle" font-size="8" font-weight="bold" fill="white">ADA</text>
+      
+      <!-- DOT -->
+      <circle cx="50" cy="-20" r="10" fill="#e6007a"/>
+      <text x="50" y="-15" text-anchor="middle" font-size="8" font-weight="bold" fill="white">DOT</text>
+    </g>
+    
+    <!-- Validation server/node -->
+    <rect x="-25" y="-10" width="50" height="30" rx="5" fill="#10b981" opacity="0.7"/>
+    <rect x="-20" y="-5" width="8" height="3" rx="1" fill="#0f172a"/>
+    <rect x="-10" y="-5" width="8" height="3" rx="1" fill="#0f172a"/>
+    <rect x="2" y="-5" width="8" height="3" rx="1" fill="#0f172a"/>
+    <rect x="12" y="-5" width="8" height="3" rx="1" fill="#0f172a"/>
+    
+    <!-- Staking connections -->
+    <path d="M-40,-20 L-25,0" stroke="#10b981" stroke-width="2" opacity="0.6"/>
+    <path d="M0,-20 L0,0" stroke="#10b981" stroke-width="2" opacity="0.6"/>
+    <path d="M40,-20 L25,0" stroke="#10b981" stroke-width="2" opacity="0.6"/>
+    
+    <!-- Income flow visualization -->
+    <g opacity="0.7">
+      <path d="M-15,25 Q0,35 15,25" stroke="#fbbf24" stroke-width="2" fill="none"/>
+      <circle cx="-10" cy="27" r="2" fill="#fbbf24"/>
+      <circle cx="0" cy="30" r="2" fill="#fbbf24"/>
+      <circle cx="10" cy="27" r="2" fill="#fbbf24"/>
+      <text x="0" y="45" text-anchor="middle" font-size="10" fill="#fbbf24">2x MULTIPLIER</text>
+    </g>
+    
+    <!-- Validation checkmarks -->
+    <path d="M-60,5 L-55,10 L-45,0" stroke="#10b981" stroke-width="2" fill="none"/>
+    <path d="M45,5 L50,10 L60,0" stroke="#10b981" stroke-width="2" fill="none"/>
+  </g>
+  
+  <!-- DeFi Motif Overlay -->
+  <g opacity="0.3">
+    <!-- Yield arrows -->
+    <path d="M20 90 L35 85 L35 95 Z" fill="#10b981"/>
+    <path d="M40 85 L55 90 L40 95 Z" fill="#10b981"/>
+    
+    <!-- Staking indicator -->
+    <rect x="240" y="85" width="20" height="15" rx="3" fill="#f59e0b" stroke="#f97316" stroke-width="1"/>
+    <text x="250" y="95" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white">STAKE</text>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="80" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="14" fill="#e2e8f0">Gain 2 ETH every turn</text>
+  <text x="25" y="305" font-family="Arial, sans-serif" font-size="14" fill="#e2e8f0">per ETH stored here.</text>
+  
+  <!-- Yield/Income Indicator -->
+  <g transform="translate(200, 275)">
+    <rect width="60" height="25" rx="5" fill="#f59e0b" stroke="#f97316" stroke-width="1"/>
+    <text x="30" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">2xΞ</text>
+  </g>
+  
+  <!-- Staking Box -->
+  <rect x="15" y="355" width="80" height="30" rx="5" fill="#374151" stroke="#6b7280" stroke-width="1"/>
+  <text x="25" y="375" font-family="Arial, sans-serif" font-size="12" fill="#e2e8f0">Staked: 0Ξ</text>
+  
+  <!-- ETH Icon -->
+  <circle cx="120" cy="370" r="12" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+  <text x="120" y="376" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">Ξ</text>
+  
+  <!-- Rarity Indicator (Rare - cost 4) -->
+  <g transform="translate(250, 355)">
+    <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#3b82f6" stroke="#2563eb" stroke-width="1"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="defiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#059669;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.8" />
+    </linearGradient>
+  </defs>
+</svg>

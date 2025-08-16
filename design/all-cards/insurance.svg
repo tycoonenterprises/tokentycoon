@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- DeFi Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#defiGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">4</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="47" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Insurance</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="70" height="20" rx="10" fill="#059669" stroke="#047857" stroke-width="1"/>
+  <text x="235" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">DeFi</text>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Insurance Art -->
+  <g transform="translate(150, 165)">
+    <!-- Shield symbol -->
+    <path d="M0,-40 L-30,-20 L-30,20 L0,50 L30,20 L30,-20 Z" fill="#1e40af" stroke="#3b82f6" stroke-width="3" opacity="0.8"/>
+    
+    <!-- Shield inner pattern -->
+    <path d="M0,-30 L-20,-15 L-20,15 L0,35 L20,15 L20,-15 Z" fill="#3b82f6" opacity="0.6"/>
+    
+    <!-- Checkmark for protection -->
+    <path d="M-8,0 L-2,8 L12,-8" stroke="white" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Protection aura -->
+    <circle cx="0" cy="5" r="45" fill="none" stroke="#60a5fa" stroke-width="2" opacity="0.3"/>
+    <circle cx="0" cy="5" r="55" fill="none" stroke="#93c5fd" stroke-width="1" opacity="0.2"/>
+    
+    <!-- Small protected elements -->
+    <g transform="translate(-35, -10)">
+      <rect width="10" height="8" rx="2" fill="#34d399" opacity="0.7"/>
+    </g>
+    <g transform="translate(35, -10)">
+      <rect width="10" height="8" rx="2" fill="#34d399" opacity="0.7"/>
+    </g>
+    <g transform="translate(-25, 30)">
+      <rect width="10" height="8" rx="2" fill="#34d399" opacity="0.7"/>
+    </g>
+    <g transform="translate(25, 30)">
+      <rect width="10" height="8" rx="2" fill="#34d399" opacity="0.7"/>
+    </g>
+  </g>
+  
+  <!-- DeFi Motif Overlay -->
+  <g opacity="0.3">
+    <!-- Protection indicators -->
+    <path d="M20 90 L35 85 L35 95 Z" fill="#3b82f6"/>
+    <path d="M40 85 L55 90 L40 95 Z" fill="#3b82f6"/>
+    
+    <!-- Protection indicator -->
+    <rect x="240" y="85" width="20" height="15" rx="3" fill="#3b82f6" stroke="#1d4ed8" stroke-width="1"/>
+    <text x="250" y="95" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" font-weight="bold" fill="white">SHIELD</text>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="80" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="13" fill="#e2e8f0">This chain and all DeFi protocols</text>
+  <text x="25" y="305" font-family="Arial, sans-serif" font-size="13" fill="#e2e8f0">on it can't be destroyed.</text>
+  
+  <!-- Protection Indicator -->
+  <g transform="translate(200, 275)">
+    <rect width="60" height="25" rx="5" fill="#3b82f6" stroke="#1d4ed8" stroke-width="1"/>
+    <text x="30" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">PROTECT</text>
+  </g>
+  
+  <!-- ETH Icon -->
+  <circle cx="120" cy="370" r="12" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+  <text x="120" y="376" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">Ξ</text>
+  
+  <!-- Rarity Indicator (Uncommon - cost 4) -->
+  <g transform="translate(250, 355)">
+    <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="defiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#059669;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.8" />
+    </linearGradient>
+  </defs>
+</svg>
