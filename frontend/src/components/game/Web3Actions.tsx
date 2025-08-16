@@ -37,7 +37,7 @@ function ActionButton({ onClick, loading, disabled = false, children, className 
 }
 
 export function Web3Actions() {
-  const { user, signMessage, sendTransaction, authenticated, ready, connectWallet, createWallet } = usePrivy()
+  const { user, signMessage, sendTransaction, authenticated, ready, connectWallet, createWallet, exportWallet } = usePrivy()
   const { address, isConnected, chain } = useAccount()
   const { data: balance } = useBalance({ address })
   
@@ -49,6 +49,7 @@ export function Web3Actions() {
   const [isSigningMessage, setIsSigningMessage] = useState(false)
   const [isSendingTx, setIsSendingTx] = useState(false)
   const [isQueryingContract, setIsQueryingContract] = useState(false)
+  const [isCreatingWallet, setIsCreatingWallet] = useState(false)
   
   const [signedMessage, setSignedMessage] = useState<string>('')
   const [txHash, setTxHash] = useState<string>('')
@@ -99,22 +100,17 @@ export function Web3Actions() {
       )
       console.log('Embedded wallets:', embeddedWallets)
       
-      const connectedWallets = walletAccounts.filter(account => 
-        account.walletClient !== 'privy' && account.walletClientType !== 'privy'
-      )
-      console.log('Connected wallets:', connectedWallets)
-      
-      // If no wallets at all, try to create one
+      // If no wallets at all, try to create one and wait for it to be ready
       if (walletAccounts.length === 0) {
         console.log('No wallets found, creating embedded wallet...')
         try {
           const createdWallet = await createWallet()
           console.log('Embedded wallet created:', createdWallet)
           
-          // Wait a moment for the wallet to be registered
-          await new Promise(resolve => setTimeout(resolve, 1000))
+          // Wait longer for the wallet to be properly registered
+          await new Promise(resolve => setTimeout(resolve, 2000))
           
-          // Refresh user data
+          // Force a re-render by logging updated user data
           console.log('Updated user linkedAccounts:', user.linkedAccounts)
         } catch (createErr: any) {
           console.error('Failed to create embedded wallet:', createErr)
@@ -123,22 +119,20 @@ export function Web3Actions() {
         }
       }
       
-      // If still no embedded wallet but has connected wallet, try to connect it
-      if (embeddedWallets.length === 0 && connectedWallets.length === 0) {
-        console.log('No wallets available, trying to connect...')
-        try {
-          await connectWallet()
-          console.log('Wallet connected successfully')
-        } catch (connectErr: any) {
-          console.error('Failed to connect wallet:', connectErr)
-          setError(`Failed to connect wallet: ${connectErr.message}`)
-          return
-        }
+      // Check again after potential wallet creation
+      const updatedWalletAccounts = user.linkedAccounts?.filter(account => account.type === 'wallet') || []
+      console.log('Updated wallet accounts:', updatedWalletAccounts)
+      
+      if (updatedWalletAccounts.length === 0) {
+        throw new Error('No wallets available after creation attempt')
       }
       
       const message = `Welcome to Ethereum TCG!\n\nTimestamp: ${new Date().toISOString()}\nUser: ${user.id}`
       
       console.log('Attempting to sign message:', message)
+      
+      // Use simple signMessage call without specifying address
+      // Let Privy handle wallet selection automatically
       const signResult = await signMessage({ message })
       setSignedMessage(signResult.signature)
       console.log('Message signed successfully:', signResult)
@@ -209,6 +203,24 @@ export function Web3Actions() {
     }
   }
 
+  const handleCreateWallet = async () => {
+    setIsCreatingWallet(true)
+    setError('')
+    
+    try {
+      console.log('=== CREATING WALLET ===')
+      const walletResult = await createWallet()
+      console.log('Wallet created:', walletResult)
+      console.log('Updated user linkedAccounts:', user?.linkedAccounts)
+      console.log('=== WALLET CREATION COMPLETE ===')
+    } catch (err: any) {
+      console.error('Wallet creation error:', err)
+      setError(`Wallet creation failed: ${err.message || err}`)
+    } finally {
+      setIsCreatingWallet(false)
+    }
+  }
+
   if (!isConnected || !address) {
     return (
       <div className="p-6">
@@ -274,6 +286,20 @@ export function Web3Actions() {
 
       {/* Actions */}
       <div className="space-y-4">
+        {/* Wallet Management */}
+        <div className="card p-4">
+          <h4 className="font-medium text-white mb-3">Wallet Management</h4>
+          <div className="space-y-2">
+            <ActionButton
+              onClick={handleCreateWallet}
+              loading={isCreatingWallet}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              Create Embedded Wallet
+            </ActionButton>
+          </div>
+        </div>
+
         {/* Message Signing */}
         <div className="card p-4">
           <h4 className="font-medium text-white mb-3">Message Signing</h4>
