@@ -389,32 +389,32 @@ export const useGameEngine = () => {
       // Games are 0-indexed, so if nextGameId is 3, we have games 0, 1, 2
       for (let i = totalGames - 1; i >= Math.max(0, totalGames - gamesToFetch); i--) {
         try {
-          const gameData = await readContract(wagmiConfig, {
+          const gameView = await readContract(wagmiConfig, {
             address: CONTRACT_ADDRESSES.GAME_ENGINE,
             abi: GameEngineABI,
-            functionName: 'games',
+            functionName: 'getGameState',
             args: [BigInt(i)],
           })
           
-          console.log(`Game ${i} data:`, gameData)
+          console.log(`Game ${i} data:`, gameView)
           
           // Only show games that are waiting for players (not started and no player2)
-          const hasPlayer2 = gameData.player2 && gameData.player2 !== '0x0000000000000000000000000000000000000000'
-          if (gameData && !gameData.isStarted && !hasPlayer2) {
+          const hasPlayer2 = gameView.player2 && gameView.player2 !== '0x0000000000000000000000000000000000000000'
+          if (gameView && !gameView.isStarted && !hasPlayer2) {
             console.log(`Game ${i} is available for joining`)
             games.push({
               gameId: i,
-              creator: gameData.player1,
-              player2: gameData.player2 || '0x0000000000000000000000000000000000000000',
+              creator: gameView.player1,
+              player2: gameView.player2 || '0x0000000000000000000000000000000000000000',
               status: 'waiting' as const,
               createdAt: Date.now() - (totalGames - 1 - i) * 60000, // Estimate time
               deckIds: { 
-                player1: Number(gameData.player1DeckId || 0), 
-                player2: Number(gameData.player2DeckId || 0) 
+                player1: undefined, // Deck IDs not available in GameView
+                player2: undefined
               }
             })
           } else {
-            console.log(`Game ${i} is not available: isStarted=${gameData.isStarted}, hasPlayer2=${hasPlayer2}`)
+            console.log(`Game ${i} is not available: isStarted=${gameView.isStarted}, hasPlayer2=${hasPlayer2}`)
           }
         } catch (err) {
           console.warn(`Error fetching game ${i}:`, err)
@@ -447,70 +447,48 @@ export const useGameEngine = () => {
     }
   }
 
-  // Helper function to get game state from blockchain
+  // Helper function to get game state from blockchain using getGameState view function
   const getGameState = async (gameId: number) => {
     try {
-      // Query the actual game state from the blockchain
+      // Use the getGameState function which returns a proper struct
       const { readContract } = await import('wagmi/actions')
-      const gameData = await readContract(wagmiConfig, {
+      const gameView = await readContract(wagmiConfig, {
         address: CONTRACT_ADDRESSES.GAME_ENGINE,
         abi: GameEngineABI,
-        functionName: 'games',
+        functionName: 'getGameState',
         args: [BigInt(gameId)],
       })
       
-      
-      if (!gameData) {
+      if (!gameView) {
         return null
       }
       
-      // Try accessing by index first (arrays in Solidity return as indexed)
-      // NOTE: PlayerState structs are not returned by public mappings, so indices shift!
-      const gameId_ = gameData[0]
-      const player1 = gameData[1]
-      const player2 = gameData[2]
-      const player1DeckId = gameData[3]
-      const player2DeckId = gameData[4]
-      // gameData[5] and gameData[6] would be player1State and player2State but they're not returned
-      const isStarted = gameData[5]  // Shifted due to missing structs
-      const isFinished = gameData[6]  // Shifted due to missing structs
-      const currentTurn = gameData[7]  // Shifted due to missing structs
-      const turnNumber = gameData[8]  // Shifted due to missing structs
-      const needsToDraw = gameData[9]  // Shifted due to missing structs
-      const createdAt = gameData[10]  // Shifted due to missing structs
-      const startedAt = gameData[11]  // Shifted due to missing structs
+      console.log('🎮 Game State from getGameState:', gameView)
       
-      console.log('  Player1:', player1)
-      console.log('  Player2:', player2)
-      console.log('  Player1 Deck ID:', player1DeckId)
-      console.log('  Player2 Deck ID:', player2DeckId)
-      console.log('  Is Started (index 5):', isStarted)
-      console.log('  Is Finished (index 6):', isFinished)
-      console.log('  Current Turn (index 7):', currentTurn)
-      console.log('  Turn Number (index 8):', turnNumber)
-      console.log('  needsToDraw (index 9):', needsToDraw)
-      console.log('  createdAt (index 10):', createdAt)
-      console.log('  startedAt (index 11):', startedAt)
-      console.log('=======================================')
-      
-      // Parse the game data from contract
-      // Status: 'waiting' if no player2, 'ready' if player2 joined but not started, 'started' if isStarted is true
-      const hasPlayer2 = player2 && player2 !== '0x0000000000000000000000000000000000000000'
-      const status = isStarted ? 'started' : (hasPlayer2 ? 'ready' : 'waiting')
+      // GameView struct has named fields, much cleaner!
+      const hasPlayer2 = gameView.player2 && gameView.player2 !== '0x0000000000000000000000000000000000000000'
+      const status = gameView.isStarted ? 'started' : (hasPlayer2 ? 'ready' : 'waiting')
       
       return {
         gameId,
-        player1: player1,
-        creator: player1, // Keep for backwards compat
-        player2: player2,
+        player1: gameView.player1,
+        creator: gameView.player1, // Keep for backwards compat
+        player2: gameView.player2,
         status,
-        isStarted: isStarted,
-        isFinished: isFinished,
-        currentTurn: currentTurn ? Number(currentTurn) : undefined,
-        turnNumber: turnNumber ? Number(turnNumber) : undefined,
+        isStarted: gameView.isStarted,
+        isFinished: gameView.isFinished,
+        currentTurn: gameView.currentTurn ? Number(gameView.currentTurn) : undefined,
+        turnNumber: gameView.turnNumber ? Number(gameView.turnNumber) : undefined,
+        needsToDraw: gameView.needsToDraw,
+        // Add ETH and cold storage data
+        player1ETH: gameView.player1ETH ? Number(gameView.player1ETH) : 0,
+        player2ETH: gameView.player2ETH ? Number(gameView.player2ETH) : 0,
+        player1ColdStorage: gameView.player1ColdStorage ? Number(gameView.player1ColdStorage) : 0,
+        player2ColdStorage: gameView.player2ColdStorage ? Number(gameView.player2ColdStorage) : 0,
+        // Note: Deck IDs are not in GameView, would need to query games mapping for those
         deckIds: { 
-          player1: player1DeckId ? Number(player1DeckId) : undefined, 
-          player2: player2DeckId ? Number(player2DeckId) : undefined
+          player1: undefined, 
+          player2: undefined
         }
       }
     } catch (error) {
