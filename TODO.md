@@ -6,6 +6,8 @@
   * DeFi on a specific chain
   * targets for abilities
   *
+* Leaderboard
+* Demo mode working with one "player" switching between player hands and playing to watch mechanics working
 
 
 Extra Credit:
