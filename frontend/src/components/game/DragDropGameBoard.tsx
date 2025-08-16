@@ -15,7 +15,13 @@ interface DraggableCardProps {
   canDrag: boolean
 }
 
-function DraggableCard({ card, playerId, source, canDrag }: DraggableCardProps) {
+interface ExtendedDraggableCardProps extends DraggableCardProps {
+  playerETH: number
+  isActivePlayer: boolean
+  currentPhase: string
+}
+
+function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, currentPhase }: ExtendedDraggableCardProps) {
   const {
     attributes,
     listeners,
@@ -34,6 +40,21 @@ function DraggableCard({ card, playerId, source, canDrag }: DraggableCardProps) 
     transition,
     opacity: isDragging ? 0.5 : 1,
   }
+
+  // Determine the specific reason why a card cannot be played
+  const canAfford = playerETH >= card.cost
+  const inMainPhase = currentPhase === 'main'
+  
+  const getCardState = () => {
+    if (source === 'board') return 'playable' // Board cards are just displayed
+    
+    if (!isActivePlayer) return 'not-your-turn'
+    if (!inMainPhase) return 'wrong-phase'
+    if (!canAfford) return 'cant-afford'
+    return 'playable'
+  }
+
+  const cardState = getCardState()
 
   const getTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
@@ -63,17 +84,54 @@ function DraggableCard({ card, playerId, source, canDrag }: DraggableCardProps) 
     }
   }
 
+  const getCardVisualState = () => {
+    switch (cardState) {
+      case 'playable':
+        return {
+          className: 'hover:scale-105 cursor-pointer',
+          opacity: '1',
+          filter: 'none'
+        }
+      case 'cant-afford':
+        return {
+          className: 'cursor-not-allowed',
+          opacity: '0.5',
+          filter: 'grayscale(0.8) brightness(0.7)'
+        }
+      case 'wrong-phase':
+        return {
+          className: 'cursor-not-allowed',
+          opacity: '0.7',
+          filter: 'grayscale(0.3)'
+        }
+      case 'not-your-turn':
+        return {
+          className: 'cursor-not-allowed',
+          opacity: '0.6',
+          filter: 'grayscale(0.5)'
+        }
+      default:
+        return {
+          className: 'cursor-not-allowed',
+          opacity: '0.6',
+          filter: 'grayscale(0.5)'
+        }
+    }
+  }
+
+  const visualState = getCardVisualState()
   const cardSize = source === 'board' ? 'w-24 h-32' : 'w-32 h-44'
 
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{
+        ...style,
+        filter: visualState.filter,
+      }}
       {...attributes}
       {...(canDrag ? listeners : {})}
-      className={`${cardSize} card cursor-pointer transition-all duration-200 ${getTypeColor(card.type)} ${
-        canDrag ? 'hover:scale-105' : 'opacity-60 cursor-not-allowed'
-      } ${isDragging ? 'z-50' : ''}`}
+      className={`${cardSize} card transition-all duration-200 ${getTypeColor(card.type)} ${visualState.className} ${isDragging ? 'z-50' : ''}`}
     >
       {/* Card Header */}
       <div className="p-2 border-b border-gray-600">
@@ -83,8 +141,17 @@ function DraggableCard({ card, playerId, source, canDrag }: DraggableCardProps) 
             {source === 'hand' && card.type.toUpperCase()}
           </div>
           {card.cost > 0 && (
-            <div className="bg-eth-secondary text-xs px-2 py-1 rounded-full font-bold">
-              {card.cost}
+            <div className={`text-xs px-2 py-1 rounded-full font-bold ${
+              cardState === 'cant-afford' 
+                ? 'bg-red-600 text-red-200 border border-red-400' 
+                : 'bg-eth-secondary text-white'
+            }`}>
+              {card.cost} ETH
+              {cardState === 'cant-afford' && source === 'hand' && (
+                <div className="text-xs text-red-300 mt-1">
+                  Need {card.cost - playerETH} more
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -97,9 +164,28 @@ function DraggableCard({ card, playerId, source, canDrag }: DraggableCardProps) 
         </h4>
         
         {source === 'hand' && (
-          <p className="text-xs text-gray-300 leading-tight">
-            {card.text}
-          </p>
+          <>
+            <p className="text-xs text-gray-300 leading-tight">
+              {card.text}
+            </p>
+            
+            {/* Status message for unplayable cards */}
+            {cardState === 'cant-afford' && (
+              <div className="mt-2 text-xs text-red-400 font-semibold">
+                💸 Need {card.cost - playerETH} more ETH
+              </div>
+            )}
+            {cardState === 'wrong-phase' && (
+              <div className="mt-2 text-xs text-yellow-400 font-semibold">
+                🕐 Wrong phase
+              </div>
+            )}
+            {cardState === 'not-your-turn' && (
+              <div className="mt-2 text-xs text-gray-400 font-semibold">
+                ⏳ Not your turn
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -342,6 +428,9 @@ export function DragDropGameBoard() {
                     playerId={currentViewingPlayer}
                     source="board"
                     canDrag={canDragCard(card, 'board', currentViewingPlayer)}
+                    playerETH={playerHand.eth}
+                    isActivePlayer={activePlayer === currentViewingPlayer}
+                    currentPhase={currentPhase}
                   />
                 ))}
               </SortableContext>
@@ -354,11 +443,20 @@ export function DragDropGameBoard() {
                   <h3 className="text-lg font-semibold text-white">
                     Your Hand ({playerHand.hand.length})
                   </h3>
-                  {canPlayCards && (
-                    <div className="text-sm text-eth-success">
-                      ⚡ Drag cards to board to play
-                    </div>
-                  )}
+                  <div className="text-sm">
+                    {canPlayCards ? (
+                      <>
+                        <span className="text-eth-success">⚡ Drag cards to board to play</span>
+                        <span className="text-gray-400 ml-4">💰 {playerHand.eth} ETH available</span>
+                      </>
+                    ) : currentPhase === 'draw' ? (
+                      <span className="text-yellow-400">🃏 Click deck to draw first</span>
+                    ) : activePlayer !== currentViewingPlayer ? (
+                      <span className="text-gray-400">⏳ Opponent's turn</span>
+                    ) : (
+                      <span className="text-gray-400">⏸ Wrong phase</span>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="flex gap-3 overflow-x-auto pb-2">
@@ -373,6 +471,9 @@ export function DragDropGameBoard() {
                         playerId={currentViewingPlayer}
                         source="hand"
                         canDrag={canDragCard(card, 'hand', currentViewingPlayer)}
+                        playerETH={playerHand.eth}
+                        isActivePlayer={activePlayer === currentViewingPlayer}
+                        currentPhase={currentPhase}
                       />
                     ))}
                   </SortableContext>
