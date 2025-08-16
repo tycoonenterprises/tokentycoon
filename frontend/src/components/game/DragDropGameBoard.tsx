@@ -4,6 +4,9 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useGameStore, type Card } from '@/stores/gameStore'
+import { DeckElement } from './DeckElement'
+import { ColdStorage } from './ColdStorage'
+import { HotWallet } from './HotWallet'
 
 interface DraggableCardProps {
   card: Card
@@ -394,6 +397,35 @@ export function DragDropGameBoard() {
           </div>
         ) : null}
       </DragOverlay>
+
+      {/* Game UI Elements */}
+      {/* Player's deck (lower left) */}
+      <DeckElement 
+        playerId={currentViewingPlayer}
+        position="lower-left"
+      />
+      
+      {/* Opponent's deck (upper right) - only visible in demo mode */}
+      {isDemoMode && (
+        <DeckElement 
+          playerId={currentViewingPlayer === 'player1' ? 'player2' : 'player1'}
+          position="upper-right"
+        />
+      )}
+
+      {/* Player's wallet controls (lower right) */}
+      <div className="fixed bottom-4 right-4 z-10 flex flex-col gap-3">
+        <HotWallet playerId={currentViewingPlayer} />
+        <ColdStorage playerId={currentViewingPlayer} />
+      </div>
+
+      {/* Opponent's wallet displays (upper left) - only in demo mode */}
+      {isDemoMode && (
+        <div className="fixed top-4 left-4 z-10 flex flex-col gap-3">
+          <HotWallet playerId={currentViewingPlayer === 'player1' ? 'player2' : 'player1'} />
+          <ColdStorage playerId={currentViewingPlayer === 'player1' ? 'player2' : 'player1'} />
+        </div>
+      )}
     </DndContext>
   )
 }

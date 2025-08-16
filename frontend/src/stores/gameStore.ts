@@ -11,6 +11,8 @@ export interface Card {
   toughness?: number
   text: string // Description from contract
   abilities?: string // Abilities from contract
+  stakedETH?: number // For DeFi cards
+  yieldAmount?: number // Yield multiplier for DeFi cards
 }
 
 // Convert contract enum to string
@@ -63,8 +65,10 @@ export interface PlayerState {
   id: string
   balance: number // Player's life/health (for game end condition)
   eth: number // ETH resources for paying card costs
+  coldStorage: number // ETH in cold storage (win condition: 10 ETH)
   hand: Card[]
   board: Card[]
+  deck: Card[] // Actual deck cards for drawing
   deckRemaining: number // Cards remaining in deck
   battlefieldSize: number // Number of cards on battlefield
 }
@@ -96,6 +100,7 @@ export interface GameState {
 
 export interface GameActions {
   // Game management
+  startGame: (player1Id: string, player2Id: string) => void
   startDemoMode: (player1Id: string, player2Id: string) => void
   switchViewingPlayer: () => void
   endGame: (winnerId?: string) => void
@@ -115,6 +120,8 @@ export interface GameActions {
   // Player actions
   updatePlayerETH: (playerId: string, amount: number) => void
   updatePlayerBalance: (playerId: string, amount: number) => void
+  transferToColdStorage: (playerId: string, amount: number) => void
+  transferFromColdStorage: (playerId: string, amount: number) => void
   
   // Card registry actions
   loadCardsFromBlockchain: (contractCards: ContractCard[]) => void
@@ -208,8 +215,10 @@ const initialState: GameState = {
       id: 'player1',
       balance: 20, // Health/life points
       eth: 3, // Starting ETH resources
+      coldStorage: 0, // ETH in cold storage
       hand: [],
       board: [],
+      deck: [],
       deckRemaining: 30,
       battlefieldSize: 0,
     },
@@ -217,8 +226,10 @@ const initialState: GameState = {
       id: 'player2',
       balance: 20, // Health/life points
       eth: 3, // Starting ETH resources
+      coldStorage: 0, // ETH in cold storage
       hand: [],
       board: [],
+      deck: [],
       deckRemaining: 30,
       battlefieldSize: 0,
     },
@@ -239,8 +250,51 @@ export const useGameStore = create<GameState & GameActions>()(
       ...initialState,
 
 
+      startGame: (player1Id: string, player2Id: string) => {
+        const { availableCards } = get()
+        const player1Deck = getRandomCards(availableCards, 30)
+        const player2Deck = getRandomCards(availableCards, 30)
+        
+        set({
+          matchId: `game-${Date.now()}`,
+          isGameActive: true,
+          isGameStarted: true,
+          isDemoMode: false,
+          viewingPlayer: 'player1',
+          activePlayer: 'player1',
+          currentPhase: 'draw',
+          players: {
+            player1: {
+              id: player1Id,
+              balance: 20,
+              eth: 3,
+              coldStorage: 0,
+              hand: player1Deck.slice(0, 5),
+              board: [],
+              deck: player1Deck.slice(5),
+              deckRemaining: 25,
+              battlefieldSize: 0,
+            },
+            player2: {
+              id: player2Id,
+              balance: 20,
+              eth: 3,
+              coldStorage: 0,
+              hand: player2Deck.slice(0, 5),
+              board: [],
+              deck: player2Deck.slice(5),
+              deckRemaining: 25,
+              battlefieldSize: 0,
+            },
+          },
+        })
+      },
+
       startDemoMode: (player1Id: string, player2Id: string) => {
         const { availableCards } = get()
+        const player1Deck = getRandomCards(availableCards, 30)
+        const player2Deck = getRandomCards(availableCards, 30)
+        
         set({
           matchId: `demo-${Date.now()}`,
           isGameActive: true,
@@ -248,23 +302,28 @@ export const useGameStore = create<GameState & GameActions>()(
           isDemoMode: true,
           viewingPlayer: 'player1',
           activePlayer: 'player1',
+          currentPhase: 'draw',
           players: {
             player1: {
               id: player1Id,
               balance: 20,
               eth: 3,
-              hand: getRandomCards(availableCards, 5),
+              coldStorage: 0,
+              hand: player1Deck.slice(0, 5),
               board: [],
-              deckRemaining: 30,
+              deck: player1Deck.slice(5),
+              deckRemaining: 25,
               battlefieldSize: 0,
             },
             player2: {
               id: player2Id,
               balance: 20,
               eth: 3,
-              hand: getRandomCards(availableCards, 5),
+              coldStorage: 0,
+              hand: player2Deck.slice(0, 5),
               board: [],
-              deckRemaining: 30,
+              deck: player2Deck.slice(5),
+              deckRemaining: 25,
               battlefieldSize: 0,
             },
           },
@@ -500,16 +559,16 @@ export const useGameStore = create<GameState & GameActions>()(
       },
 
       drawCard: (playerId: string) => {
-        const { players, availableCards } = get()
+        const { players } = get()
         const player = players[playerId as keyof typeof players]
-        const newCards = getRandomCards(availableCards, 1)
         
-        if (newCards.length === 0) {
-          console.warn('Cannot draw card: no available cards loaded from blockchain')
+        if (player.deck.length === 0) {
+          console.warn('Cannot draw card: deck is empty')
           return
         }
         
-        const newCard = newCards[0]
+        const newCard = player.deck[0]
+        const newDeck = player.deck.slice(1)
         
         set({
           players: {
@@ -517,9 +576,16 @@ export const useGameStore = create<GameState & GameActions>()(
             [playerId]: {
               ...player,
               hand: [...player.hand, newCard],
+              deck: newDeck,
+              deckRemaining: newDeck.length,
             },
           },
         })
+        
+        // Check for cold storage win condition
+        if (player.coldStorage >= 10) {
+          get().endGame(playerId)
+        }
       },
 
       moveCard: (playerId: string, cardId: string, from: 'hand' | 'board', to: 'hand' | 'board') => {
@@ -581,6 +647,49 @@ export const useGameStore = create<GameState & GameActions>()(
         if (newBalance <= 0) {
           const winnerId = playerId === 'player1' ? 'player2' : 'player1'
           get().endGame(winnerId)
+        }
+      },
+
+      transferToColdStorage: (playerId: string, amount: number) => {
+        const { players } = get()
+        const player = players[playerId as keyof typeof players]
+        
+        if (player.eth >= amount) {
+          const newColdStorage = player.coldStorage + amount
+          
+          set({
+            players: {
+              ...players,
+              [playerId]: {
+                ...player,
+                eth: player.eth - amount,
+                coldStorage: newColdStorage,
+              },
+            },
+          })
+          
+          // Check for cold storage win condition
+          if (newColdStorage >= 10) {
+            get().endGame(playerId)
+          }
+        }
+      },
+
+      transferFromColdStorage: (playerId: string, amount: number) => {
+        const { players } = get()
+        const player = players[playerId as keyof typeof players]
+        
+        if (player.coldStorage >= amount) {
+          set({
+            players: {
+              ...players,
+              [playerId]: {
+                ...player,
+                eth: player.eth + amount,
+                coldStorage: player.coldStorage - amount,
+              },
+            },
+          })
         }
       },
 
