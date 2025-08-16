@@ -512,6 +512,16 @@ export function DragDropGameBoard() {
   // Wait for wallets to be ready before checking
   const canPlayCards = walletsReady && Boolean(activePlayer && userAddress && activePlayer.toLowerCase() === userAddress.toLowerCase())
   
+  // Debug turn state for troubleshooting
+  console.log('🎯 Turn State Debug:', {
+    activePlayer,
+    userAddress,
+    currentViewingPlayer,
+    canPlayCards,
+    isActivePlayerMatch: activePlayer?.toLowerCase() === userAddress?.toLowerCase(),
+    walletsReady
+  })
+  
   // Debug: Log when activePlayer changes
   useEffect(() => {
     console.log('🎯 Active player changed in DragDropGameBoard:', {
@@ -764,7 +774,7 @@ export function DragDropGameBoard() {
                     source="board"
                     canDrag={canDragCard(card, 'board', currentViewingPlayer)}
                     playerETH={playerHand.eth}
-                    isActivePlayer={activePlayer === currentViewingPlayer}
+                    isActivePlayer={activePlayer?.toLowerCase() === userAddress?.toLowerCase()}
                     gameId={gameId}
                   />
                 ))}
@@ -805,7 +815,7 @@ export function DragDropGameBoard() {
                         source="hand"
                         canDrag={canDragCard(card, 'hand', currentViewingPlayer)}
                         playerETH={playerHand.eth}
-                        isActivePlayer={activePlayer === currentViewingPlayer}
+                        isActivePlayer={activePlayer?.toLowerCase() === userAddress?.toLowerCase()}
                         gameId={gameId}
                       />
                     ))}
