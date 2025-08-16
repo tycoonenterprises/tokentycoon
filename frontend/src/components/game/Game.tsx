@@ -31,11 +31,12 @@ export function Game() {
     setContractFunctions,
     setContractGameId,
     gameId,
-    updateGameFromContract
+    updateGameFromContract,
+    initializeGameFromContract
   } = useGameStore()
   
   // Get contract functions
-  const { endTurn, playCard, stakeETH, getDetailedGameState } = useGameEngine()
+  const { endTurn, playCard, stakeETH, getDetailedGameState, getFullGameState } = useGameEngine()
   
   const [showWeb3Panel, setShowWeb3Panel] = useState(false)
   const [showDeckBuilder, setShowDeckBuilder] = useState(false)
@@ -50,7 +51,8 @@ export function Game() {
       endTurn,
       playCard,
       stakeETH,
-      getDetailedGameState
+      getDetailedGameState,
+      getFullGameState
     })
   }, [endTurn, playCard, stakeETH, getDetailedGameState, setContractFunctions])
 
@@ -233,17 +235,96 @@ export function Game() {
     }
   }
 
+  const handleGetGameState = async () => {
+    console.log('=== CURRENT GAME STATE DEBUG ===')
+    const state = useGameStore.getState()
+    console.log('Game Store State:', {
+      gameId: state.gameId,
+      currentTurn: state.currentTurn,
+      turnNumber: state.turnNumber,
+      activePlayer: state.activePlayer,
+      isGameActive: state.isGameActive,
+      isGameStarted: state.isGameStarted,
+      isDemoMode: state.isDemoMode,
+      players: {
+        player1: {
+          id: state.players.player1.id,
+          balance: state.players.player1.balance,
+          eth: state.players.player1.eth,
+          coldStorage: state.players.player1.coldStorage,
+          handSize: state.players.player1.hand.length,
+          boardSize: state.players.player1.board.length,
+          deckSize: state.players.player1.deck.length,
+          deckRemaining: state.players.player1.deckRemaining,
+          battlefieldSize: state.players.player1.battlefieldSize,
+          hand: state.players.player1.hand.map(card => ({ id: card.id, name: card.name, cost: card.cost, type: card.type })),
+          board: state.players.player1.board.map(card => ({ id: card.id, name: card.name, cost: card.cost, type: card.type })),
+          deck: state.players.player1.deck.slice(0, 5).map(card => ({ id: card.id, name: card.name, cost: card.cost, type: card.type })) // Show first 5 deck cards
+        },
+        player2: {
+          id: state.players.player2.id,
+          balance: state.players.player2.balance,
+          eth: state.players.player2.eth,
+          coldStorage: state.players.player2.coldStorage,
+          handSize: state.players.player2.hand.length,
+          boardSize: state.players.player2.board.length,
+          deckSize: state.players.player2.deck.length,
+          deckRemaining: state.players.player2.deckRemaining,
+          battlefieldSize: state.players.player2.battlefieldSize,
+          hand: state.players.player2.hand.map(card => ({ id: card.id, name: card.name, cost: card.cost, type: card.type })),
+          board: state.players.player2.board.map(card => ({ id: card.id, name: card.name, cost: card.cost, type: card.type })),
+          deck: state.players.player2.deck.slice(0, 5).map(card => ({ id: card.id, name: card.name, cost: card.cost, type: card.type })) // Show first 5 deck cards
+        }
+      }
+    })
+    
+    if (gameId && getFullGameState) {
+      try {
+        console.log('=== FETCHING COMPREHENSIVE CONTRACT STATE ===')
+        await getFullGameState(gameId)
+      } catch (error) {
+        console.error('Error fetching comprehensive contract state:', error)
+      }
+    } else {
+      console.log('No gameId or getFullGameState function available')
+      console.log('Available functions:', { getDetailedGameState: !!getDetailedGameState, getFullGameState: !!getFullGameState })
+    }
+    console.log('=== END GAME STATE DEBUG ===')
+  }
+
   const handleLogout = () => {
     resetGame()
     logout()
   }
 
-  const handleOnchainGameStart = (gameId: number) => {
+  const handleOnchainGameStart = async (gameId: number) => {
     setCurrentGameId(gameId)
     setShowPlayPage(false)
-    // Here we would load the game state from the blockchain
-    // and start the game with the decks from the smart contract
-    startGame(user?.id || 'player1', 'player2')
+    setContractGameId(gameId)
+    
+    // Load the actual game state from the blockchain
+    if (getDetailedGameState) {
+      try {
+        console.log('Loading game state from contract for game', gameId)
+        const contractState = await getDetailedGameState(gameId)
+        if (contractState) {
+          // Initialize game store with contract state (for new onchain games)
+          initializeGameFromContract(contractState)
+          console.log('Game initialized from contract:', contractState)
+        } else {
+          console.error('No contract state returned for game', gameId)
+          // Fallback to local demo for now
+          startGame(user?.id || 'player1', 'player2')
+        }
+      } catch (error) {
+        console.error('Error loading contract state:', error)
+        // Fallback to local demo for now
+        startGame(user?.id || 'player1', 'player2')
+      }
+    } else {
+      console.warn('No getDetailedGameState function available')
+      startGame(user?.id || 'player1', 'player2')
+    }
   }
 
   return (
@@ -307,6 +388,12 @@ export function Game() {
                   disabled={!isDemoMode && activePlayer !== 'player1'}
                 >
                   End Turn
+                </button>
+                <button
+                  onClick={handleGetGameState}
+                  className="btn-secondary text-sm"
+                >
+                  Get Game State
                 </button>
                 <button
                   onClick={resetGame}

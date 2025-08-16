@@ -91,14 +91,14 @@ export function AnimatedCard({
             <span className="mr-1">{getTypeIcon(card.type)}</span>
             {size !== 'small' && card.type.toUpperCase()}
           </div>
-          {card.cost.gas && (
+          {card.cost > 0 && (
             <motion.div
               className="bg-eth-secondary text-xs px-2 py-1 rounded-full font-bold"
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring' }}
             >
-              {card.cost.gas}
+              {card.cost}
             </motion.div>
           )}
         </div>

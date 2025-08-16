@@ -9,7 +9,7 @@ export function HotWallet({ playerId }: HotWalletProps) {
   
   const player = players[playerId as keyof typeof players]
   const isCurrentPlayer = viewingPlayer === playerId
-  const balance = player?.eth || 0
+  const balance = Number(player?.eth) || 0
   
   // Show earnings animation during turn start
   const isActiveTurn = activePlayer === playerId
@@ -18,12 +18,14 @@ export function HotWallet({ playerId }: HotWalletProps) {
   // Calculate yield from board cards (DeFi cards with staked ETH)
   const yieldEarnings = player?.board?.reduce((total, card) => {
     if (card.type === 'DeFi' && card.stakedETH && card.yieldAmount) {
-      return total + (card.stakedETH * card.yieldAmount)
+      const stakedAmount = Number(card.stakedETH) || 0
+      const yieldRate = Number(card.yieldAmount) || 0
+      return total + (stakedAmount * yieldRate)
     }
     return total
   }, 0) || 0
   
-  const totalEarnings = baseEarnings + yieldEarnings
+  const totalEarnings = Number(baseEarnings + yieldEarnings) || 1
 
   return (
     <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 w-48">

@@ -451,6 +451,102 @@ export const useGameEngine = () => {
   const totalGasCost = getTotalGasCost()
   const totalGasUsed = getTotalGasUsed()
 
+  // Comprehensive debug function to get full game state
+  const getFullGameState = async (gameId: number) => {
+    try {
+      const { readContract } = await import('wagmi/actions')
+      
+      console.log('=== FETCHING FULL CONTRACT STATE ===')
+      
+      // Get basic game state
+      const gameState = await getDetailedGameState(gameId)
+      console.log('Basic Game State:', gameState)
+      
+      // Get player hands
+      try {
+        const player1Hand = await readContract(wagmiConfig, {
+          address: CONTRACT_ADDRESSES.GAME_ENGINE,
+          abi: GameEngineABI,
+          functionName: 'getPlayerHand',
+          args: [BigInt(gameId), gameState?.player1 || '0x0'],
+        })
+        console.log('Player 1 Hand (card IDs):', player1Hand)
+        
+        const player2Hand = await readContract(wagmiConfig, {
+          address: CONTRACT_ADDRESSES.GAME_ENGINE,
+          abi: GameEngineABI,
+          functionName: 'getPlayerHand',
+          args: [BigInt(gameId), gameState?.player2 || '0x0'],
+        })
+        console.log('Player 2 Hand (card IDs):', player2Hand)
+      } catch (err) {
+        console.error('Error fetching player hands:', err)
+      }
+      
+      // Get player battlefields
+      try {
+        const player1Battlefield = await readContract(wagmiConfig, {
+          address: CONTRACT_ADDRESSES.GAME_ENGINE,
+          abi: GameEngineABI,
+          functionName: 'getPlayerBattlefield',
+          args: [BigInt(gameId), gameState?.player1 || '0x0'],
+        })
+        console.log('Player 1 Battlefield (instance IDs):', player1Battlefield)
+        
+        const player2Battlefield = await readContract(wagmiConfig, {
+          address: CONTRACT_ADDRESSES.GAME_ENGINE,
+          abi: GameEngineABI,
+          functionName: 'getPlayerBattlefield',
+          args: [BigInt(gameId), gameState?.player2 || '0x0'],
+        })
+        console.log('Player 2 Battlefield (instance IDs):', player2Battlefield)
+        
+        // Get card instance details for battlefield cards
+        if (player1Battlefield && Array.isArray(player1Battlefield)) {
+          console.log('=== PLAYER 1 BATTLEFIELD DETAILS ===')
+          for (const instanceId of player1Battlefield) {
+            try {
+              const cardInstance = await readContract(wagmiConfig, {
+                address: CONTRACT_ADDRESSES.GAME_ENGINE,
+                abi: GameEngineABI,
+                functionName: 'getCardInstance',
+                args: [instanceId],
+              })
+              console.log(`Instance ${instanceId}:`, cardInstance)
+            } catch (err) {
+              console.error(`Error fetching instance ${instanceId}:`, err)
+            }
+          }
+        }
+        
+        if (player2Battlefield && Array.isArray(player2Battlefield)) {
+          console.log('=== PLAYER 2 BATTLEFIELD DETAILS ===')
+          for (const instanceId of player2Battlefield) {
+            try {
+              const cardInstance = await readContract(wagmiConfig, {
+                address: CONTRACT_ADDRESSES.GAME_ENGINE,
+                abi: GameEngineABI,
+                functionName: 'getCardInstance',
+                args: [instanceId],
+              })
+              console.log(`Instance ${instanceId}:`, cardInstance)
+            } catch (err) {
+              console.error(`Error fetching instance ${instanceId}:`, err)
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching player battlefields:', err)
+      }
+      
+      console.log('=== END FULL CONTRACT STATE ===')
+      return gameState
+    } catch (error) {
+      console.error('Error fetching full game state:', error)
+      return null
+    }
+  }
+
   return {
     // Data
     sessionCount: sessionCount as number | undefined,
@@ -480,6 +576,7 @@ export const useGameEngine = () => {
     getActiveGames,
     getGameState,
     getDetailedGameState,
+    getFullGameState,
     refetchMyGames,
     refetchAvailableGames,
   }

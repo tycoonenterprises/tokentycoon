@@ -39,9 +39,9 @@ function BoardCard({ card, playerId, isOpponent = false }: BoardCardProps) {
           <div className="text-xs text-gray-400">
             {getTypeIcon(card.type)}
           </div>
-          {card.cost.gas && (
+          {card.cost > 0 && (
             <div className="bg-eth-secondary text-xs px-1 py-0.5 rounded font-bold">
-              {card.cost.gas}
+              {card.cost}
             </div>
           )}
         </div>

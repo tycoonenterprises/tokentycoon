@@ -15,18 +15,34 @@ export const localChain = {
 export const privyConfig = {
   appId: import.meta.env.VITE_PRIVY_APP_ID || 'local-dev-app-id',
   config: {
-    loginMethods: ['email' as const, 'wallet' as const],
+    loginMethods: ['email' as const, 'wallet' as const, 'sms' as const],
     appearance: {
       theme: 'dark' as const,
       accentColor: '#627eea' as `#${string}`,
       logo: undefined,
     },
     embeddedWallets: {
-      createOnLogin: 'all-users' as const, // Create embedded wallet for all users
+      createOnLogin: 'all-users' as const, // Create embedded wallet for all users for gasless transactions
+      requireUserPasswordOnCreate: false,
       noPromptOnSignature: false, // Allow signature prompts
+      showWalletUIs: true, // Show wallet UIs for embedded wallets
+    },
+    externalWallets: {
+      metamask: true,
+      coinbaseWallet: true,
+      walletConnect: true,
     },
     supportedChains: [localChain],
     defaultChain: localChain,
+    // Additional wallet options
+    mfa: {
+      noPromptOnMfaRequired: false,
+    },
+    // Legal config
+    legal: {
+      termsAndConditionsUrl: '',
+      privacyPolicyUrl: '',
+    },
   },
 }
 

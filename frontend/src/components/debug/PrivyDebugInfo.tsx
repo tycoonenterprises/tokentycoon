@@ -13,7 +13,8 @@ export function PrivyDebugInfo() {
     logout, 
     createWallet,
     connectWallet,
-    exportWallet
+    exportWallet,
+    setActiveWallet
   } = usePrivy()
   
   const { address, isConnected } = useAccount()
@@ -86,25 +87,56 @@ export function PrivyDebugInfo() {
             <div className="font-semibold">Embedded Wallets ({embeddedWallets.length}):</div>
           </div>
 
-          <div className="space-x-2">
-            <button 
-              onClick={() => { createWallet?.(); }}
-              className="bg-green-600 px-3 py-1 rounded text-xs hover:bg-green-700 transition-colors"
-            >
-              Create Wallet
-            </button>
-            <button 
-              onClick={() => { connectWallet?.(); }}
-              className="bg-blue-600 px-3 py-1 rounded text-xs hover:bg-blue-700 transition-colors"
-            >
-              Connect Wallet
-            </button>
-            <button 
-              onClick={logout}
-              className="bg-red-600 px-3 py-1 rounded text-xs hover:bg-red-700 transition-colors"
-            >
-              Logout
-            </button>
+          <div className="space-y-2">
+            <div className="space-x-2">
+              <button 
+                onClick={() => { createWallet?.(); }}
+                className="bg-green-600 px-3 py-1 rounded text-xs hover:bg-green-700 transition-colors"
+              >
+                Create Wallet
+              </button>
+              <button 
+                onClick={() => { connectWallet?.(); }}
+                className="bg-blue-600 px-3 py-1 rounded text-xs hover:bg-blue-700 transition-colors"
+              >
+                Connect Wallet
+              </button>
+              <button 
+                onClick={() => console.log('Privy user:', user)}
+                className="bg-purple-600 px-3 py-1 rounded text-xs hover:bg-purple-700 transition-colors"
+              >
+                Log User
+              </button>
+              <button 
+                onClick={logout}
+                className="bg-red-600 px-3 py-1 rounded text-xs hover:bg-red-700 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+            
+            {/* Switch Active Wallet Buttons */}
+            <div className="space-y-1">
+              <div className="text-xs font-semibold">Switch Active Wallet:</div>
+              {walletAccounts.map((wallet, i) => {
+                const isActive = address === wallet.address
+                const isEmbedded = wallet.walletClientType === 'privy'
+                return (
+                  <button
+                    key={i}
+                    onClick={() => setActiveWallet?.(wallet)}
+                    className={`block w-full text-left px-2 py-1 rounded text-xs ${
+                      isActive 
+                        ? 'bg-green-600 text-white' 
+                        : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+                    }`}
+                  >
+                    {isEmbedded ? '🔐 Embedded' : '🦊 External'}: {wallet.address?.slice(0, 6)}...{wallet.address?.slice(-4)}
+                    {isActive && ' (Active)'}
+                  </button>
+                )
+              })}
+            </div>
           </div>
         </div>
       )}

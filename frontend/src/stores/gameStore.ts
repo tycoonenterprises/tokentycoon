@@ -137,6 +137,7 @@ export interface GameActions {
 
   // Contract integration
   setContractGameId: (gameId: number) => void
+  initializeGameFromContract: (gameView: any) => void
   setContractFunctions: (functions: {
     endTurn?: (gameId: number) => Promise<any>
     playCard?: (gameId: number, cardIndex: number) => Promise<any>
@@ -367,29 +368,92 @@ export const useGameStore = create<GameState & GameActions>()(
         }
       },
 
+      // Initialize game from contract state (for onchain games)
+      initializeGameFromContract: (gameView: any) => {
+        const activePlayer = gameView.currentTurn === 0 ? 'player1' : 'player2'
+        
+        // Convert BigInt values to numbers
+        const convertBigInt = (value: any): number => {
+          if (typeof value === 'bigint') {
+            return Number(value)
+          }
+          return Number(value) || 0
+        }
+        
+        set({
+          matchId: `contract-game-${gameView.gameId}`,
+          gameId: convertBigInt(gameView.gameId),
+          currentTurn: convertBigInt(gameView.currentTurn),
+          turnNumber: convertBigInt(gameView.turnNumber),
+          activePlayer,
+          viewingPlayer: 'player1', // Always view as player1 initially
+          isDemoMode: false,
+          isGameActive: gameView.isStarted && !gameView.isFinished,
+          isGameStarted: gameView.isStarted,
+          winner: null,
+          players: {
+            player1: {
+              id: gameView.player1, // Use actual contract addresses
+              balance: 20, // Default health
+              eth: convertBigInt(gameView.player1ETH),
+              coldStorage: 0,
+              coldStorageWithdrawnThisTurn: 0,
+              hand: [], // Will be populated by updatePlayerHandFromContract
+              board: [], // Will be populated by updatePlayerBattlefieldFromContract
+              deck: [], // Not available from contract GameView
+              deckRemaining: convertBigInt(gameView.player1DeckRemaining),
+              battlefieldSize: convertBigInt(gameView.player1BattlefieldSize),
+            },
+            player2: {
+              id: gameView.player2, // Use actual contract addresses
+              balance: 20, // Default health
+              eth: convertBigInt(gameView.player2ETH),
+              coldStorage: 0,
+              coldStorageWithdrawnThisTurn: 0,
+              hand: [], // Will be populated by updatePlayerHandFromContract
+              board: [], // Will be populated by updatePlayerBattlefieldFromContract
+              deck: [], // Not available from contract GameView
+              deckRemaining: convertBigInt(gameView.player2DeckRemaining),
+              battlefieldSize: convertBigInt(gameView.player2BattlefieldSize),
+            },
+          },
+        })
+      },
+      
       // Update game state from contract GameView
       // This function receives real ETH balances from the smart contract
       updateGameFromContract: (gameView: any) => {
         const activePlayer = gameView.currentTurn === 0 ? 'player1' : 'player2'
+        
+        // Convert BigInt values to numbers
+        const convertBigInt = (value: any): number => {
+          if (typeof value === 'bigint') {
+            return Number(value)
+          }
+          return Number(value) || 0
+        }
+        
         set({
-          gameId: gameView.gameId,
-          currentTurn: gameView.currentTurn,
-          turnNumber: gameView.turnNumber,
+          gameId: convertBigInt(gameView.gameId),
+          currentTurn: convertBigInt(gameView.currentTurn),
+          turnNumber: convertBigInt(gameView.turnNumber),
           activePlayer,
           isGameStarted: gameView.isStarted,
           isGameActive: gameView.isStarted && !gameView.isFinished,
           players: {
             player1: {
               ...get().players.player1,
-              eth: gameView.player1ETH,
-              deckRemaining: gameView.player1DeckRemaining,
-              battlefieldSize: gameView.player1BattlefieldSize,
+              id: gameView.player1 || get().players.player1.id, // Use contract address as ID
+              eth: convertBigInt(gameView.player1ETH),
+              deckRemaining: convertBigInt(gameView.player1DeckRemaining),
+              battlefieldSize: convertBigInt(gameView.player1BattlefieldSize),
             },
             player2: {
               ...get().players.player2,
-              eth: gameView.player2ETH,
-              deckRemaining: gameView.player2DeckRemaining,
-              battlefieldSize: gameView.player2BattlefieldSize,
+              id: gameView.player2 || get().players.player2.id, // Use contract address as ID
+              eth: convertBigInt(gameView.player2ETH),
+              deckRemaining: convertBigInt(gameView.player2DeckRemaining),
+              battlefieldSize: convertBigInt(gameView.player2BattlefieldSize),
             },
           },
         })
