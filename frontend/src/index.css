@@ -1,6 +1,12 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-eth-dark: #1c1c1e;
+  --color-eth-primary: #627eea;
+  --color-eth-secondary: #f7931a;
+  --color-eth-success: #4ade80;
+  --color-eth-danger: #ef4444;
+}
 
 @layer base {
   body {
