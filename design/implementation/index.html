@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Tycoon v2.0 - Cyberpunk Circuit Board Implementation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/token-tycoon-v2.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/card-types.css">
+</head>
+<body class="cyberpunk-theme">
+    <div class="showcase-container">
+        <!-- Header -->
+        <header class="showcase-header">
+            <h1 class="main-title">
+                <span class="title-text">TOKEN TYCOON</span>
+                <span class="subtitle">v2.0 Cyberpunk Circuit Board</span>
+            </h1>
+            <div class="version-badge">IMPLEMENTATION SHOWCASE</div>
+        </header>
+
+        <!-- Design System Overview -->
+        <section class="system-overview">
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <h3>Visual Language</h3>
+                    <p>Cyberpunk Circuit Board aesthetic with blockchain technology themes</p>
+                    <div class="feature-list">
+                        <span class="feature">5-Color Palette</span>
+                        <span class="feature">Circuit Patterns</span>
+                        <span class="feature">5-Tier Rarity</span>
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <h3>Card Coverage</h3>
+                    <p>Complete implementation for all card types and rarities</p>
+                    <div class="stats">
+                        <span class="stat">92 Cards</span>
+                        <span class="stat">5 Types</span>
+                        <span class="stat">5 Tiers</span>
+                    </div>
+                </div>
+                <div class="overview-card">
+                    <h3>Advanced Features</h3>
+                    <p>Interactive animations and dynamic visual states</p>
+                    <div class="feature-list">
+                        <span class="feature">Particle Systems</span>
+                        <span class="feature">Energy Flow</span>
+                        <span class="feature">State Transitions</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Card Type Showcase -->
+        <section class="card-showcase">
+            <h2 class="section-title">Card Type Showcase</h2>
+            <div class="showcase-grid">
+                
+                <!-- Chain Card Example -->
+                <div class="card-display">
+                    <h3 class="card-type-title">Chain Cards</h3>
+                    <div class="card chain-card premium-tier" data-card-name="Ethereum Mainnet" data-cost="3" data-type="CHAIN">
+                        <div class="card-header">
+                            <div class="cost-indicator">
+                                <span class="cost-value">3</span>
+                                <span class="cost-unit">ETH</span>
+                            </div>
+                            <div class="card-name">ETHEREUM MAINNET</div>
+                        </div>
+                        
+                        <div class="card-art">
+                            <div class="network-visualization">
+                                <svg class="circuit-pattern" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Main network hub -->
+                                    <circle cx="100" cy="60" r="8" class="network-hub" />
+                                    
+                                    <!-- Validator nodes -->
+                                    <circle cx="50" cy="30" r="4" class="validator-node" />
+                                    <circle cx="150" cy="30" r="4" class="validator-node" />
+                                    <circle cx="50" cy="90" r="4" class="validator-node" />
+                                    <circle cx="150" cy="90" r="4" class="validator-node" />
+                                    
+                                    <!-- Network connections -->
+                                    <line x1="100" y1="60" x2="50" y2="30" class="network-connection" />
+                                    <line x1="100" y1="60" x2="150" y2="30" class="network-connection" />
+                                    <line x1="100" y1="60" x2="50" y2="90" class="network-connection" />
+                                    <line x1="100" y1="60" x2="150" y2="90" class="network-connection" />
+                                    
+                                    <!-- Cross connections -->
+                                    <line x1="50" y1="30" x2="150" y2="90" class="network-connection secondary" />
+                                    <line x1="150" y1="30" x2="50" y2="90" class="network-connection secondary" />
+                                    
+                                    <!-- Energy flow particles -->
+                                    <circle r="2" class="energy-particle">
+                                        <animateMotion dur="3s" repeatCount="indefinite" path="M50,30 L100,60 L150,90" />
+                                    </circle>
+                                    <circle r="2" class="energy-particle">
+                                        <animateMotion dur="3s" repeatCount="indefinite" begin="1s" path="M150,30 L100,60 L50,90" />
+                                    </circle>
+                                </svg>
+                                
+                                <div class="eth-logo">Ξ</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-text">
+                            <p class="card-description">Foundational blockchain infrastructure. Generates 1 ETH per turn and powers all connected Layer 2 protocols.</p>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <div class="card-type-badge">CHAIN</div>
+                        </div>
+                        
+                        <div class="card-effects">
+                            <div class="glow-effect"></div>
+                            <div class="circuit-overlay"></div>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <span class="info-label">Infrastructure Focus</span>
+                        <span class="color-scheme">Electric Cyan</span>
+                    </div>
+                </div>
+
+                <!-- DeFi Card Example -->
+                <div class="card-display">
+                    <h3 class="card-type-title">DeFi Cards</h3>
+                    <div class="card defi-card standard-tier" data-card-name="Uniswap" data-cost="2" data-type="DeFi">
+                        <div class="card-header">
+                            <div class="cost-indicator">
+                                <span class="cost-value">2</span>
+                                <span class="cost-unit">ETH</span>
+                            </div>
+                            <div class="card-name">UNISWAP</div>
+                        </div>
+                        
+                        <div class="card-art">
+                            <div class="defi-visualization">
+                                <svg class="circuit-pattern" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Liquidity pools -->
+                                    <circle cx="70" cy="45" r="12" class="liquidity-pool" />
+                                    <circle cx="130" cy="45" r="12" class="liquidity-pool" />
+                                    
+                                    <!-- Pool connection -->
+                                    <line x1="82" y1="45" x2="118" y2="45" class="pool-connection" />
+                                    
+                                    <!-- Swap arrows -->
+                                    <path d="M90,35 L95,40 L90,45 L85,40 Z" class="swap-arrow" />
+                                    <path d="M110,55 L105,50 L110,45 L115,50 Z" class="swap-arrow" />
+                                    
+                                    <!-- Yield indicators -->
+                                    <circle cx="100" cy="75" r="8" class="yield-container" />
+                                    <text x="100" y="80" text-anchor="middle" class="yield-text">1 ETH</text>
+                                    
+                                    <!-- Flow particles -->
+                                    <circle r="1.5" class="flow-particle">
+                                        <animateMotion dur="2s" repeatCount="indefinite" path="M70,45 L100,75" />
+                                    </circle>
+                                    <circle r="1.5" class="flow-particle">
+                                        <animateMotion dur="2s" repeatCount="indefinite" begin="1s" path="M130,45 L100,75" />
+                                    </circle>
+                                </svg>
+                                
+                                <div class="unicorn-symbol">🦄</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-text">
+                            <p class="card-description">Automated Market Maker protocol. Gain 1 ETH per turn per ETH stored through decentralized exchange functionality.</p>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <div class="card-type-badge">DeFi</div>
+                            <div class="storage-indicator">
+                                <span class="storage-icon">🏦</span>
+                                <span class="storage-text">Storage Available</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-effects">
+                            <div class="glow-effect"></div>
+                            <div class="circuit-overlay"></div>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <span class="info-label">Financial Yield</span>
+                        <span class="color-scheme">Neon Amber + Purple</span>
+                    </div>
+                </div>
+
+                <!-- EOA Card Example -->
+                <div class="card-display">
+                    <h3 class="card-type-title">EOA Cards</h3>
+                    <div class="card eoa-card standard-tier" data-card-name="Multi-sig Wallet" data-cost="3" data-type="EOA">
+                        <div class="card-header">
+                            <div class="cost-indicator">
+                                <span class="cost-value">3</span>
+                                <span class="cost-unit">ETH</span>
+                            </div>
+                            <div class="card-name">MULTI-SIG WALLET</div>
+                        </div>
+                        
+                        <div class="card-art">
+                            <div class="eoa-visualization">
+                                <svg class="circuit-pattern" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Vault container -->
+                                    <rect x="75" y="40" width="50" height="40" rx="5" class="vault-container" />
+                                    
+                                    <!-- Multi-sig keys -->
+                                    <circle cx="60" cy="25" r="6" class="key-holder" />
+                                    <circle cx="100" cy="25" r="6" class="key-holder" />
+                                    <circle cx="140" cy="25" r="6" class="key-holder" />
+                                    
+                                    <!-- Authorization lines -->
+                                    <line x1="60" y1="31" x2="85" y2="45" class="auth-connection" />
+                                    <line x1="100" y1="31" x2="100" y2="40" class="auth-connection" />
+                                    <line x1="140" y1="31" x2="115" y2="45" class="auth-connection" />
+                                    
+                                    <!-- Security shields -->
+                                    <path d="M90,50 L95,45 L105,45 L110,50 L105,65 L95,65 Z" class="security-shield" />
+                                    
+                                    <!-- Key symbols -->
+                                    <text x="60" y="30" text-anchor="middle" class="key-symbol">🔑</text>
+                                    <text x="100" y="30" text-anchor="middle" class="key-symbol">🔑</text>
+                                    <text x="140" y="30" text-anchor="middle" class="key-symbol">🔑</text>
+                                    
+                                    <!-- Storage level -->
+                                    <rect x="80" y="55" width="40" height="15" class="storage-level" />
+                                    <text x="100" y="95" text-anchor="middle" class="storage-text">8 ETH MAX</text>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <div class="card-text">
+                            <p class="card-description">Enhanced security wallet system. Storage max 8 ETH with multi-signature protection. First attack per turn prevented.</p>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <div class="card-type-badge">EOA</div>
+                            <div class="protection-indicator">
+                                <span class="shield-icon">🛡️</span>
+                                <span class="protection-text">2-of-3 Protection</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-effects">
+                            <div class="glow-effect"></div>
+                            <div class="circuit-overlay"></div>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <span class="info-label">Personal Security</span>
+                        <span class="color-scheme">Cyan + Magenta</span>
+                    </div>
+                </div>
+
+                <!-- Action Card Example -->
+                <div class="card-display">
+                    <h3 class="card-type-title">Action Cards</h3>
+                    <div class="card action-card destructive premium-tier" data-card-name="Bridge Hack" data-cost="5" data-type="ACTION">
+                        <div class="card-header">
+                            <div class="cost-indicator">
+                                <span class="cost-value">5</span>
+                                <span class="cost-unit">ETH</span>
+                            </div>
+                            <div class="card-name">BRIDGE HACK</div>
+                        </div>
+                        
+                        <div class="card-art">
+                            <div class="action-visualization">
+                                <svg class="circuit-pattern" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Bridge structure -->
+                                    <line x1="30" y1="60" x2="170" y2="60" class="bridge-structure" />
+                                    <circle cx="100" cy="60" r="8" class="bridge-center" />
+                                    
+                                    <!-- Attack vectors -->
+                                    <path d="M50,30 L100,60 M150,30 L100,60" class="attack-vector" stroke-dasharray="5,5" />
+                                    <path d="M50,90 L100,60 M150,90 L100,60" class="attack-vector" stroke-dasharray="5,5" />
+                                    
+                                    <!-- Explosion effect -->
+                                    <circle cx="100" cy="60" r="15" class="explosion-ring" />
+                                    <circle cx="100" cy="60" r="25" class="explosion-ring secondary" />
+                                    
+                                    <!-- Warning symbols -->
+                                    <text x="40" y="40" class="warning-symbol">⚠</text>
+                                    <text x="160" y="40" class="warning-symbol">⚠</text>
+                                    <text x="40" y="85" class="warning-symbol">💀</text>
+                                    <text x="160" y="85" class="warning-symbol">💀</text>
+                                    
+                                    <!-- Destruction particles -->
+                                    <circle r="2" class="destruction-particle">
+                                        <animateMotion dur="1.5s" repeatCount="indefinite" path="M100,60 L120,40 L140,20" />
+                                    </circle>
+                                    <circle r="2" class="destruction-particle">
+                                        <animateMotion dur="1.5s" repeatCount="indefinite" begin="0.5s" path="M100,60 L80,80 L60,100" />
+                                    </circle>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <div class="card-text">
+                            <p class="card-description">Massive infrastructure attack. Destroy target bridge and all DeFi protocols connected to it. Maximum destruction capability.</p>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <div class="card-type-badge destructive">ACTION</div>
+                            <div class="impact-indicator">
+                                <span class="impact-icon">💥</span>
+                                <span class="impact-text">Chain + All DeFi</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-effects">
+                            <div class="glow-effect"></div>
+                            <div class="circuit-overlay"></div>
+                            <div class="warning-pulse"></div>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <span class="info-label">Destructive Impact</span>
+                        <span class="color-scheme">Amber → Red</span>
+                    </div>
+                </div>
+
+                <!-- Ability Card Example -->
+                <div class="card-display">
+                    <h3 class="card-type-title">Ability Cards</h3>
+                    <div class="card ability-card premium-tier" data-card-name="Attend a Conference" data-cost="5" data-type="ABILITY">
+                        <div class="card-header">
+                            <div class="cost-indicator">
+                                <span class="cost-value">5</span>
+                                <span class="cost-unit">ETH</span>
+                            </div>
+                            <div class="card-name">ATTEND A CONFERENCE</div>
+                        </div>
+                        
+                        <div class="card-art">
+                            <div class="ability-visualization">
+                                <svg class="circuit-pattern" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Conference stage -->
+                                    <rect x="60" y="20" width="80" height="30" rx="3" class="conference-stage" />
+                                    
+                                    <!-- Speaker -->
+                                    <circle cx="100" cy="35" r="5" class="speaker-node" />
+                                    
+                                    <!-- Audience network -->
+                                    <circle cx="50" cy="70" r="3" class="audience-node" />
+                                    <circle cx="80" cy="80" r="3" class="audience-node" />
+                                    <circle cx="100" cy="85" r="3" class="audience-node" />
+                                    <circle cx="120" cy="80" r="3" class="audience-node" />
+                                    <circle cx="150" cy="70" r="3" class="audience-node" />
+                                    
+                                    <!-- Knowledge flow -->
+                                    <line x1="100" y1="40" x2="50" y2="70" class="knowledge-flow" />
+                                    <line x1="100" y1="40" x2="80" y2="80" class="knowledge-flow" />
+                                    <line x1="100" y1="40" x2="120" y2="80" class="knowledge-flow" />
+                                    <line x1="100" y1="40" x2="150" y2="70" class="knowledge-flow" />
+                                    
+                                    <!-- Networking connections -->
+                                    <line x1="50" y1="70" x2="80" y2="80" class="network-connection" opacity="0.3" />
+                                    <line x1="120" y1="80" x2="150" y2="70" class="network-connection" opacity="0.3" />
+                                    
+                                    <!-- Knowledge symbols -->
+                                    <text x="100" y="40" text-anchor="middle" class="knowledge-symbol">📚</text>
+                                    <text x="170" y="30" class="knowledge-symbol">🎓</text>
+                                    <text x="30" y="30" class="knowledge-symbol">💡</text>
+                                    
+                                    <!-- Learning particles -->
+                                    <circle r="1.5" class="learning-particle">
+                                        <animateMotion dur="3s" repeatCount="indefinite" path="M100,40 L80,80 L120,80 L100,85" />
+                                    </circle>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <div class="card-text">
+                            <p class="card-description">Premium educational experience. Draw 3 cards representing maximum knowledge acquisition and professional networking opportunities.</p>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <div class="card-type-badge">ABILITY</div>
+                            <div class="learning-indicator">
+                                <span class="learning-icon">🧠</span>
+                                <span class="learning-text">Draw 3 Cards</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-effects">
+                            <div class="glow-effect"></div>
+                            <div class="circuit-overlay"></div>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <span class="info-label">Academic Intelligence</span>
+                        <span class="color-scheme">Purple + Cyan</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Interactive Features -->
+        <section class="interactive-features">
+            <h2 class="section-title">Interactive Features</h2>
+            <div class="features-grid">
+                <div class="feature-demo">
+                    <h3>Hover Effects</h3>
+                    <p>Hover over any card to see enhanced glow, animation acceleration, and particle effects.</p>
+                    <div class="demo-indicator">Move mouse over cards above ↑</div>
+                </div>
+                <div class="feature-demo">
+                    <h3>Circuit Animations</h3>
+                    <p>Energy flows through circuit patterns with particle systems based on card rarity.</p>
+                    <div class="demo-indicator">Continuous circuit energy flow</div>
+                </div>
+                <div class="feature-demo">
+                    <h3>Rarity Effects</h3>
+                    <p>Premium cards show complex multi-layer animations with enhanced visual effects.</p>
+                    <div class="demo-indicator">Compare standard vs premium cards</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Technical Specifications -->
+        <section class="tech-specs">
+            <h2 class="section-title">Technical Implementation</h2>
+            <div class="specs-grid">
+                <div class="spec-item">
+                    <h4>Performance</h4>
+                    <ul>
+                        <li>60fps animation targeting</li>
+                        <li>GPU-accelerated transforms</li>
+                        <li>Optimized particle systems</li>
+                        <li>Battery-conscious rendering</li>
+                    </ul>
+                </div>
+                <div class="spec-item">
+                    <h4>Accessibility</h4>
+                    <ul>
+                        <li>WCAG 2.1 AA compliance</li>
+                        <li>Reduced motion support</li>
+                        <li>High contrast modes</li>
+                        <li>Screen reader optimized</li>
+                    </ul>
+                </div>
+                <div class="spec-item">
+                    <h4>Cross-Platform</h4>
+                    <ul>
+                        <li>Responsive design system</li>
+                        <li>Mobile-optimized assets</li>
+                        <li>Print-ready specifications</li>
+                        <li>Progressive enhancement</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="showcase-footer">
+            <p>Token Tycoon v2.0 - Cyberpunk Circuit Board Design System Implementation</p>
+            <p>Complete design specifications with 92 individual card briefs and production-ready assets</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/token-tycoon-v2.js"></script>
+    <script src="js/particle-system.js"></script>
+    <script src="js/card-interactions.js"></script>
+</body>
+</html>

@@ -1,0 +1,908 @@
+/* Token Tycoon v2.0 - Card Ability Visual Treatments */
+/* Specialized styling for all 92 unique card abilities and mechanics */
+
+/* ===== MTG-STYLE CARD LAYOUT ===== */
+
+/* Card Rules Text Section */
+.card-rules-text {
+  padding: 0.75rem;
+  background: rgba(10, 14, 39, 0.9);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  border-radius: 8px;
+  margin: 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  min-height: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.description-text {
+  color: var(--color-text-primary);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Abilities Text Styling */
+.abilities-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ability-mechanic {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem 0.4rem;
+  background: rgba(0, 217, 255, 0.1);
+  border-left: 3px solid var(--color-cyan-electric);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.mechanic-symbol {
+  font-size: 1rem;
+  filter: drop-shadow(0 0 3px currentColor);
+}
+
+.mechanic-text {
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+/* Ability-specific coloring */
+.income-mechanic {
+  border-left-color: var(--color-amber-neon);
+  background: rgba(255, 165, 0, 0.15);
+}
+
+.yield-mechanic {
+  border-left-color: #00FF7F;
+  background: rgba(0, 255, 127, 0.15);
+}
+
+.destroy-mechanic {
+  border-left-color: var(--color-danger);
+  background: rgba(255, 0, 68, 0.15);
+}
+
+.draw-mechanic {
+  border-left-color: var(--color-purple-circuit);
+  background: rgba(139, 0, 255, 0.15);
+}
+
+.storage-mechanic {
+  border-left-color: #4682B4;
+  background: rgba(70, 130, 180, 0.15);
+}
+
+/* Card Stats Footer */
+.card-stats-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: rgba(26, 30, 58, 0.8);
+  border-top: 1px solid rgba(0, 217, 255, 0.2);
+  margin-top: auto;
+  min-height: 40px;
+}
+
+.stats-bar {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem 0.4rem;
+  background: rgba(0, 217, 255, 0.1);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.stat-symbol {
+  font-size: 0.9rem;
+  filter: drop-shadow(0 0 3px currentColor);
+}
+
+.stat-value {
+  color: var(--color-text-primary);
+  min-width: 12px;
+  text-align: center;
+}
+
+/* Token Counter Styling */
+.token-counter {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  background: rgba(255, 215, 0, 0.2);
+  border: 1px solid #FFD700;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+.token-label {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.token-display {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.token-symbol {
+  font-size: 1rem;
+  filter: drop-shadow(0 0 5px #FFD700);
+}
+
+.token-count {
+  color: #FFD700;
+  font-weight: 700;
+  min-width: 15px;
+  text-align: center;
+}
+
+/* ===== LEGACY ABILITY ICON STYLING ===== */
+.abilities-container {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 0.5rem;
+  background: rgba(26, 30, 58, 0.6);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 217, 255, 0.2);
+  margin-top: auto;
+}
+
+.ability-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.3rem;
+  border-radius: 6px;
+  background: rgba(0, 217, 255, 0.1);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  transition: all var(--animation-standard) ease;
+}
+
+.ability-symbol {
+  font-size: 1rem;
+  filter: drop-shadow(0 0 5px currentColor);
+}
+
+.ability-value {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+/* ===== SPECIFIC ABILITY TYPES ===== */
+
+/* Income Generation */
+.income-ability {
+  background: rgba(255, 165, 0, 0.2);
+  border-color: var(--color-amber-neon);
+  color: var(--color-amber-neon);
+}
+
+.income-ability:hover {
+  background: rgba(255, 165, 0, 0.3);
+  box-shadow: 0 0 10px rgba(255, 165, 0, 0.4);
+}
+
+/* Yield Generation */
+.yield-ability {
+  background: rgba(0, 255, 127, 0.2);
+  border-color: #00FF7F;
+  color: #00FF7F;
+}
+
+.yield-ability:hover {
+  background: rgba(0, 255, 127, 0.3);
+  box-shadow: 0 0 10px rgba(0, 255, 127, 0.4);
+}
+
+/* Destruction */
+.destroy-ability {
+  background: rgba(255, 0, 68, 0.2);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.destroy-ability:hover {
+  background: rgba(255, 0, 68, 0.3);
+  box-shadow: 0 0 10px rgba(255, 0, 68, 0.4);
+  animation: destroyPulse 0.5s ease-in-out;
+}
+
+@keyframes destroyPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Card Draw */
+.draw-ability {
+  background: rgba(138, 43, 226, 0.2);
+  border-color: var(--color-purple-circuit);
+  color: var(--color-purple-circuit);
+}
+
+.draw-ability:hover {
+  background: rgba(138, 43, 226, 0.3);
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
+}
+
+/* Storage */
+.storage-ability {
+  background: rgba(70, 130, 180, 0.2);
+  border-color: #4682B4;
+  color: #4682B4;
+}
+
+/* Protection */
+.protection-ability {
+  background: rgba(50, 205, 50, 0.2);
+  border-color: #32CD32;
+  color: #32CD32;
+}
+
+.protection-ability:hover {
+  background: rgba(50, 205, 50, 0.3);
+  animation: protectionShield 1s ease-in-out infinite;
+}
+
+@keyframes protectionShield {
+  0%, 100% { box-shadow: 0 0 5px rgba(50, 205, 50, 0.4); }
+  50% { box-shadow: 0 0 15px rgba(50, 205, 50, 0.6); }
+}
+
+/* Steal/Takeover */
+.steal-ability,
+.takeover-ability {
+  background: rgba(220, 20, 60, 0.2);
+  border-color: #DC143C;
+  color: #DC143C;
+}
+
+/* Scaling Effects */
+.scale-ability {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: #FFD700;
+  color: #FFD700;
+}
+
+/* Burn */
+.burn-ability {
+  background: rgba(255, 69, 0, 0.2);
+  border-color: #FF4500;
+  color: #FF4500;
+  animation: burnFlicker 2s ease-in-out infinite;
+}
+
+@keyframes burnFlicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* ===== CARD ART SPECIALIZATIONS ===== */
+
+/* Bridge Hack - Legendary Destruction */
+.bridge-explosion {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.explosion-center {
+  width: 30px;
+  height: 30px;
+  background: radial-gradient(circle, var(--color-danger), #FF6B00);
+  border-radius: 50%;
+  animation: explosionCore 1.5s ease-in-out infinite;
+}
+
+.explosion-rings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.explosion-rings .ring {
+  position: absolute;
+  border: 2px solid var(--color-danger);
+  border-radius: 50%;
+  animation: explosionRing 2s ease-out infinite;
+}
+
+.explosion-rings .ring-1 {
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  animation-delay: 0s;
+}
+
+.explosion-rings .ring-2 {
+  width: 60px;
+  height: 60px;
+  margin: -30px 0 0 -30px;
+  animation-delay: 0.5s;
+}
+
+.explosion-rings .ring-3 {
+  width: 80px;
+  height: 80px;
+  margin: -40px 0 0 -40px;
+  animation-delay: 1s;
+}
+
+@keyframes explosionCore {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 20px var(--color-danger);
+  }
+  50% { 
+    transform: scale(1.2);
+    box-shadow: 0 0 30px var(--color-danger);
+  }
+}
+
+@keyframes explosionRing {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Conference Scene - Premium Learning */
+.conference-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.speaker-podium {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 30px;
+  background: linear-gradient(45deg, var(--color-purple-circuit), var(--color-cyan-electric));
+  border-radius: 4px;
+}
+
+.audience-network {
+  position: absolute;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 15px;
+}
+
+.attendee {
+  width: 8px;
+  height: 12px;
+  background: var(--color-cyan-electric);
+  border-radius: 50% 50% 0 0;
+  animation: attendeeGlow 3s ease-in-out infinite;
+}
+
+.attendee-1 { animation-delay: 0s; }
+.attendee-2 { animation-delay: 1s; }
+.attendee-3 { animation-delay: 2s; }
+
+@keyframes attendeeGlow {
+  0%, 100% { box-shadow: 0 0 5px var(--color-cyan-electric); }
+  50% { box-shadow: 0 0 15px var(--color-cyan-electric); }
+}
+
+.knowledge-flow .flow-line {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-purple-circuit), transparent);
+  animation: knowledgeFlow 2s ease-in-out infinite;
+}
+
+.flow-1 {
+  top: 40%;
+  left: 30%;
+  width: 40px;
+  transform: rotate(-30deg);
+}
+
+.flow-2 {
+  top: 40%;
+  right: 30%;
+  width: 40px;
+  transform: rotate(30deg);
+}
+
+@keyframes knowledgeFlow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Uniswap AMM Visualization */
+.uniswap-amm {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.liquidity-pool {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  border: 2px solid var(--color-amber-neon);
+  background: radial-gradient(circle, rgba(255, 165, 0, 0.3), transparent);
+  animation: poolPulse 2s ease-in-out infinite;
+}
+
+.pool-a { animation-delay: 0s; }
+.pool-b { animation-delay: 1s; }
+
+@keyframes poolPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.swap-arrow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 2px;
+  background: var(--color-cyan-electric);
+}
+
+.swap-arrow::after {
+  content: '';
+  position: absolute;
+  right: -5px;
+  top: -3px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid var(--color-cyan-electric);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+
+/* Multi-sig Vault */
+.multisig-vault {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.vault-door {
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, var(--color-cyan-electric), var(--color-navy-deep));
+  border-radius: 50%;
+  border: 3px solid var(--color-amber-neon);
+  position: relative;
+}
+
+.vault-door::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 15px;
+  height: 15px;
+  background: var(--color-amber-neon);
+  border-radius: 50%;
+}
+
+.signature-keys {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.key {
+  width: 6px;
+  height: 15px;
+  background: var(--color-cyan-electric);
+  border-radius: 2px;
+  animation: keyActivation 3s ease-in-out infinite;
+}
+
+.key-1 { animation-delay: 0s; }
+.key-2 { animation-delay: 1s; }
+.key-3 { animation-delay: 2s; }
+
+@keyframes keyActivation {
+  0%, 80%, 100% { 
+    opacity: 0.4;
+    box-shadow: none;
+  }
+  10%, 70% { 
+    opacity: 1;
+    box-shadow: 0 0 10px var(--color-cyan-electric);
+  }
+}
+
+/* ===== CARD TYPE BACKGROUND EFFECTS ===== */
+
+/* Chain Network Effects */
+.chain-nodes .node {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--color-cyan-electric);
+  border-radius: 50%;
+  animation: nodeSync 4s ease-in-out infinite;
+}
+
+.node-primary {
+  top: 30%;
+  left: 20%;
+  animation-delay: 0s;
+}
+
+.node-secondary {
+  top: 30%;
+  right: 20%;
+  animation-delay: 1.3s;
+}
+
+.node-tertiary {
+  bottom: 40%;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 2.6s;
+}
+
+@keyframes nodeSync {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: scale(1.5);
+    opacity: 1;
+    box-shadow: 0 0 15px var(--color-cyan-electric);
+  }
+}
+
+.network-connections .connection {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-cyan-electric), transparent);
+  animation: dataFlow 3s linear infinite;
+}
+
+.connection-1 {
+  top: 32%;
+  left: 25%;
+  width: 50%;
+}
+
+.connection-2 {
+  top: 32%;
+  right: 15%;
+  width: 30%;
+  transform: rotate(60deg);
+  transform-origin: left;
+}
+
+.connection-3 {
+  bottom: 42%;
+  left: 25%;
+  width: 25%;
+  transform: rotate(-60deg);
+  transform-origin: left;
+}
+
+@keyframes dataFlow {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* DeFi Liquidity Pool Effects */
+.liquidity-pools {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 30px;
+}
+
+.pool {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--color-amber-neon);
+  background: radial-gradient(circle, rgba(255, 165, 0, 0.4), rgba(139, 0, 255, 0.2));
+  animation: liquidityFlow 3s ease-in-out infinite;
+}
+
+.pool-primary { animation-delay: 0s; }
+.pool-secondary { animation-delay: 1.5s; }
+
+@keyframes liquidityFlow {
+  0%, 100% { 
+    transform: scale(1);
+    border-color: var(--color-amber-neon);
+  }
+  50% { 
+    transform: scale(1.2);
+    border-color: var(--color-purple-circuit);
+  }
+}
+
+.yield-streams .stream {
+  position: absolute;
+  width: 2px;
+  height: 30px;
+  background: linear-gradient(to top, transparent, var(--color-amber-neon), transparent);
+  animation: yieldStream 2s ease-in-out infinite;
+}
+
+.stream-1 {
+  top: 60%;
+  left: 35%;
+  animation-delay: 0s;
+}
+
+.stream-2 {
+  top: 60%;
+  right: 35%;
+  animation-delay: 1s;
+}
+
+@keyframes yieldStream {
+  0%, 100% { 
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% { 
+    opacity: 1;
+    transform: translateY(-10px);
+  }
+}
+
+/* ===== RARITY TIER VISUAL EFFECTS ===== */
+
+.legendary-tier {
+  position: relative;
+  overflow: visible;
+}
+
+.legendary-tier::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  background: linear-gradient(45deg, var(--color-cyan-electric), var(--color-amber-neon), var(--color-purple-circuit), var(--color-magenta-glow));
+  background-size: 400% 400%;
+  border-radius: var(--card-border-radius);
+  z-index: -1;
+  animation: legendaryGlow 3s ease-in-out infinite;
+}
+
+@keyframes legendaryGlow {
+  0%, 100% { 
+    background-position: 0% 50%;
+    filter: blur(2px);
+  }
+  50% { 
+    background-position: 100% 50%;
+    filter: blur(1px);
+  }
+}
+
+.premium-tier .card-name {
+  position: relative;
+}
+
+.premium-tier .card-name::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, var(--color-amber-neon), var(--color-purple-circuit));
+  border-radius: 8px;
+  z-index: -1;
+  opacity: 0.6;
+  animation: premiumShimmer 2s ease-in-out infinite;
+}
+
+@keyframes premiumShimmer {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* ===== ENERGY CORES AND EFFECTS ===== */
+.energy-core {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--color-cyan-electric);
+  border-radius: 50%;
+  left: var(--position-x);
+  top: var(--position-y);
+  animation: energyPulse 2s ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+@keyframes energyPulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.6;
+    box-shadow: 0 0 5px var(--color-cyan-electric);
+  }
+  50% { 
+    transform: scale(1.5);
+    opacity: 1;
+    box-shadow: 0 0 15px var(--color-cyan-electric);
+  }
+}
+
+.energy-stream {
+  position: absolute;
+  background: linear-gradient(90deg, transparent, var(--color-cyan-electric), transparent);
+  animation: energyFlow 3s linear infinite;
+}
+
+.stream-horizontal {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  transform: translateY(-50%);
+}
+
+.stream-vertical {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%) rotate(90deg);
+}
+
+@keyframes energyFlow {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.legendary-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1), transparent);
+  border-radius: 50%;
+  animation: legendaryBurst 4s ease-in-out infinite;
+}
+
+@keyframes legendaryBurst {
+  0%, 100% { 
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  50% { 
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+}
+
+/* ===== TOKEN COUNTERS ===== */
+.token-counter {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(255, 215, 0, 0.2);
+  border: 1px solid #FFD700;
+  border-radius: 12px;
+  padding: 0.2rem 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.token-symbol {
+  font-size: 1rem;
+  filter: drop-shadow(0 0 5px #FFD700);
+}
+
+.token-count {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #FFD700;
+}
+
+/* ===== RESPONSIVE ABILITY STYLING ===== */
+@media (max-width: 768px) {
+  .abilities-container {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  
+  .ability-icon {
+    flex-direction: row;
+    gap: 0.5rem;
+    padding: 0.2rem 0.4rem;
+  }
+  
+  .ability-symbol {
+    font-size: 0.9rem;
+  }
+  
+  .ability-value {
+    font-size: 0.8rem;
+  }
+}
+
+/* ===== ACCESSIBILITY ENHANCEMENTS ===== */
+@media (prefers-reduced-motion: reduce) {
+  .energy-core,
+  .node,
+  .pool,
+  .attendee,
+  .key,
+  .explosion-center,
+  .legendary-burst {
+    animation: none;
+  }
+  
+  .legendary-tier::before,
+  .premium-tier .card-name::after {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* ===== HIGH CONTRAST MODE ===== */
+@media (prefers-contrast: high) {
+  .ability-icon {
+    border-width: 2px;
+  }
+  
+  .abilities-container {
+    border-width: 2px;
+  }
+  
+  .ability-symbol {
+    filter: none;
+  }
+}

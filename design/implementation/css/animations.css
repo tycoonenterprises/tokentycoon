@@ -1,0 +1,620 @@
+/* Token Tycoon v2.0 - Advanced Animation System */
+/* Circuit energy flows, particle effects, and interactive animations */
+
+/* ===== KEYFRAME ANIMATIONS ===== */
+
+/* Title glow animation */
+@keyframes titleGlow {
+  0% {
+    text-shadow: 
+      0 0 5px var(--color-cyan-electric),
+      0 0 10px var(--color-cyan-electric),
+      0 0 15px var(--color-cyan-electric);
+  }
+  100% {
+    text-shadow: 
+      0 0 10px var(--color-cyan-electric),
+      0 0 20px var(--color-cyan-electric),
+      0 0 30px var(--color-cyan-electric),
+      0 0 40px var(--color-amber-neon);
+  }
+}
+
+/* Circuit scan overlay */
+@keyframes circuitScan {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Warning pulse for destructive actions */
+@keyframes warningPulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 5px var(--color-danger),
+      inset 0 0 5px rgba(255, 0, 68, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 0 20px var(--color-danger),
+      0 0 30px var(--color-amber-orange),
+      inset 0 0 10px rgba(255, 0, 68, 0.3);
+  }
+}
+
+/* Energy flow animation */
+@keyframes energyFlow {
+  0% {
+    stroke-dashoffset: 0;
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1.0;
+  }
+  100% {
+    stroke-dashoffset: 20px;
+    opacity: 0.3;
+  }
+}
+
+/* Network pulse animation */
+@keyframes networkPulse {
+  0%, 100% {
+    transform: scale(1.0);
+    opacity: 0.6;
+    filter: brightness(1.0);
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1.0;
+    filter: brightness(1.5);
+  }
+}
+
+/* Particle float animation */
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translate(0, 0) scale(1.0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translate(10px, -15px) scale(1.2);
+    opacity: 1.0;
+  }
+}
+
+/* Explosion ring animation */
+@keyframes explosionRing {
+  0% {
+    r: 5;
+    opacity: 1.0;
+    stroke-width: 3;
+  }
+  100% {
+    r: 30;
+    opacity: 0;
+    stroke-width: 0.5;
+  }
+}
+
+/* Knowledge flow animation */
+@keyframes knowledgeFlow {
+  0% {
+    stroke-dasharray: 0, 100;
+    opacity: 0.3;
+  }
+  50% {
+    stroke-dasharray: 50, 50;
+    opacity: 1.0;
+  }
+  100% {
+    stroke-dasharray: 100, 0;
+    opacity: 0.7;
+  }
+}
+
+/* Yield accumulation animation */
+@keyframes yieldAccumulation {
+  0% {
+    transform: scale(1.0);
+    fill-opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.1);
+    fill-opacity: 1.0;
+  }
+  100% {
+    transform: scale(1.0);
+    fill-opacity: 0.6;
+  }
+}
+
+/* Security shield pulse */
+@keyframes securityPulse {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(1.0);
+    filter: drop-shadow(0 0 5px currentColor);
+  }
+  50% {
+    opacity: 1.0;
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 15px currentColor);
+  }
+}
+
+/* Card hover lift animation */
+@keyframes cardLift {
+  0% {
+    transform: translateY(0) scale(1.0);
+  }
+  100% {
+    transform: translateY(-8px) scale(1.02);
+  }
+}
+
+/* Glow intensity pulse */
+@keyframes glowPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px currentColor);
+    opacity: 0.6;
+  }
+  50% {
+    filter: drop-shadow(0 0 15px currentColor);
+    opacity: 1.0;
+  }
+}
+
+/* Data flow animation */
+@keyframes dataFlow {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 15;
+  }
+}
+
+/* ===== SVG ELEMENT ANIMATIONS ===== */
+
+/* Network nodes */
+.network-hub {
+  fill: var(--color-cyan-electric);
+  stroke: var(--color-cyan-bright);
+  stroke-width: 2;
+  animation: networkPulse 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px var(--color-cyan-electric));
+}
+
+.validator-node {
+  fill: var(--color-cyan-bright);
+  stroke: var(--color-cyan-electric);
+  stroke-width: 1;
+  animation: networkPulse 3s ease-in-out infinite;
+  animation-delay: 0.5s;
+  filter: drop-shadow(0 0 4px var(--color-cyan-bright));
+}
+
+/* Network connections */
+.network-connection {
+  stroke: var(--color-cyan-electric);
+  stroke-width: 2;
+  stroke-dasharray: 10, 5;
+  animation: dataFlow 2s linear infinite;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 2px var(--color-cyan-electric));
+}
+
+.network-connection.secondary {
+  stroke: var(--color-cyan-bright);
+  stroke-width: 1;
+  opacity: 0.5;
+  animation-delay: 1s;
+}
+
+/* Energy particles */
+.energy-particle {
+  fill: var(--color-cyan-electric);
+  filter: drop-shadow(0 0 4px var(--color-cyan-electric));
+  animation: particleFloat 2s ease-in-out infinite;
+}
+
+/* DeFi elements */
+.liquidity-pool {
+  fill: rgba(255, 165, 0, 0.3);
+  stroke: var(--color-amber-neon);
+  stroke-width: 2;
+  animation: yieldAccumulation 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px var(--color-amber-neon));
+}
+
+.pool-connection {
+  stroke: var(--color-amber-orange);
+  stroke-width: 3;
+  stroke-dasharray: 8, 4;
+  animation: energyFlow 2.5s linear infinite;
+}
+
+.swap-arrow {
+  fill: var(--color-purple-circuit);
+  animation: networkPulse 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px var(--color-purple-circuit));
+}
+
+.yield-container {
+  fill: rgba(139, 0, 255, 0.2);
+  stroke: var(--color-purple-circuit);
+  stroke-width: 2;
+  animation: yieldAccumulation 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px var(--color-purple-circuit));
+}
+
+.yield-text {
+  fill: var(--color-text-primary);
+  font-family: var(--font-primary);
+  font-size: 10px;
+  font-weight: 700;
+  text-anchor: middle;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.flow-particle {
+  fill: var(--color-amber-neon);
+  filter: drop-shadow(0 0 3px var(--color-amber-neon));
+}
+
+/* EOA (wallet) elements */
+.vault-container {
+  fill: rgba(0, 184, 230, 0.2);
+  stroke: var(--color-eoa-primary);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 8px var(--color-eoa-primary));
+}
+
+.key-holder {
+  fill: var(--color-magenta-glow);
+  stroke: var(--color-eoa-primary);
+  stroke-width: 1.5;
+  animation: securityPulse 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px var(--color-magenta-glow));
+}
+
+.auth-connection {
+  stroke: var(--color-eoa-primary);
+  stroke-width: 2;
+  stroke-dasharray: 5, 3;
+  animation: dataFlow 3s linear infinite;
+  opacity: 0.8;
+}
+
+.security-shield {
+  fill: rgba(0, 184, 230, 0.3);
+  stroke: var(--color-eoa-primary);
+  stroke-width: 2;
+  animation: securityPulse 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px var(--color-eoa-primary));
+}
+
+.key-symbol {
+  fill: var(--color-text-primary);
+  font-size: 12px;
+  text-anchor: middle;
+  filter: drop-shadow(0 0 4px var(--color-magenta-glow));
+}
+
+.storage-level {
+  fill: linear-gradient(90deg, var(--color-eoa-primary), var(--color-magenta-glow));
+  animation: yieldAccumulation 5s ease-in-out infinite;
+}
+
+.storage-text {
+  fill: var(--color-text-secondary);
+  font-family: var(--font-primary);
+  font-size: 8px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+/* Action (destructive) elements */
+.bridge-structure {
+  stroke: var(--color-amber-orange);
+  stroke-width: 4;
+  filter: drop-shadow(0 0 4px var(--color-amber-orange));
+}
+
+.bridge-center {
+  fill: var(--color-danger);
+  stroke: var(--color-amber-orange);
+  stroke-width: 2;
+  animation: warningPulse 1.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px var(--color-danger));
+}
+
+.attack-vector {
+  stroke: var(--color-danger);
+  stroke-width: 3;
+  animation: energyFlow 1s linear infinite;
+  filter: drop-shadow(0 0 4px var(--color-danger));
+}
+
+.explosion-ring {
+  fill: none;
+  stroke: var(--color-danger);
+  stroke-width: 2;
+  animation: explosionRing 2s ease-out infinite;
+}
+
+.explosion-ring.secondary {
+  animation-delay: 0.5s;
+  stroke: var(--color-amber-orange);
+}
+
+.warning-symbol {
+  fill: var(--color-warning);
+  font-size: 16px;
+  text-anchor: middle;
+  animation: warningPulse 1s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px var(--color-warning));
+}
+
+.destruction-particle {
+  fill: var(--color-danger);
+  filter: drop-shadow(0 0 4px var(--color-danger));
+}
+
+/* Ability (academic) elements */
+.conference-stage {
+  fill: rgba(139, 0, 255, 0.2);
+  stroke: var(--color-purple-circuit);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 6px var(--color-purple-circuit));
+}
+
+.speaker-node {
+  fill: var(--color-cyan-electric);
+  stroke: var(--color-purple-circuit);
+  stroke-width: 1.5;
+  animation: networkPulse 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px var(--color-cyan-electric));
+}
+
+.audience-node {
+  fill: var(--color-purple-circuit);
+  stroke: var(--color-cyan-bright);
+  stroke-width: 1;
+  animation: networkPulse 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px var(--color-purple-circuit));
+}
+
+.audience-node:nth-child(odd) {
+  animation-delay: 1s;
+}
+
+.knowledge-flow {
+  stroke: var(--color-cyan-electric);
+  stroke-width: 2;
+  stroke-dasharray: 8, 4;
+  animation: knowledgeFlow 4s linear infinite;
+  opacity: 0.8;
+  filter: drop-shadow(0 0 3px var(--color-cyan-electric));
+}
+
+.knowledge-symbol {
+  fill: var(--color-text-primary);
+  font-size: 14px;
+  text-anchor: middle;
+  filter: drop-shadow(0 0 4px var(--color-purple-circuit));
+  animation: particleFloat 4s ease-in-out infinite;
+}
+
+.learning-particle {
+  fill: var(--color-purple-circuit);
+  filter: drop-shadow(0 0 3px var(--color-purple-circuit));
+}
+
+/* ===== INTERACTION ANIMATIONS ===== */
+
+/* Card hover effects */
+.card:hover .network-hub {
+  animation-duration: 2s;
+}
+
+.card:hover .network-connection {
+  animation-duration: 1s;
+  stroke-width: 3;
+}
+
+.card:hover .energy-particle {
+  animation-duration: 1s;
+  filter: drop-shadow(0 0 8px var(--color-cyan-electric));
+}
+
+.card:hover .liquidity-pool {
+  animation-duration: 2s;
+  transform: scale(1.1);
+}
+
+.card:hover .flow-particle {
+  animation-duration: 1s;
+}
+
+.card:hover .security-shield {
+  animation-duration: 2s;
+  opacity: 1.0;
+}
+
+.card:hover .explosion-ring {
+  animation-duration: 1s;
+}
+
+.card:hover .knowledge-flow {
+  animation-duration: 2s;
+  stroke-width: 3;
+}
+
+/* ===== RARITY-BASED ANIMATION ENHANCEMENTS ===== */
+
+/* Standard tier enhancements */
+.standard-tier .circuit-pattern {
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.standard-tier:hover .circuit-pattern {
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* Premium tier enhancements */
+.premium-tier .circuit-pattern {
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+.premium-tier:hover .circuit-pattern {
+  filter: drop-shadow(0 0 12px currentColor);
+}
+
+.premium-tier .network-hub,
+.premium-tier .liquidity-pool,
+.premium-tier .security-shield,
+.premium-tier .explosion-ring,
+.premium-tier .speaker-node {
+  animation-duration: 2s;
+}
+
+.premium-tier:hover .network-hub,
+.premium-tier:hover .liquidity-pool,
+.premium-tier:hover .security-shield,
+.premium-tier:hover .explosion-ring,
+.premium-tier:hover .speaker-node {
+  animation-duration: 1s;
+  transform: scale(1.2);
+}
+
+/* ===== PARTICLE SYSTEM BASE STYLES ===== */
+.particle-system {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: var(--z-particles);
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: particleFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.particle.chain {
+  background: var(--color-cyan-electric);
+}
+
+.particle.defi {
+  background: var(--color-amber-neon);
+}
+
+.particle.eoa {
+  background: var(--color-eoa-primary);
+}
+
+.particle.action {
+  background: var(--color-danger);
+  animation-duration: 1s;
+}
+
+.particle.ability {
+  background: var(--color-purple-circuit);
+}
+
+/* ===== PERFORMANCE OPTIMIZATIONS ===== */
+
+/* GPU acceleration for smooth animations */
+.card,
+.circuit-pattern,
+.particle,
+.glow-effect {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+}
+
+/* Reduce animation complexity on lower-end devices */
+@media (max-width: 768px) {
+  .particle {
+    display: none;
+  }
+  
+  .circuit-pattern {
+    filter: none;
+  }
+  
+  .network-hub,
+  .liquidity-pool,
+  .security-shield,
+  .explosion-ring,
+  .speaker-node {
+    animation-duration: 4s;
+  }
+}
+
+/* Battery-conscious mode */
+@media (prefers-reduced-motion: reduce) {
+  .particle {
+    display: none;
+  }
+  
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .glow-effect,
+  .circuit-overlay,
+  .warning-pulse {
+    animation: none !important;
+  }
+}
+
+/* ===== ACCESSIBILITY ENHANCEMENTS ===== */
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+  .network-hub,
+  .liquidity-pool,
+  .security-shield,
+  .explosion-ring,
+  .speaker-node {
+    stroke-width: 3px;
+    filter: none;
+  }
+  
+  .particle {
+    width: 4px;
+    height: 4px;
+    filter: none;
+  }
+}
+
+/* Increased motion for users who prefer it */
+@media (prefers-reduced-motion: no-preference) {
+  .card:hover {
+    animation: cardLift 0.3s ease-out forwards;
+  }
+  
+  .glow-effect {
+    animation: glowPulse 3s ease-in-out infinite;
+  }
+}

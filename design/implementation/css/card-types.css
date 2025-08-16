@@ -1,0 +1,611 @@
+/* Token Tycoon v2.0 - Card Type Specific Styles */
+/* Individual styling for Chain, DeFi, EOA, Action, and Ability cards */
+
+/* ===== CHAIN CARD STYLING ===== */
+.chain-card {
+  border-color: var(--color-chain);
+  color: var(--color-chain);
+}
+
+.chain-card .glow-effect {
+  box-shadow: 
+    0 0 20px rgba(0, 217, 255, 0.4),
+    0 0 40px rgba(0, 217, 255, 0.2),
+    inset 0 0 20px rgba(0, 217, 255, 0.1);
+}
+
+.chain-card:hover .glow-effect {
+  box-shadow: 
+    0 0 30px rgba(0, 217, 255, 0.6),
+    0 0 60px rgba(0, 217, 255, 0.3),
+    inset 0 0 30px rgba(0, 217, 255, 0.2);
+}
+
+.chain-card .cost-indicator {
+  border-color: var(--color-chain);
+  background: linear-gradient(135deg, 
+    rgba(0, 217, 255, 0.2), 
+    rgba(10, 14, 39, 0.8));
+  color: var(--color-chain);
+  box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+}
+
+.chain-card .card-name {
+  color: var(--color-chain);
+  text-shadow: 
+    0 0 10px var(--color-chain),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.chain-card .card-type-badge {
+  background: var(--color-chain);
+  color: var(--color-navy-deep);
+  box-shadow: 0 0 10px rgba(0, 217, 255, 0.4);
+}
+
+.chain-card .circuit-overlay {
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(0, 217, 255, 0.1) 50%, 
+    transparent 70%);
+}
+
+/* Chain-specific network visualization */
+.chain-card .eth-logo {
+  color: var(--color-chain);
+  font-weight: 900;
+  text-shadow: 0 0 15px var(--color-chain);
+  animation: networkPulse 4s ease-in-out infinite;
+}
+
+/* ===== DeFi CARD STYLING ===== */
+.defi-card {
+  border-color: var(--color-defi-primary);
+  color: var(--color-defi-primary);
+  background: linear-gradient(145deg, 
+    var(--color-navy-deep), 
+    rgba(26, 30, 58, 0.9),
+    rgba(139, 0, 255, 0.05));
+}
+
+.defi-card .glow-effect {
+  box-shadow: 
+    0 0 20px rgba(255, 165, 0, 0.4),
+    0 0 40px rgba(139, 0, 255, 0.2),
+    inset 0 0 20px rgba(255, 165, 0, 0.1);
+}
+
+.defi-card:hover .glow-effect {
+  box-shadow: 
+    0 0 30px rgba(255, 165, 0, 0.6),
+    0 0 60px rgba(139, 0, 255, 0.4),
+    inset 0 0 30px rgba(255, 165, 0, 0.2);
+}
+
+.defi-card .cost-indicator {
+  border-color: var(--color-defi-primary);
+  background: linear-gradient(135deg, 
+    rgba(255, 165, 0, 0.2), 
+    rgba(139, 0, 255, 0.1),
+    rgba(10, 14, 39, 0.8));
+  color: var(--color-defi-primary);
+  box-shadow: 0 0 15px rgba(255, 165, 0, 0.3);
+}
+
+.defi-card .card-name {
+  background: linear-gradient(180deg, 
+    var(--color-defi-primary) 0%, 
+    var(--color-defi-secondary) 50%,
+    rgba(255, 165, 0, 0.7) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 
+    0 0 10px var(--color-defi-primary),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.defi-card .card-type-badge {
+  background: linear-gradient(45deg, 
+    var(--color-defi-primary), 
+    var(--color-defi-secondary));
+  color: var(--color-navy-deep);
+  box-shadow: 0 0 10px rgba(255, 165, 0, 0.4);
+}
+
+.defi-card .circuit-overlay {
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(255, 165, 0, 0.08) 45%,
+    rgba(139, 0, 255, 0.08) 55%, 
+    transparent 70%);
+}
+
+.defi-card .storage-indicator {
+  color: var(--color-defi-secondary);
+  background: rgba(139, 0, 255, 0.2);
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  border: 1px solid rgba(139, 0, 255, 0.3);
+}
+
+/* DeFi-specific unicorn symbol */
+.defi-card .unicorn-symbol {
+  font-size: 2.5rem;
+  color: var(--color-defi-primary);
+  text-shadow: 0 0 20px var(--color-defi-primary);
+  animation: yieldAccumulation 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px var(--color-defi-primary));
+}
+
+/* ===== EOA CARD STYLING ===== */
+.eoa-card {
+  border-color: var(--color-eoa-primary);
+  color: var(--color-eoa-primary);
+  background: linear-gradient(145deg, 
+    var(--color-navy-deep), 
+    rgba(26, 30, 58, 0.9),
+    rgba(255, 0, 128, 0.03));
+}
+
+.eoa-card .glow-effect {
+  box-shadow: 
+    0 0 20px rgba(0, 184, 230, 0.4),
+    0 0 40px rgba(255, 0, 128, 0.2),
+    inset 0 0 20px rgba(0, 184, 230, 0.1);
+}
+
+.eoa-card:hover .glow-effect {
+  box-shadow: 
+    0 0 30px rgba(0, 184, 230, 0.6),
+    0 0 60px rgba(255, 0, 128, 0.4),
+    inset 0 0 30px rgba(0, 184, 230, 0.2);
+}
+
+.eoa-card .cost-indicator {
+  border-color: var(--color-eoa-primary);
+  background: linear-gradient(135deg, 
+    rgba(0, 184, 230, 0.2), 
+    rgba(255, 0, 128, 0.1),
+    rgba(10, 14, 39, 0.8));
+  color: var(--color-eoa-primary);
+  box-shadow: 0 0 15px rgba(0, 184, 230, 0.3);
+}
+
+.eoa-card .card-name {
+  background: linear-gradient(180deg, 
+    var(--color-eoa-primary) 0%, 
+    var(--color-eoa-secondary) 50%,
+    rgba(0, 184, 230, 0.7) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 
+    0 0 10px var(--color-eoa-primary),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.eoa-card .card-type-badge {
+  background: linear-gradient(45deg, 
+    var(--color-eoa-primary), 
+    var(--color-eoa-secondary));
+  color: var(--color-navy-deep);
+  box-shadow: 0 0 10px rgba(0, 184, 230, 0.4);
+  border-radius: 8px;
+  position: relative;
+}
+
+.eoa-card .card-type-badge::before {
+  content: '💎';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  filter: drop-shadow(0 0 4px var(--color-eoa-secondary));
+}
+
+.eoa-card .circuit-overlay {
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(0, 184, 230, 0.08) 45%,
+    rgba(255, 0, 128, 0.08) 55%, 
+    transparent 70%);
+}
+
+.eoa-card .protection-indicator {
+  color: var(--color-eoa-secondary);
+  background: rgba(255, 0, 128, 0.2);
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 0, 128, 0.3);
+}
+
+/* EOA-specific security elements */
+.eoa-card .security-shield {
+  animation: securityPulse 4s ease-in-out infinite;
+}
+
+.eoa-card:hover .security-shield {
+  animation-duration: 2s;
+  filter: drop-shadow(0 0 15px var(--color-eoa-primary));
+}
+
+/* ===== ACTION CARD STYLING ===== */
+.action-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Base action card styles */
+.action-card .cost-indicator {
+  border: 2px solid;
+  background: rgba(0, 0, 0, 0.9);
+  color: inherit;
+  box-shadow: 0 0 15px currentColor;
+}
+
+.action-card .card-name {
+  color: inherit;
+  text-shadow: 
+    0 0 10px currentColor,
+    0 2px 4px rgba(0, 0, 0, 0.8);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.action-card .circuit-overlay {
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(255, 107, 0, 0.1) 50%, 
+    transparent 70%);
+}
+
+/* Destructive action subtype */
+.action-card.destructive {
+  border: 3px solid;
+  border-image: linear-gradient(45deg, 
+    var(--color-action-destructive-start), 
+    var(--color-action-destructive-end)) 1;
+  background: linear-gradient(145deg, 
+    var(--color-navy-deep), 
+    rgba(26, 30, 58, 0.9),
+    rgba(255, 0, 68, 0.05));
+  color: var(--color-action-destructive-start);
+}
+
+.action-card.destructive .glow-effect {
+  box-shadow: 
+    0 0 25px rgba(255, 107, 0, 0.4),
+    0 0 50px rgba(255, 0, 0, 0.2),
+    inset 0 0 25px rgba(255, 107, 0, 0.1);
+}
+
+.action-card.destructive:hover .glow-effect {
+  box-shadow: 
+    0 0 35px rgba(255, 107, 0, 0.6),
+    0 0 70px rgba(255, 0, 0, 0.4),
+    inset 0 0 35px rgba(255, 107, 0, 0.2);
+}
+
+.action-card.destructive .card-type-badge {
+  background: linear-gradient(45deg, 
+    var(--color-action-destructive-start), 
+    var(--color-action-destructive-end));
+  color: var(--color-navy-deep);
+  box-shadow: 0 0 15px rgba(255, 107, 0, 0.5);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.action-card.destructive .card-type-badge::before {
+  content: '⚠';
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-danger);
+  font-size: 0.9rem;
+  animation: warningPulse 1.5s ease-in-out infinite;
+}
+
+.action-card.destructive .impact-indicator {
+  color: var(--color-danger);
+  background: rgba(255, 0, 68, 0.2);
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 0, 68, 0.4);
+  animation: warningPulse 2s ease-in-out infinite;
+}
+
+/* Educational action subtype */
+.action-card.educational {
+  border-color: var(--color-action-educational);
+  color: var(--color-action-educational);
+  background: linear-gradient(145deg, 
+    var(--color-navy-deep), 
+    rgba(26, 30, 58, 0.9),
+    rgba(139, 0, 255, 0.05));
+}
+
+.action-card.educational .glow-effect {
+  box-shadow: 
+    0 0 20px rgba(139, 0, 255, 0.4),
+    0 0 40px rgba(0, 217, 255, 0.2),
+    inset 0 0 20px rgba(139, 0, 255, 0.1);
+}
+
+.action-card.educational .card-type-badge {
+  background: linear-gradient(45deg, 
+    var(--color-action-educational), 
+    var(--color-cyan-electric));
+  color: var(--color-navy-deep);
+  box-shadow: 0 0 10px rgba(139, 0, 255, 0.4);
+}
+
+.action-card.educational .card-type-badge::before {
+  content: '📚';
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+}
+
+/* Technical action subtype */
+.action-card.technical {
+  border-color: var(--color-info);
+  color: var(--color-info);
+  background: linear-gradient(145deg, 
+    var(--color-navy-deep), 
+    rgba(26, 30, 58, 0.9),
+    rgba(0, 136, 255, 0.05));
+}
+
+.action-card.technical .glow-effect {
+  box-shadow: 
+    0 0 20px rgba(0, 136, 255, 0.4),
+    0 0 40px rgba(0, 136, 255, 0.2),
+    inset 0 0 20px rgba(0, 136, 255, 0.1);
+}
+
+.action-card.technical .card-type-badge {
+  background: var(--color-info);
+  color: var(--color-navy-deep);
+  box-shadow: 0 0 10px rgba(0, 136, 255, 0.4);
+}
+
+.action-card.technical .card-type-badge::before {
+  content: '⚙';
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  color: var(--color-info);
+}
+
+/* ===== ABILITY CARD STYLING ===== */
+.ability-card {
+  border-color: var(--color-ability);
+  color: var(--color-ability);
+  background: linear-gradient(145deg, 
+    var(--color-navy-deep), 
+    rgba(26, 30, 58, 0.9),
+    rgba(139, 0, 255, 0.05));
+}
+
+.ability-card .glow-effect {
+  box-shadow: 
+    0 0 20px rgba(139, 0, 255, 0.4),
+    0 0 40px rgba(0, 217, 255, 0.2),
+    inset 0 0 20px rgba(139, 0, 255, 0.1);
+}
+
+.ability-card:hover .glow-effect {
+  box-shadow: 
+    0 0 30px rgba(139, 0, 255, 0.6),
+    0 0 60px rgba(0, 217, 255, 0.4),
+    inset 0 0 30px rgba(139, 0, 255, 0.2);
+}
+
+.ability-card .cost-indicator {
+  border-color: var(--color-ability);
+  background: linear-gradient(135deg, 
+    rgba(139, 0, 255, 0.2), 
+    rgba(0, 217, 255, 0.1),
+    rgba(10, 14, 39, 0.8));
+  color: var(--color-ability);
+  box-shadow: 0 0 15px rgba(139, 0, 255, 0.3);
+}
+
+.ability-card .card-name {
+  background: linear-gradient(180deg, 
+    var(--color-ability) 0%, 
+    var(--color-cyan-electric) 50%,
+    rgba(139, 0, 255, 0.7) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 
+    0 0 10px var(--color-ability),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.ability-card .card-type-badge {
+  background: linear-gradient(45deg, 
+    var(--color-ability), 
+    var(--color-cyan-electric));
+  color: var(--color-navy-deep);
+  box-shadow: 0 0 10px rgba(139, 0, 255, 0.4);
+  border-radius: 8px;
+  position: relative;
+}
+
+.ability-card .card-type-badge::before {
+  content: '🧠';
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+  filter: drop-shadow(0 0 4px var(--color-ability));
+}
+
+.ability-card .circuit-overlay {
+  background: linear-gradient(45deg, 
+    transparent 30%, 
+    rgba(139, 0, 255, 0.08) 45%,
+    rgba(0, 217, 255, 0.08) 55%, 
+    transparent 70%);
+}
+
+.ability-card .learning-indicator {
+  color: var(--color-cyan-electric);
+  background: rgba(0, 217, 255, 0.2);
+  padding: 0.3rem 0.6rem;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 217, 255, 0.3);
+}
+
+/* Ability-specific neural network effects */
+.ability-card .speaker-node {
+  animation: networkPulse 3s ease-in-out infinite;
+}
+
+.ability-card:hover .speaker-node {
+  animation-duration: 1.5s;
+  filter: drop-shadow(0 0 12px var(--color-cyan-electric));
+}
+
+.ability-card .knowledge-flow {
+  stroke: var(--color-cyan-electric);
+  animation: knowledgeFlow 4s linear infinite;
+}
+
+.ability-card:hover .knowledge-flow {
+  animation-duration: 2s;
+  stroke-width: 3;
+  filter: drop-shadow(0 0 8px var(--color-cyan-electric));
+}
+
+/* ===== RARITY TIER ENHANCEMENTS PER CARD TYPE ===== */
+
+/* Common tier - minimal enhancements */
+.common-tier.chain-card,
+.common-tier.defi-card,
+.common-tier.eoa-card,
+.common-tier.action-card,
+.common-tier.ability-card {
+  border-width: 2px;
+}
+
+.common-tier .circuit-pattern {
+  opacity: 0.6;
+  filter: none;
+}
+
+/* Standard tier - moderate enhancements */
+.standard-tier.chain-card .network-hub,
+.standard-tier.defi-card .liquidity-pool,
+.standard-tier.eoa-card .security-shield,
+.standard-tier.action-card .explosion-ring,
+.standard-tier.ability-card .speaker-node {
+  animation-duration: 3s;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+.standard-tier .circuit-pattern {
+  opacity: 0.8;
+  filter: drop-shadow(0 0 3px currentColor);
+}
+
+/* Premium tier - maximum enhancements */
+.premium-tier.chain-card,
+.premium-tier.defi-card,
+.premium-tier.eoa-card,
+.premium-tier.action-card,
+.premium-tier.ability-card {
+  border-width: 4px;
+  position: relative;
+}
+
+.premium-tier.chain-card::before,
+.premium-tier.defi-card::before,
+.premium-tier.eoa-card::before,
+.premium-tier.action-card::before,
+.premium-tier.ability-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border: 2px solid;
+  border-color: inherit;
+  border-radius: var(--card-border-radius);
+  opacity: 0.5;
+  animation: glowPulse 4s ease-in-out infinite;
+}
+
+.premium-tier .network-hub,
+.premium-tier .liquidity-pool,
+.premium-tier .security-shield,
+.premium-tier .explosion-ring,
+.premium-tier .speaker-node {
+  animation-duration: 2s;
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+.premium-tier .circuit-pattern {
+  opacity: 1.0;
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+.premium-tier:hover .network-hub,
+.premium-tier:hover .liquidity-pool,
+.premium-tier:hover .security-shield,
+.premium-tier:hover .explosion-ring,
+.premium-tier:hover .speaker-node {
+  animation-duration: 1s;
+  transform: scale(1.3);
+  filter: drop-shadow(0 0 20px currentColor);
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+  .card-type-badge::before {
+    display: none;
+  }
+  
+  .storage-indicator,
+  .protection-indicator,
+  .impact-indicator,
+  .learning-indicator {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+  .glow-effect,
+  .circuit-overlay,
+  .warning-pulse {
+    display: none;
+  }
+  
+  .card {
+    border-style: solid;
+    border-width: 2px;
+  }
+  
+  .card-type-badge::before {
+    content: '';
+  }
+  
+  .card-type-badge::after {
+    content: ' (' attr(data-card-type) ')';
+    font-weight: normal;
+  }
+}
