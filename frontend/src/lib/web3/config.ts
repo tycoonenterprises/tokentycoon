@@ -1,8 +1,8 @@
 import { createConfig, http } from 'wagmi'
 
-// Local development network configuration
+// Local development network configuration (Anvil default)
 export const localChain = {
-  id: 1337,
+  id: 31337,
   name: 'Local Development',
   nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
@@ -32,7 +32,8 @@ export const privyConfig = {
       logo: undefined,
     },
     embeddedWallets: {
-      createOnLogin: 'users-without-wallets' as const,
+      createOnLogin: 'all-users' as const, // Create embedded wallet for all users
+      noPromptOnSignature: false, // Allow signature prompts
     },
     supportedChains: [localChain],
     defaultChain: localChain,

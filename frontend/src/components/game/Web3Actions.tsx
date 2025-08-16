@@ -58,17 +58,28 @@ export function Web3Actions() {
   const clearError = () => setError('')
 
   const handleSignMessage = async () => {
-    if (!user) return
+    if (!user) {
+      setError('No user logged in')
+      return
+    }
     
     setIsSigningMessage(true)
     setError('')
     
     try {
       const message = `Welcome to Ethereum TCG!\n\nTimestamp: ${new Date().toISOString()}\nUser: ${user.id}`
+      
+      console.log('Attempting to sign message for user:', user.id)
+      console.log('User wallets:', user.linkedAccounts)
+      console.log('Address from wagmi:', address)
+      console.log('Is connected:', isConnected)
+      
       const signResult = await signMessage({ message })
       setSignedMessage(signResult.signature)
+      console.log('Message signed successfully:', signResult)
     } catch (err: any) {
-      setError(`Message signing failed: ${err.message}`)
+      console.error('Message signing error:', err)
+      setError(`Message signing failed: ${err.message || err}`)
     } finally {
       setIsSigningMessage(false)
     }
