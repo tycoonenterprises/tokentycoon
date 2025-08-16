@@ -78,6 +78,8 @@ export interface GameState {
   turnNumber: number // Turn number from contract
   currentPhase: GamePhase
   activePlayer: string
+  viewingPlayer: string // Which player's perspective we're viewing in demo mode
+  isDemoMode: boolean // Whether we're in demo mode (user plays both sides)
   players: {
     player1: PlayerState
     player2: PlayerState
@@ -94,7 +96,8 @@ export interface GameState {
 
 export interface GameActions {
   // Game management
-  startGame: (player1Id: string, player2Id: string) => void
+  startDemoMode: (player1Id: string, player2Id: string) => void
+  switchViewingPlayer: () => void
   endGame: (winnerId?: string) => void
   nextPhase: () => void
   endTurn: () => void
@@ -122,11 +125,56 @@ export interface GameActions {
   resetGame: () => void
 }
 
+// Mock cards for testing when blockchain isn't connected
+const getMockCards = (): Card[] => [
+  {
+    id: 'test-ethereum-1',
+    name: 'Ethereum',
+    type: 'Chain',
+    cost: 1,
+    text: 'The original smart contract platform',
+    abilities: 'income',
+    power: undefined,
+    toughness: undefined,
+  },
+  {
+    id: 'test-uniswap-2',
+    name: 'Uniswap',
+    type: 'DeFi',
+    cost: 2,
+    text: 'Decentralized exchange protocol',
+    abilities: 'yield',
+    power: undefined,
+    toughness: undefined,
+  },
+  {
+    id: 'test-vitalik-3',
+    name: 'Vitalik Buterin',
+    type: 'EOA',
+    cost: 3,
+    text: 'Ethereum founder and developer',
+    abilities: 'draw',
+    power: 3,
+    toughness: 3,
+  },
+  {
+    id: 'test-gas-4',
+    name: 'Gas Spike',
+    type: 'Action',
+    cost: 1,
+    text: 'Deal 2 damage to target player',
+    abilities: 'damage',
+    power: undefined,
+    toughness: undefined,
+  },
+]
+
 // Helper function to get random cards from available cards
 const getRandomCards = (availableCards: Card[], count: number): Card[] => {
   if (availableCards.length === 0) {
-    // Fallback: return empty array if no cards are loaded
-    return []
+    // Fallback: use mock cards for testing
+    console.log('🎭 Using mock cards for demo')
+    availableCards = getMockCards()
   }
   
   // Create multiple instances of each card for deck variety
@@ -153,6 +201,8 @@ const initialState: GameState = {
   turnNumber: 1,
   currentPhase: 'main',
   activePlayer: 'player1',
+  viewingPlayer: 'player1',
+  isDemoMode: false,
   players: {
     player1: {
       id: 'player1',
@@ -178,7 +228,7 @@ const initialState: GameState = {
   isGameStarted: false,
   
   // Card registry state
-  availableCards: [],
+  availableCards: getMockCards(), // Start with mock cards for demo
   isLoadingCards: false,
   cardLoadError: null,
 }
@@ -188,17 +238,21 @@ export const useGameStore = create<GameState & GameActions>()(
     (set, get) => ({
       ...initialState,
 
-      startGame: (player1Id: string, player2Id: string) => {
+
+      startDemoMode: (player1Id: string, player2Id: string) => {
         const { availableCards } = get()
         set({
-          matchId: `match-${Date.now()}`,
+          matchId: `demo-${Date.now()}`,
           isGameActive: true,
-          isGameStarted: false, // Will be set to true when contract game starts
+          isGameStarted: false,
+          isDemoMode: true,
+          viewingPlayer: 'player1',
+          activePlayer: 'player1',
           players: {
             player1: {
               id: player1Id,
               balance: 20,
-              eth: 3, // Initial ETH from contract INITIAL_ETH
+              eth: 3,
               hand: getRandomCards(availableCards, 5),
               board: [],
               deckRemaining: 30,
@@ -207,7 +261,7 @@ export const useGameStore = create<GameState & GameActions>()(
             player2: {
               id: player2Id,
               balance: 20,
-              eth: 3, // Initial ETH from contract INITIAL_ETH
+              eth: 3,
               hand: getRandomCards(availableCards, 5),
               board: [],
               deckRemaining: 30,
@@ -215,6 +269,15 @@ export const useGameStore = create<GameState & GameActions>()(
             },
           },
         })
+      },
+
+      switchViewingPlayer: () => {
+        const { viewingPlayer, isDemoMode } = get()
+        if (isDemoMode) {
+          set({
+            viewingPlayer: viewingPlayer === 'player1' ? 'player2' : 'player1'
+          })
+        }
       },
 
       // Update game state from contract GameView
@@ -352,9 +415,9 @@ export const useGameStore = create<GameState & GameActions>()(
       },
 
       endTurn: () => {
-        const { activePlayer, players, turnNumber, isGameStarted } = get()
+        const { activePlayer, players, turnNumber, isGameStarted, isDemoMode, viewingPlayer } = get()
         
-        // In practice mode (when not connected to contract), simulate turn progression
+        // In practice/demo mode (when not connected to contract), simulate turn progression
         if (!isGameStarted) {
           const newActivePlayer = activePlayer === 'player1' ? 'player2' : 'player1'
           const newTurnNumber = activePlayer === 'player2' ? turnNumber + 1 : turnNumber
@@ -367,6 +430,7 @@ export const useGameStore = create<GameState & GameActions>()(
             currentTurn: newActivePlayer === 'player1' ? 0 : 1,
             turnNumber: newTurnNumber,
             currentPhase: 'main', // Skip draw/upkeep phases in practice mode
+            viewingPlayer: isDemoMode ? newActivePlayer : viewingPlayer, // Auto-switch viewing in demo mode
             players: {
               ...players,
               [newActivePlayer]: {
@@ -525,16 +589,6 @@ export const useGameStore = create<GameState & GameActions>()(
         set({
           ...initialState,
           availableCards, // Preserve loaded cards
-          players: {
-            player1: {
-              ...initialState.players.player1,
-              hand: getRandomCards(availableCards, 5),
-            },
-            player2: {
-              ...initialState.players.player2,
-              hand: getRandomCards(availableCards, 5),
-            },
-          },
         })
       },
     }),

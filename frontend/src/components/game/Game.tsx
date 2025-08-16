@@ -13,12 +13,15 @@ import { PrivyDebugInfo } from '@/components/debug/PrivyDebugInfo'
 export function Game() {
   const { logout, user } = usePrivy()
   const { 
-    startGame, 
+    startGame,
+    startDemoMode,
+    switchViewingPlayer,
     nextPhase, 
     resetGame, 
     isGameActive, 
     currentPhase, 
     activePlayer,
+    isDemoMode,
     winner 
   } = useGameStore()
   
@@ -33,6 +36,10 @@ export function Game() {
     startGame(user?.id || 'player1', 'player2')
   }
 
+  const handleStartDemoMode = () => {
+    startDemoMode(user?.id || 'player1', 'player2')
+  }
+
   const handleStartWithCustomDeck = () => {
     setShowDeckBuilder(true)
   }
@@ -41,8 +48,8 @@ export function Game() {
     setCustomDeck(deck)
     setShowDeckBuilder(false)
     // Here you would modify the game store to use the custom deck
-    // For now, we'll just start a regular game
-    startGame(user?.id || 'player1', 'player2')
+    // For now, we'll just start demo mode
+    startDemoMode(user?.id || 'player1', 'player2')
   }
 
   const handleNextPhase = () => {
@@ -97,19 +104,30 @@ export function Game() {
                 >
                   🎮 Play
                 </button>
-                <button
-                  onClick={handleStartGame}
-                  className="btn-secondary text-sm"
-                >
-                  Practice
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleStartDemoMode}
+                    className="btn-primary"
+                  >
+                    Demo Mode
+                  </button>
+                </div>
               </>
             ) : (
               <div className="flex items-center gap-2">
+                {isDemoMode && (
+                  <button
+                    onClick={switchViewingPlayer}
+                    className="btn-secondary text-sm"
+                    disabled={!isDemoMode}
+                  >
+                    Switch Player
+                  </button>
+                )}
                 <button
                   onClick={handleNextPhase}
                   className="btn-primary text-sm"
-                  disabled={activePlayer !== 'player1'}
+                  disabled={!isDemoMode && activePlayer !== 'player1'}
                 >
                   Next Phase
                 </button>
@@ -147,16 +165,16 @@ export function Game() {
                 <h2 className="text-3xl font-bold text-white mb-4">
                   Ready to Play?
                 </h2>
-                <p className="text-gray-400 mb-8 max-w-md">
-                  Start a practice match to test your deck and learn the game mechanics.
-                  You can use the default deck or build a custom one from your NFT cards.
+                <p className="text-gray-400 mb-8 max-w-lg">
+                  Start Demo Mode to control both players and fully test all game mechanics, 
+                  card interactions, and onchain functionality.
                 </p>
                 <div className="flex gap-4 justify-center">
                   <button
-                    onClick={handleStartGame}
+                    onClick={handleStartDemoMode}
                     className="btn-primary text-lg px-8 py-3"
                   >
-                    🎮 Quick Start
+                    🔄 Start Demo Mode
                   </button>
                   <button
                     onClick={handleStartWithCustomDeck}
@@ -189,7 +207,7 @@ export function Game() {
                 </p>
                 <div className="flex gap-4 justify-center">
                   <button
-                    onClick={handleStartGame}
+                    onClick={handleStartDemoMode}
                     className="btn-primary"
                   >
                     Play Again
@@ -223,7 +241,12 @@ export function Game() {
           <div className="text-sm text-white">
             <div className="font-bold">{currentPhase.toUpperCase()} PHASE</div>
             <div className="text-gray-400 text-xs">
-              {activePlayer === 'player1' ? 'Your turn' : "Opponent's turn"}
+              {isDemoMode 
+                ? `Player ${activePlayer === 'player1' ? '1' : '2'}'s turn`
+                : activePlayer === 'player1' 
+                  ? 'Your turn' 
+                  : "Opponent's turn"
+              }
             </div>
           </div>
         </div>

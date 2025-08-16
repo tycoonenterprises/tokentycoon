@@ -8,6 +8,7 @@
   *
 * Leaderboard
 * Demo mode working with one "player" switching between player hands and playing to watch mechanics working
+* Generate designs for cards Philipp entered 
 
 
 Extra Credit:

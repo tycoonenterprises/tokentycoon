@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { DndContext, DragOverlay, closestCenter, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
+import { DndContext, DragOverlay, closestCenter, useDroppable, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -122,9 +122,16 @@ interface DropZoneProps {
   isOver?: boolean
 }
 
-function DropZone({ id, children, label, isEmpty, canDrop, isOver = false }: DropZoneProps) {
+function DropZone({ id, children, label, isEmpty, canDrop, isOver: isOverProp = false }: DropZoneProps) {
+  const { isOver, setNodeRef } = useDroppable({
+    id,
+    disabled: !canDrop
+  })
+
+
   return (
     <div
+      ref={setNodeRef}
       className={`min-h-36 p-4 border-2 border-dashed rounded-lg transition-all duration-200 ${
         canDrop
           ? isOver
@@ -164,6 +171,8 @@ export function DragDropGameBoard() {
   const { 
     players, 
     activePlayer, 
+    viewingPlayer,
+    isDemoMode,
     currentPhase,
     playCard,
     moveCard 
@@ -173,7 +182,19 @@ export function DragDropGameBoard() {
   const [draggedCard, setDraggedCard] = useState<Card | null>(null)
 
   const { player1, player2 } = players
-  const canPlayCards = activePlayer === 'player1' && currentPhase === 'main'
+  
+  // In demo mode, the viewing player can play cards if it's their turn
+  const currentViewingPlayer = viewingPlayer
+  
+  // Simplified: in demo mode, always allow the viewing player to play cards if it's their turn and main phase
+  const canPlayCards = activePlayer === viewingPlayer && currentPhase === 'main'
+  
+  
+  // Determine which player's perspective we're showing
+  const playerHand = currentViewingPlayer === 'player1' ? player1 : player2
+  const opponentHand = currentViewingPlayer === 'player1' ? player2 : player1
+  const playerBoard = currentViewingPlayer === 'player1' ? player1 : player2
+  const opponentBoard = currentViewingPlayer === 'player1' ? player2 : player1
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
@@ -200,8 +221,9 @@ export function DragDropGameBoard() {
     const { card, playerId, source } = activeData
 
     // Handle card play from hand to board
-    if (source === 'hand' && overId === 'player1-board' && playerId === 'player1') {
-      if (canPlayCards && player1.eth >= card.cost) {
+    const targetBoard = `${currentViewingPlayer}-board`
+    if (source === 'hand' && overId === targetBoard && playerId === currentViewingPlayer) {
+      if (canPlayCards && playerHand.eth >= card.cost) {
         playCard(playerId, card.id)
       }
     }
@@ -214,9 +236,16 @@ export function DragDropGameBoard() {
   }
 
   const canDragCard = (card: Card, source: 'hand' | 'board', playerId: string) => {
-    if (playerId !== 'player1') return false // Only allow player 1 to drag for now
+    // In demo mode, allow the current viewing player to drag their cards
+    // In practice mode, only allow player1
+    if (isDemoMode) {
+      if (playerId !== currentViewingPlayer) return false
+    } else {
+      if (playerId !== 'player1') return false
+    }
+    
     if (source === 'hand') {
-      return canPlayCards && player1.eth >= card.cost
+      return canPlayCards && playerHand.eth >= card.cost
     }
     return false // Board cards can't be moved yet
   }
@@ -230,18 +259,18 @@ export function DragDropGameBoard() {
       <div className="flex-1 p-6 bg-gradient-to-b from-gray-800 to-eth-dark">
         <div className="max-w-6xl mx-auto h-full">
           <div className="h-full flex flex-col gap-6">
-            {/* Opponent Board (Player 2) - Not droppable for now */}
+            {/* Opponent Board - Not droppable for now */}
             <DropZone
-              id="player2-board"
-              label="Opponent Board"
-              isEmpty={player2.board.length === 0}
+              id={`${currentViewingPlayer === 'player1' ? 'player2' : 'player1'}-board`}
+              label={`Opponent Board (Player ${currentViewingPlayer === 'player1' ? '2' : '1'})`}
+              isEmpty={opponentBoard.board.length === 0}
               canDrop={false}
             >
               <SortableContext 
-                items={player2.board.map(card => `board-${card.id}`)}
+                items={opponentBoard.board.map(card => `board-${card.id}`)}
                 strategy={verticalListSortingStrategy}
               >
-                {player2.board.map((card) => (
+                {opponentBoard.board.map((card) => (
                   <div
                     key={card.id}
                     className="w-24 h-32 card border-red-500/50 transform rotate-180"
@@ -279,25 +308,24 @@ export function DragDropGameBoard() {
               </div>
             </div>
 
-            {/* Player Board (Player 1) - Droppable */}
+            {/* Player Board - Droppable */}
             <DropZone
-              id="player1-board"
-              label="Your Board"
-              isEmpty={player1.board.length === 0}
+              id={`${currentViewingPlayer}-board`}
+              label={`Your Board (Player ${currentViewingPlayer === 'player1' ? '1' : '2'})`}
+              isEmpty={playerBoard.board.length === 0}
               canDrop={canPlayCards}
-              isOver={activeId !== null && draggedCard?.type === 'unit'}
             >
               <SortableContext 
-                items={player1.board.map(card => `board-${card.id}`)}
+                items={playerBoard.board.map(card => `board-${card.id}`)}
                 strategy={verticalListSortingStrategy}
               >
-                {player1.board.map((card) => (
+                {playerBoard.board.map((card) => (
                   <DraggableCard
                     key={card.id}
                     card={card}
-                    playerId="player1"
+                    playerId={currentViewingPlayer}
                     source="board"
-                    canDrag={canDragCard(card, 'board', 'player1')}
+                    canDrag={canDragCard(card, 'board', currentViewingPlayer)}
                   />
                 ))}
               </SortableContext>
@@ -308,7 +336,7 @@ export function DragDropGameBoard() {
               <div className="max-w-6xl mx-auto">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-white">
-                    Your Hand ({player1.hand.length})
+                    Your Hand ({playerHand.hand.length})
                   </h3>
                   {canPlayCards && (
                     <div className="text-sm text-eth-success">
@@ -319,16 +347,16 @@ export function DragDropGameBoard() {
                 
                 <div className="flex gap-3 overflow-x-auto pb-2">
                   <SortableContext 
-                    items={player1.hand.map(card => `hand-${card.id}`)}
+                    items={playerHand.hand.map(card => `hand-${card.id}`)}
                     strategy={verticalListSortingStrategy}
                   >
-                    {player1.hand.map((card) => (
+                    {playerHand.hand.map((card) => (
                       <DraggableCard
                         key={card.id}
                         card={card}
-                        playerId="player1"
+                        playerId={currentViewingPlayer}
                         source="hand"
-                        canDrag={canDragCard(card, 'hand', 'player1')}
+                        canDrag={canDragCard(card, 'hand', currentViewingPlayer)}
                       />
                     ))}
                   </SortableContext>
@@ -336,7 +364,13 @@ export function DragDropGameBoard() {
                 
                 {canPlayCards && (
                   <div className="mt-3 text-xs text-gray-400">
-                    💡 Drag cards from hand to board to play them. ETH available: {player1.eth}
+                    💡 Drag cards from hand to board to play them. ETH available: {playerHand.eth}
+                  </div>
+                )}
+                
+                {isDemoMode && !canPlayCards && (
+                  <div className="mt-3 text-xs text-yellow-400">
+                    🔄 {activePlayer !== currentViewingPlayer ? 'Not your turn' : 'Wrong phase'} - Use "Switch Player" or "Next Phase" to continue
                   </div>
                 )}
               </div>
