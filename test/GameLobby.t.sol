@@ -3,9 +3,11 @@ pragma solidity ^0.8.19;
 
 import "forge-std/Test.sol";
 import "../src/GameLobby.sol";
+import "../src/CardRegistry.sol";
 
 contract GameLobbyTest is Test {
     GameLobby public lobby;
+    CardRegistry public cardRegistry;
     address public player1 = address(0x1);
     address public player2 = address(0x2);
     address public player3 = address(0x3);
@@ -15,7 +17,8 @@ contract GameLobbyTest is Test {
     event GameStarted(uint256 indexed gameId, address indexed player1, address indexed player2);
 
     function setUp() public {
-        lobby = new GameLobby();
+        cardRegistry = new CardRegistry();
+        lobby = new GameLobby(address(cardRegistry));
     }
 
     function testCreateGame() public {

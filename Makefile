@@ -19,14 +19,24 @@ anvil-background: ## Start Anvil in background
 	@echo "Anvil started. Check anvil.log for output"
 	@sleep 2
 
-deploy-local: ## Deploy contracts to local Anvil
-	@echo "Deploying GameLobby to local Anvil..."
-	@PRIVATE_KEY=$(ANVIL_PRIVATE_KEY) forge script script/DeployGameLobby.s.sol:DeployGameLobby \
+deploy-contracts: ## Deploy only the smart contracts
+	@echo "Deploying contracts to local Anvil..."
+	@PRIVATE_KEY=$(ANVIL_PRIVATE_KEY) forge script script/Deploy.s.sol:Deploy \
 		--rpc-url http://localhost:8545 \
 		--broadcast \
 		-vvv
 
-deploy: anvil-background deploy-local ## Start Anvil and deploy contracts
+deploy-cards: ## Initialize cards from JSON (requires CARD_REGISTRY_ADDRESS)
+	@echo "Initializing cards from JSON..."
+	@npm install
+	@node scripts/deployCards.js $(CARD_REGISTRY_ADDRESS)
+
+deploy-local: ## Deploy contracts and initialize cards
+	@echo "Deploying contracts and initializing cards..."
+	@npm install
+	@node scripts/deploy.js
+
+deploy: anvil-background deploy-local ## Start Anvil and deploy everything
 	@echo "Deployment complete!"
 
 stop: ## Stop Anvil if running in background
@@ -41,6 +51,10 @@ test: ## Run all tests
 test-lobby: ## Run GameLobby tests only
 	@echo "Running GameLobby tests..."
 	@forge test --match-contract GameLobbyTest -vv
+
+test-cards: ## Run CardRegistry tests only
+	@echo "Running CardRegistry tests..."
+	@forge test --match-contract CardRegistryTest -vv
 
 build: ## Build contracts
 	@echo "Building contracts..."
@@ -58,16 +72,14 @@ install: ## Install dependencies
 # Development workflow commands
 dev: ## Start Anvil and deploy (keeps Anvil in foreground)
 	@echo "Starting development environment..."
+	@npm install
 	@make build
 	@echo "Starting Anvil (press Ctrl+C to stop)..."
 	@trap 'echo "\nStopping Anvil..."; exit 0' INT; \
 	anvil --host 0.0.0.0 --port 8545 & ANVIL_PID=$$!; \
 	sleep 2; \
-	echo "Deploying contracts..."; \
-	PRIVATE_KEY=$(ANVIL_PRIVATE_KEY) forge script script/DeployGameLobby.s.sol:DeployGameLobby \
-		--rpc-url http://localhost:8545 \
-		--broadcast \
-		-vvv; \
+	echo "Deploying contracts and cards..."; \
+	node scripts/deploy.js; \
 	wait $$ANVIL_PID
 
 verify-deployment: ## Verify contract deployment on localhost

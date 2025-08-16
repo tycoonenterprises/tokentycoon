@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
+import "./CardRegistry.sol";
+
 contract GameLobby {
     struct Game {
         uint256 gameId;
@@ -17,6 +19,8 @@ contract GameLobby {
     uint256[] public gameIds;
     
     mapping(address => uint256[]) public playerGames;
+    
+    CardRegistry public cardRegistry;
 
     event GameCreated(uint256 indexed gameId, address indexed creator);
     event GameJoined(uint256 indexed gameId, address indexed player);
@@ -27,8 +31,14 @@ contract GameLobby {
     error GameFull();
     error NotInGame();
     error AlreadyInGame();
+    error CardRegistryNotSet();
+
+    constructor(address _cardRegistry) {
+        cardRegistry = CardRegistry(_cardRegistry);
+    }
 
     function createGame() external returns (uint256) {
+        if (address(cardRegistry) == address(0)) revert CardRegistryNotSet();
         uint256 gameId = nextGameId++;
         
         games[gameId] = Game({

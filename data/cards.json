@@ -1,0 +1,48 @@
+{
+  "cards": [
+    {
+      "name": "Polygon",
+      "description": "Gain <1> Per Turn",
+      "cost": 2,
+      "cardType": "Chain",
+      "abilities": {
+        "income": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Uniswap",
+      "description": "Gain <1> per turn per <> stored here",
+      "cost": 2,
+      "cardType": "Defi",
+      "abilities": {
+        "yield": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Validator Node",
+      "description": "Gain <1> every turn",
+      "cost": 2,
+      "cardType": "EOA",
+      "abilities": {
+        "income": {
+          "amount": 1
+        }
+      }
+    },
+    {
+      "name": "Read a Whitepaper",
+      "description": "Draw 2 cards",
+      "cost": 3,
+      "cardType": "Action",
+      "abilities": {
+        "draw": {
+          "amount": 2
+        }
+      }
+    }
+  ]
+}
