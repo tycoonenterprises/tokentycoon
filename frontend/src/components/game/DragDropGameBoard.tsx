@@ -210,15 +210,15 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
   
   // Debug logging for cursor troubleshooting
   if (source === 'hand') {
-    console.log('🎯 DragDropGameBoard Card State Debug:', {
-      cardName: card.name,
-      cardCost: card.cost,
-      playerETH: playerETH,
-      isActivePlayer,
-      canAfford,
-      cardState,
-      resultingCursor: cardState === 'playable' ? 'cursor-grab' : 'cursor-not-allowed'
-    })
+    // console.log('🎯 DragDropGameBoard Card State Debug:', {
+    //   cardName: card.name,
+    //   cardCost: card.cost,
+    //   playerETH: playerETH,
+    //   isActivePlayer,
+    //   canAfford,
+    //   cardState,
+    //   resultingCursor: cardState === 'playable' ? 'cursor-grab' : 'cursor-not-allowed'
+    // })
   }
 
   const getTypeColor = (type: string) => {

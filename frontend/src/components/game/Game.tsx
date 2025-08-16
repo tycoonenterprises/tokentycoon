@@ -68,79 +68,107 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
 
   // Listen for critical game events - specifically TurnEnded to update UI
   useEffect(() => {
-    if (!gameId) {
-      console.log('🔔 No gameId for event listener')
+    if (gameId === null || gameId === undefined) {
       return
     }
-
-    console.log('🔔 Setting up TurnEnded event listener for game', gameId)
     
     // Capture current functions in closure
     const currentGetDetailedGameState = getDetailedGameState
     const currentGetFullGameState = getFullGameState
-    const currentUpdateGameFromContract = updateGameFromContract
-
-    // Listen only for TurnEnded event to know when opponent ends their turn
+    
+    let lastBlockNumber = 0n
+    
+    const pollForEvents = async () => {
+      try {
+        const { createPublicClient, http, parseAbiItem } = await import('viem')
+        const publicClient = createPublicClient({
+          transport: http('http://localhost:8545')
+        })
+        
+        const currentBlock = await publicClient.getBlockNumber()
+        
+        if (lastBlockNumber === 0n) {
+          lastBlockNumber = currentBlock - 10n // Start from 10 blocks ago
+        }
+        
+        if (currentBlock > lastBlockNumber) {
+          const logs = await publicClient.getLogs({
+            address: CONTRACT_ADDRESSES.GAME_ENGINE,
+            event: parseAbiItem('event TurnEnded(uint256 indexed gameId, address indexed player)'),
+            fromBlock: lastBlockNumber + 1n,
+            toBlock: currentBlock
+          })
+          
+          if (logs.length > 0) {
+            const relevantLogs = logs.filter(log => {
+              const eventGameId = log.args?.gameId
+              return eventGameId && Number(eventGameId) === gameId
+            })
+            
+            if (relevantLogs.length > 0) {
+              // Update game state
+              const store = useGameStore.getState()
+              const state = await currentGetDetailedGameState(gameId)
+              if (state) {
+                store.updateGameFromContract(state)
+                await currentGetFullGameState(gameId)
+              }
+            }
+          }
+          
+          lastBlockNumber = currentBlock
+        }
+      } catch (error) {
+        // Silent fail for event polling
+      }
+    }
+    
+    // Poll immediately on first load
+    pollForEvents()
+    
+    // Poll every 2 seconds
+    const eventPollInterval = setInterval(pollForEvents, 2000)
+    
+    // Also try the original watchContractEvent (might still work)
     const unsubscribe = watchContractEvent(wagmiConfig, {
       address: CONTRACT_ADDRESSES.GAME_ENGINE,
       abi: GameEngineABI,
       eventName: 'TurnEnded',
-      args: { gameId: BigInt(gameId) },
       onLogs: async (logs) => {
-        console.log('🔔 TurnEnded event detected for game', gameId, ':', logs)
-        // Immediately refresh game state when turn ends
-        try {
-          // Use the functions from the current scope
-          const store = useGameStore.getState()
-          
-          const state = await currentGetDetailedGameState(gameId)
-          if (state) {
-            console.log('🎯 Updating game state after TurnEnded event:', {
-              currentTurn: state.currentTurn,
-              player1: state.player1,
-              player2: state.player2,
-              needsToDraw: state.needsToDraw,
-              activePlayerWillBe: Number(state.currentTurn) === 0 ? state.player1 : state.player2
-            })
-            store.updateGameFromContract(state)
-            console.log('✅ Store updated after TurnEnded event')
-            // Also fetch full game state for hands/battlefield
-            await currentGetFullGameState(gameId)
-            console.log('✅ Full game state fetched after TurnEnded event')
-          }
-        } catch (error) {
-          console.error('Error updating state after TurnEnded:', error)
-        }
+        // Silent success - events are being detected
       }
     })
 
-    // Also set up a simple 5-second poll as backup
+    // Also set up a simple 2-second poll as backup
     const pollInterval = setInterval(async () => {
       try {
         if (currentGetDetailedGameState) {
           const state = await currentGetDetailedGameState(gameId)
           if (state) {
             const store = useGameStore.getState()
+            const oldActivePlayer = store.activePlayer
             store.updateGameFromContract(state)
-            console.log('🕰️ Backup poll updated state')
+            
+            // Check if active player changed
+            const newActivePlayer = store.activePlayer
+            if (oldActivePlayer !== newActivePlayer) {
+              // Also fetch full game state
+              await currentGetFullGameState(gameId)
+            }
           }
         }
       } catch (error) {
         // Silent fail
       }
-    }, 5000)
+    }, 2000)
 
     // Cleanup function
     return () => {
-      console.log('Cleaning up TurnEnded event listener for game', gameId)
       unsubscribe()
       clearInterval(pollInterval)
+      clearInterval(eventPollInterval)
     }
   }, [gameId]) // Only depend on gameId to avoid recreating
-
-  const handleStartGame = () => {
-    startGame(user?.id || 'player1', 'player2')
-  }
 
   const handleStartWithCustomDeck = () => {
     setShowDeckBuilder(true)
@@ -151,20 +179,6 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
     setShowDeckBuilder(false)
     // Here you would modify the game store to use the custom deck
     startGame(user?.id || 'player1', 'player2')
-  }
-
-  const handleEndTurn = () => {
-    // End turn using contract
-    useGameStore.getState().endTurn()
-  }
-
-  const handleDrawToStartTurn = async () => {
-    try {
-      await drawToStartTurn(gameId!)
-      console.log('Draw to start turn completed')
-    } catch (error) {
-      console.error('Failed to draw to start turn:', error)
-    }
   }
 
   const handleGetGameState = async () => {
@@ -431,20 +445,6 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
       <div className="flex-1 flex">
         {/* Main Game Area */}
         <div className="flex-1 flex flex-col">
-          {/* Debug current state */}
-          {(() => {
-            console.log('🔍 Game render state:', {
-              isRouted,
-              routedGameId,
-              gameId,
-              isGameActive,
-              winner,
-              condition1: (isRouted || gameId) && !isGameActive && !winner,
-              condition2: !isGameActive && !winner && !isRouted && !gameId
-            })
-            return null
-          })()}
-          
           {/* Priority 1: If we're routed and loading, or have a gameId from URL and game is loading */}
           {(isRouted || gameId) && !isGameActive && !winner ? (
             <div className="flex-1 flex items-center justify-center">
@@ -559,17 +559,6 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
                 const privyWallet = wallets.find(w => w.walletClientType === 'privy')
                 const userAddress = privyWallet?.address?.toLowerCase()
                 const isMyTurn = activePlayer?.toLowerCase() === userAddress
-                
-                console.log('🎮 Turn indicator check:', {
-                  walletsReady,
-                  walletsCount: wallets.length,
-                  activePlayer,
-                  activePlayerLower: activePlayer?.toLowerCase(),
-                  userAddress,
-                  isMyTurn,
-                  needsToDraw,
-                  wallets: wallets.map(w => ({ type: w.walletClientType, address: w.address }))
-                })
                 
                 if (isMyTurn && needsToDraw) {
                   return '🃏 Draw card to start turn'

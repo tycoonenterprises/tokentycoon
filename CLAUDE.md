@@ -101,3 +101,4 @@ Tests use Foundry's forge-std testing framework. Key test patterns:
 - never run scripts/deployAll.  if you think hyou need that, use "make dev".  Never update contract addresses unless you're explicitly asked
 - alwayws make good git commits attributed to me after all meaningful changes
 - never make changes that cause the front end to implement functionality that the smart contracts are supposed to implement.
+- Don't commit until I tell you to
