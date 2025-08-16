@@ -8,6 +8,7 @@ import { DeckElement } from './DeckElement'
 import { ColdStorage } from './ColdStorage'
 import { HotWallet } from './HotWallet'
 import { CardImage } from '@/components/ui/CardImage'
+import { CardDetailModal } from '@/components/ui/CardDetailModal'
 import { useGameEngine } from '@/lib/hooks/useGameEngine'
 import { useWallets } from '@privy-io/react-auth'
 import { usePrivy } from '@privy-io/react-auth'
@@ -171,9 +172,10 @@ interface ExtendedDraggableCardProps extends DraggableCardProps {
   playerETH: number
   isActivePlayer: boolean
   gameId: number | null
+  onCardClick: (card: Card) => void
 }
 
-function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, gameId }: ExtendedDraggableCardProps) {
+function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, gameId, onCardClick }: ExtendedDraggableCardProps) {
   const {
     attributes,
     listeners,
@@ -296,6 +298,13 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
       }}
       {...attributes}
       {...(canDrag ? listeners : {})}
+      onClick={(e) => {
+        // Only open modal if not dragging
+        if (!isDragging) {
+          e.stopPropagation()
+          onCardClick(card)
+        }
+      }}
       className={`${cardSize} flex-shrink-0 card transition-all duration-200 ${getTypeColor(card.type)} ${visualState.className} ${isDragging ? 'z-50' : ''}`}
     >
       {/* Card Header - Only show full header for hand cards */}
@@ -486,6 +495,8 @@ export function DragDropGameBoard() {
   const [draggedCard, setDraggedCard] = useState<Card | null>(null)
   const [isEndingTurn, setIsEndingTurn] = useState(false)
   const [isDrawing, setIsDrawing] = useState(false)
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const { player1, player2 } = players
   
@@ -647,6 +658,11 @@ export function DragDropGameBoard() {
     return false // Board cards can't be moved yet
   }
 
+  const handleCardClick = (card: Card) => {
+    setSelectedCard(card)
+    setIsModalOpen(true)
+  }
+
   // Handle draw card to start turn
   const handleDrawToStartTurn = async () => {
     if (gameId === null || gameId === undefined || !canPlayCards || !needsToDraw) return
@@ -788,6 +804,7 @@ export function DragDropGameBoard() {
                     playerETH={playerHand.eth}
                     isActivePlayer={activePlayer?.toLowerCase() === userAddress?.toLowerCase()}
                     gameId={gameId}
+                    onCardClick={handleCardClick}
                   />
                 ))}
               </SortableContext>
@@ -829,6 +846,7 @@ export function DragDropGameBoard() {
                         playerETH={playerHand.eth}
                         isActivePlayer={activePlayer?.toLowerCase() === userAddress?.toLowerCase()}
                         gameId={gameId}
+                        onCardClick={handleCardClick}
                       />
                     ))}
                   </SortableContext>
@@ -938,6 +956,22 @@ export function DragDropGameBoard() {
           )}
         </button>
       </div>
+
+      {/* Player's wallet controls (lower right) */}
+      <div className="fixed bottom-4 right-4 z-10 flex flex-col gap-3">
+        <HotWallet playerId={currentViewingPlayer} />
+        <ColdStorage playerId={currentViewingPlayer} />
+      </div>
+
+      {/* Card Detail Modal */}
+      <CardDetailModal
+        card={selectedCard}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false)
+          setSelectedCard(null)
+        }}
+      />
 
     </div>
   )
