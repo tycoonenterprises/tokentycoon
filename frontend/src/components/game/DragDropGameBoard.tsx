@@ -458,18 +458,19 @@ export function DragDropGameBoard() {
 
   const { player1, player2 } = players
   
-  // In demo mode, the viewing player can play cards if it's their turn
-  const currentViewingPlayer = viewingPlayer
+  // Determine which player we're viewing based on wallet address
+  // viewingPlayer now contains the actual wallet address
+  const isViewingPlayer1 = viewingPlayer === player1.id
+  const currentViewingPlayer = isViewingPlayer1 ? 'player1' : 'player2'
   
   // Simplified: in demo mode, always allow the viewing player to play cards if it's their turn and main phase
   const canPlayCards = activePlayer === viewingPlayer // Always allow playing cards during your turn
   
-  
   // Determine which player's perspective we're showing
-  const playerHand = currentViewingPlayer === 'player1' ? player1 : player2
-  const opponentHand = currentViewingPlayer === 'player1' ? player2 : player1
-  const playerBoard = currentViewingPlayer === 'player1' ? player1 : player2
-  const opponentBoard = currentViewingPlayer === 'player1' ? player2 : player1
+  const playerHand = isViewingPlayer1 ? player1 : player2
+  const opponentHand = isViewingPlayer1 ? player2 : player1
+  const playerBoard = isViewingPlayer1 ? player1 : player2
+  const opponentBoard = isViewingPlayer1 ? player2 : player1
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event

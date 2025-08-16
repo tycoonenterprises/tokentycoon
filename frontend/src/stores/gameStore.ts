@@ -294,8 +294,8 @@ export const useGameStore = create<GameState & GameActions>()(
           isGameActive: true,
           isGameStarted: true,
           isDemoMode: false,
-          viewingPlayer: 'player1',
-          activePlayer: 'player1',
+          viewingPlayer: player1Id, // Use actual player ID
+          activePlayer: player1Id,  // Use actual player ID
           players: {
             player1: {
               id: player1Id,
@@ -367,10 +367,13 @@ export const useGameStore = create<GameState & GameActions>()(
       },
 
       switchViewingPlayer: () => {
-        const { viewingPlayer, isDemoMode } = get()
+        const { viewingPlayer, isDemoMode, players } = get()
         if (isDemoMode) {
+          // Switch between actual player IDs
+          const player1Id = players.player1.id
+          const player2Id = players.player2.id
           set({
-            viewingPlayer: viewingPlayer === 'player1' ? 'player2' : 'player1'
+            viewingPlayer: viewingPlayer === player1Id ? player2Id : player1Id
           })
         }
       },
@@ -431,20 +434,18 @@ export const useGameStore = create<GameState & GameActions>()(
       // Update game state from contract GameView
       // This function receives real ETH balances from the smart contract
       updateGameFromContract: (gameView: any) => {
-        const activePlayer = gameView.currentTurn === 0 ? 'player1' : 'player2'
+        // Get the actual player addresses from current state or gameView
+        const { players } = get()
+        const player1Id = players.player1.id || gameView.player1
+        const player2Id = players.player2.id || gameView.player2
         
-        // Convert BigInt values to numbers
-        const convertBigInt = (value: any): number => {
-          if (typeof value === 'bigint') {
-            return Number(value)
-          }
-          return Number(value) || 0
-        }
+        // Set activePlayer to the actual address of the current turn player
+        const activePlayer = gameView.currentTurn === 0 ? player1Id : player2Id
         
         set({
-          gameId: convertBigInt(gameView.gameId),
-          currentTurn: convertBigInt(gameView.currentTurn),
-          turnNumber: convertBigInt(gameView.turnNumber),
+          gameId: gameView.gameId,
+          currentTurn: gameView.currentTurn,
+          turnNumber: gameView.turnNumber,
           activePlayer,
           needsToDraw: gameView.needsToDraw || false,
           isGameStarted: gameView.isStarted,
@@ -452,17 +453,17 @@ export const useGameStore = create<GameState & GameActions>()(
           players: {
             player1: {
               ...get().players.player1,
-              id: gameView.player1 || get().players.player1.id, // Use contract address as ID
-              eth: convertBigInt(gameView.player1ETH),
-              deckRemaining: convertBigInt(gameView.player1DeckRemaining),
-              battlefieldSize: convertBigInt(gameView.player1BattlefieldSize),
+              id: player1Id, // Ensure player ID is set
+              eth: gameView.player1ETH,
+              deckRemaining: gameView.player1DeckRemaining,
+              battlefieldSize: gameView.player1BattlefieldSize,
             },
             player2: {
               ...get().players.player2,
-              id: gameView.player2 || get().players.player2.id, // Use contract address as ID
-              eth: convertBigInt(gameView.player2ETH),
-              deckRemaining: convertBigInt(gameView.player2DeckRemaining),
-              battlefieldSize: convertBigInt(gameView.player2BattlefieldSize),
+              id: player2Id, // Ensure player ID is set
+              eth: gameView.player2ETH,
+              deckRemaining: gameView.player2DeckRemaining,
+              battlefieldSize: gameView.player2BattlefieldSize,
             },
           },
         })

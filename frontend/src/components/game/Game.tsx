@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { usePrivy } from '@privy-io/react-auth'
+import { usePrivy, useWallets } from '@privy-io/react-auth'
 import { useGameStore, type Card } from '@/stores/gameStore'
 import { PlayerStats } from './PlayerStats'
 import { DragDropGameBoard } from './DragDropGameBoard'
@@ -18,6 +18,7 @@ import { GameEngineABI } from '@/lib/contracts/GameEngineABI'
 
 export function Game() {
   const { logout, user } = usePrivy()
+  const { wallets } = useWallets()
   const [searchParams] = useSearchParams()
   const { 
     startGame,
@@ -34,7 +35,6 @@ export function Game() {
     updateGameFromContract,
     initializeGameFromContract,
     needsToDraw,
-    drawToStartTurn
   } = useGameStore()
   
   // Get contract functions
@@ -240,7 +240,7 @@ export function Game() {
 
   const handleDrawToStartTurn = async () => {
     try {
-      await drawToStartTurn()
+      await drawToStartTurn(gameId!)
       console.log('Draw to start turn completed')
     } catch (error) {
       console.error('Failed to draw to start turn:', error)
@@ -314,28 +314,39 @@ export function Game() {
     setShowPlayPage(false)
     setContractGameId(gameId)
     
-    // Load the actual game state from the blockchain
+    // Get the current user's wallet address
+    const privyWallet = wallets.find(w => w.walletClientType === 'privy')
+    const userAddress = privyWallet?.address
+    
+    // Load the game state from the blockchain
     if (getDetailedGameState) {
       try {
-        console.log('Loading game state from contract for game', gameId)
-        const contractState = await getDetailedGameState(gameId)
-        if (contractState) {
-          // Initialize game store with contract state (for new onchain games)
-          initializeGameFromContract(contractState)
-          console.log('Game initialized from contract:', contractState)
-        } else {
-          console.error('No contract state returned for game', gameId)
-          // Fallback to local demo for now
-          startGame(user?.id || 'player1', 'player2')
+        const gameStateView = await getDetailedGameState(gameId)
+        if (gameStateView) {
+          console.log('Game started, loading state from contract:', gameStateView)
+          updateGameFromContract(gameStateView)
+          
+          // Set player IDs from the contract addresses
+          const player1Address = gameStateView.player1
+          const player2Address = gameStateView.player2
+          
+          // Start the game with actual player addresses
+          startGame(player1Address, player2Address)
+          
+          // Set the viewing player based on which player the current user is
+          if (userAddress) {
+            if (userAddress.toLowerCase() === player1Address.toLowerCase()) {
+              // Current user is player1
+              // viewingPlayer should already be set to 'player1' by startGame
+            } else if (userAddress.toLowerCase() === player2Address.toLowerCase()) {
+              // Current user is player2, switch viewing player
+              switchViewingPlayer()
+            }
+          }
         }
       } catch (error) {
-        console.error('Error loading contract state:', error)
-        // Fallback to local demo for now
-        startGame(user?.id || 'player1', 'player2')
+        console.error('Error loading game state:', error)
       }
-    } else {
-      console.warn('No getDetailedGameState function available')
-      startGame(user?.id || 'player1', 'player2')
     }
   }
 
