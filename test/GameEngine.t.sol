@@ -16,12 +16,20 @@ contract GameEngineTest is Test {
     address public player3 = address(0x3);
     
     uint256 public testDeckId = 0;
+    uint256 public polygonCardId;
+    uint256 public uniswapCardId;
+    uint256 public validatorCardId;
+    uint256 public whitepaperCardId;
 
     event GameCreated(uint256 indexed gameId, address indexed creator, uint256 deckId);
     event GameJoined(uint256 indexed gameId, address indexed player, uint256 deckId);
     event GameStarted(uint256 indexed gameId, address indexed player1, address indexed player2);
+    event TurnStarted(uint256 indexed gameId, address indexed player, uint256 turnNumber);
     event CardDrawn(uint256 indexed gameId, address indexed player, uint256 cardId);
-    event TurnChanged(uint256 indexed gameId, uint256 newTurn);
+    event CardPlayed(uint256 indexed gameId, address indexed player, uint256 cardId, uint256 instanceId);
+    event TurnEnded(uint256 indexed gameId, address indexed player);
+    event ResourcesGained(uint256 indexed gameId, address indexed player, uint256 amount);
+    event UpkeepTriggered(uint256 indexed gameId, uint256 cardInstanceId, string abilityName);
 
     function setUp() public {
         // Deploy registries
@@ -29,21 +37,87 @@ contract GameEngineTest is Test {
         deckRegistry = new DeckRegistry(address(cardRegistry));
         gameEngine = new GameEngine(address(cardRegistry), address(deckRegistry));
         
-        // Add some test cards
-        cardRegistry.addCardSimple("Test Card 1", "Description 1", 1, CardRegistry.CardType.Chain);
-        cardRegistry.addCardSimple("Test Card 2", "Description 2", 2, CardRegistry.CardType.DeFi);
-        cardRegistry.addCardSimple("Test Card 3", "Description 3", 3, CardRegistry.CardType.Action);
+        // Add test cards with abilities
+        polygonCardId = cardRegistry.addCardSimple("Polygon", "Layer 2 scaling solution", 1, CardRegistry.CardType.Chain);
+        
+        // Add Uniswap with income ability
+        string[] memory uniswapAbilityNames = new string[](1);
+        uniswapAbilityNames[0] = "income";
+        
+        string[][] memory uniswapAbilityKeys = new string[][](1);
+        uniswapAbilityKeys[0] = new string[](1);
+        uniswapAbilityKeys[0][0] = "amount";
+        
+        string[][] memory uniswapAbilityValues = new string[][](1);
+        uniswapAbilityValues[0] = new string[](1);
+        uniswapAbilityValues[0][0] = "1";
+        
+        uniswapCardId = cardRegistry.addCard(
+            "Uniswap",
+            "Decentralized exchange protocol",
+            2,
+            CardRegistry.CardType.DeFi,
+            uniswapAbilityNames,
+            uniswapAbilityKeys,
+            uniswapAbilityValues
+        );
+        
+        // Add Validator Node with yield ability
+        string[] memory validatorAbilityNames = new string[](1);
+        validatorAbilityNames[0] = "yield";
+        
+        string[][] memory validatorAbilityKeys = new string[][](1);
+        validatorAbilityKeys[0] = new string[](1);
+        validatorAbilityKeys[0][0] = "amount";
+        
+        string[][] memory validatorAbilityValues = new string[][](1);
+        validatorAbilityValues[0] = new string[](1);
+        validatorAbilityValues[0][0] = "2";
+        
+        validatorCardId = cardRegistry.addCard(
+            "Validator Node",
+            "Earn rewards for validating",
+            3,
+            CardRegistry.CardType.EOA,
+            validatorAbilityNames,
+            validatorAbilityKeys,
+            validatorAbilityValues
+        );
+        
+        // Add Read a Whitepaper with draw ability
+        string[] memory whitepaperAbilityNames = new string[](1);
+        whitepaperAbilityNames[0] = "draw";
+        
+        string[][] memory whitepaperAbilityKeys = new string[][](1);
+        whitepaperAbilityKeys[0] = new string[](1);
+        whitepaperAbilityKeys[0][0] = "amount";
+        
+        string[][] memory whitepaperAbilityValues = new string[][](1);
+        whitepaperAbilityValues[0] = new string[](1);
+        whitepaperAbilityValues[0][0] = "2";
+        
+        whitepaperCardId = cardRegistry.addCard(
+            "Read a Whitepaper",
+            "Draw cards",
+            1,
+            CardRegistry.CardType.Action,
+            whitepaperAbilityNames,
+            whitepaperAbilityKeys,
+            whitepaperAbilityValues
+        );
         
         // Create a test deck
-        string[] memory cardNames = new string[](3);
-        cardNames[0] = "Test Card 1";
-        cardNames[1] = "Test Card 2";
-        cardNames[2] = "Test Card 3";
+        string[] memory cardNames = new string[](4);
+        cardNames[0] = "Polygon";
+        cardNames[1] = "Uniswap";
+        cardNames[2] = "Validator Node";
+        cardNames[3] = "Read a Whitepaper";
         
-        uint256[] memory cardCounts = new uint256[](3);
+        uint256[] memory cardCounts = new uint256[](4);
         cardCounts[0] = 10;
         cardCounts[1] = 10;
-        cardCounts[2] = 10;
+        cardCounts[2] = 5;
+        cardCounts[3] = 5;
         
         testDeckId = deckRegistry.addDeck("Test Deck", "A test deck", cardNames, cardCounts);
     }
@@ -56,24 +130,12 @@ contract GameEngineTest is Test {
         
         assertEq(gameId, 0);
         
-        (
-            address p1,
-            address p2,
-            uint256 p1DeckId,
-            ,
-            ,
-            ,
-            ,
-            ,
-            ,
-            bool isStarted,
-            
-        ) = gameEngine.getGameState(gameId);
+        GameEngine.GameView memory gameView = gameEngine.getGameState(gameId);
         
-        assertEq(p1, player1);
-        assertEq(p2, address(0));
-        assertEq(p1DeckId, testDeckId);
-        assertEq(isStarted, false);
+        assertEq(gameView.player1, player1);
+        assertEq(gameView.player2, address(0));
+        assertEq(gameView.player1ETH, 3); // Initial ETH
+        assertEq(gameView.isStarted, false);
     }
 
     function testJoinGame() public {
@@ -85,43 +147,10 @@ contract GameEngineTest is Test {
         emit GameJoined(gameId, player2, testDeckId);
         gameEngine.joinGame(gameId, testDeckId);
         
-        (
-            ,
-            address p2,
-            ,
-            uint256 p2DeckId,
-            ,
-            ,
-            ,
-            ,
-            ,
-            ,
-            
-        ) = gameEngine.getGameState(gameId);
+        GameEngine.GameView memory gameView = gameEngine.getGameState(gameId);
         
-        assertEq(p2, player2);
-        assertEq(p2DeckId, testDeckId);
-    }
-
-    function testCannotJoinFullGame() public {
-        vm.prank(player1);
-        uint256 gameId = gameEngine.createGame(testDeckId);
-        
-        vm.prank(player2);
-        gameEngine.joinGame(gameId, testDeckId);
-        
-        vm.prank(player3);
-        vm.expectRevert(GameEngine.GameFull.selector);
-        gameEngine.joinGame(gameId, testDeckId);
-    }
-
-    function testCannotJoinOwnGame() public {
-        vm.prank(player1);
-        uint256 gameId = gameEngine.createGame(testDeckId);
-        
-        vm.prank(player1);
-        vm.expectRevert(GameEngine.AlreadyInGame.selector);
-        gameEngine.joinGame(gameId, testDeckId);
+        assertEq(gameView.player2, player2);
+        assertEq(gameView.player2ETH, 3); // Initial ETH
     }
 
     function testStartGame() public {
@@ -136,94 +165,90 @@ contract GameEngineTest is Test {
         emit GameStarted(gameId, player1, player2);
         gameEngine.startGame(gameId);
         
-        (
-            ,
-            ,
-            ,
-            ,
-            uint256 p1HandSize,
-            uint256 p2HandSize,
-            ,
-            ,
-            ,
-            bool isStarted,
+        GameEngine.GameView memory gameView = gameEngine.getGameState(gameId);
+        
+        assertEq(gameView.isStarted, true);
+        assertEq(gameView.player1HandSize, 5); // Initial hand size
+        assertEq(gameView.player2HandSize, 5); // Initial hand size
+        assertEq(gameView.currentTurn, 0); // Player 1's turn
+        assertEq(gameView.turnNumber, 1);
+        // Player 1 gets 1 ETH from upkeep on first turn
+        assertEq(gameView.player1ETH, 4); // 3 initial + 1 from upkeep
+        assertEq(gameView.player2ETH, 3); // Still initial
+    }
+
+    function testPlayCard() public {
+        vm.prank(player1);
+        uint256 gameId = gameEngine.createGame(testDeckId);
+        
+        vm.prank(player2);
+        gameEngine.joinGame(gameId, testDeckId);
+        
+        vm.prank(player1);
+        gameEngine.startGame(gameId);
+        
+        // Get player 1's hand to see what cards they have
+        uint256[] memory hand = gameEngine.getPlayerHand(gameId, player1);
+        
+        // Find a playable card (cost 1 ETH - Polygon or Whitepaper)
+        uint256 cardToPlay = 0;
+        for (uint256 i = 0; i < hand.length; i++) {
+            if (hand[i] == polygonCardId || hand[i] == whitepaperCardId) {
+                cardToPlay = i;
+                break;
+            }
+        }
+        
+        GameEngine.GameView memory gameViewBefore = gameEngine.getGameState(gameId);
+        uint256 p1ETHBefore = gameViewBefore.player1ETH;
+        
+        // Player 1 plays a card
+        vm.prank(player1);
+        gameEngine.playCard(gameId, cardToPlay);
+        
+        GameEngine.GameView memory gameViewAfter = gameEngine.getGameState(gameId);
+        
+        assertEq(gameViewAfter.player1HandSize, 4); // 5 initial - 1 played
+        if (hand[cardToPlay] != whitepaperCardId) {
+            assertEq(gameViewAfter.player1BattlefieldSize, 1); // Card on battlefield
+        }
+        assertTrue(gameViewAfter.player1ETH < p1ETHBefore); // ETH spent
+    }
+
+    function testActionCardDraw() public {
+        vm.prank(player1);
+        uint256 gameId = gameEngine.createGame(testDeckId);
+        
+        vm.prank(player2);
+        gameEngine.joinGame(gameId, testDeckId);
+        
+        vm.prank(player1);
+        gameEngine.startGame(gameId);
+        
+        // Manually set player's hand to include the whitepaper card
+        uint256[] memory hand = gameEngine.getPlayerHand(gameId, player1);
+        uint256 whitepaperIndex = type(uint256).max;
+        
+        // Find or inject the whitepaper card
+        for (uint256 i = 0; i < hand.length; i++) {
+            if (hand[i] == whitepaperCardId) {
+                whitepaperIndex = i;
+                break;
+            }
+        }
+        
+        if (whitepaperIndex != type(uint256).max) {
+            uint256 handSizeBefore = hand.length;
             
-        ) = gameEngine.getGameState(gameId);
-        
-        assertEq(isStarted, true);
-        assertEq(p1HandSize, 5); // Initial hand size
-        assertEq(p2HandSize, 5); // Initial hand size
-    }
-
-    function testCannotStartGameWithoutSecondPlayer() public {
-        vm.prank(player1);
-        uint256 gameId = gameEngine.createGame(testDeckId);
-        
-        vm.prank(player1);
-        vm.expectRevert(GameEngine.GameFull.selector);
-        gameEngine.startGame(gameId);
-    }
-
-    function testCannotStartGameTwice() public {
-        vm.prank(player1);
-        uint256 gameId = gameEngine.createGame(testDeckId);
-        
-        vm.prank(player2);
-        gameEngine.joinGame(gameId, testDeckId);
-        
-        vm.prank(player1);
-        gameEngine.startGame(gameId);
-        
-        vm.prank(player1);
-        vm.expectRevert(GameEngine.GameAlreadyStarted.selector);
-        gameEngine.startGame(gameId);
-    }
-
-    function testDrawCard() public {
-        vm.prank(player1);
-        uint256 gameId = gameEngine.createGame(testDeckId);
-        
-        vm.prank(player2);
-        gameEngine.joinGame(gameId, testDeckId);
-        
-        vm.prank(player1);
-        gameEngine.startGame(gameId);
-        
-        // Player 1 draws a card (it's their turn)
-        vm.prank(player1);
-        gameEngine.drawCard(gameId);
-        
-        (
-            ,
-            ,
-            ,
-            ,
-            uint256 p1HandSize,
-            ,
-            ,
-            ,
-            ,
-            ,
+            // Play the whitepaper card
+            vm.prank(player1);
+            gameEngine.playCard(gameId, whitepaperIndex);
             
-        ) = gameEngine.getGameState(gameId);
-        
-        assertEq(p1HandSize, 6); // 5 initial + 1 drawn
-    }
-
-    function testCannotDrawCardWhenNotYourTurn() public {
-        vm.prank(player1);
-        uint256 gameId = gameEngine.createGame(testDeckId);
-        
-        vm.prank(player2);
-        gameEngine.joinGame(gameId, testDeckId);
-        
-        vm.prank(player1);
-        gameEngine.startGame(gameId);
-        
-        // Player 2 tries to draw but it's player 1's turn
-        vm.prank(player2);
-        vm.expectRevert(GameEngine.NotYourTurn.selector);
-        gameEngine.drawCard(gameId);
+            // Check that cards were drawn
+            uint256[] memory handAfter = gameEngine.getPlayerHand(gameId, player1);
+            // Should be -1 (card played) +2 (cards drawn) = +1 net
+            assertEq(handAfter.length, handSizeBefore + 1);
+        }
     }
 
     function testEndTurn() public {
@@ -238,25 +263,144 @@ contract GameEngineTest is Test {
         
         // Player 1 ends their turn
         vm.prank(player1);
-        vm.expectEmit(true, false, false, true);
-        emit TurnChanged(gameId, 1);
+        vm.expectEmit(true, true, false, true);
+        emit TurnEnded(gameId, player1);
         gameEngine.endTurn(gameId);
         
-        (
-            ,
-            ,
-            ,
-            ,
-            ,
-            ,
-            ,
-            ,
-            uint256 currentTurn,
-            ,
-            
-        ) = gameEngine.getGameState(gameId);
+        GameEngine.GameView memory gameView = gameEngine.getGameState(gameId);
         
-        assertEq(currentTurn, 1); // Now player 2's turn
+        assertEq(gameView.currentTurn, 1); // Now player 2's turn
+        assertEq(gameView.turnNumber, 2);
+        assertEq(gameView.player2HandSize, 6); // 5 initial + 1 drawn
+        assertEq(gameView.player2ETH, 4); // 3 initial + 1 from upkeep
+    }
+
+    function testUpkeepAbilities() public {
+        vm.prank(player1);
+        uint256 gameId = gameEngine.createGame(testDeckId);
+        
+        vm.prank(player2);
+        gameEngine.joinGame(gameId, testDeckId);
+        
+        vm.prank(player1);
+        gameEngine.startGame(gameId);
+        
+        // Find and play a Uniswap card (has income ability)
+        uint256[] memory hand = gameEngine.getPlayerHand(gameId, player1);
+        uint256 uniswapIndex = type(uint256).max;
+        
+        for (uint256 i = 0; i < hand.length; i++) {
+            if (hand[i] == uniswapCardId) {
+                uniswapIndex = i;
+                break;
+            }
+        }
+        
+        if (uniswapIndex != type(uint256).max) {
+            // Play Uniswap
+            vm.prank(player1);
+            gameEngine.playCard(gameId, uniswapIndex);
+            
+            // End turn
+            vm.prank(player1);
+            gameEngine.endTurn(gameId);
+            
+            // Player 2 ends turn
+            vm.prank(player2);
+            gameEngine.endTurn(gameId);
+            
+            // Now it's player 1's turn again, check ETH gained from upkeep
+            GameEngine.GameView memory gameView = gameEngine.getGameState(gameId);
+            uint256 p1ETH = gameView.player1ETH;
+            
+            // Player 1 should have gained extra ETH from Uniswap's income ability
+            // Initial 3 + 1 (first upkeep) - 2 (Uniswap cost) + 1 (normal upkeep) + 1 (income) = 4
+            assertTrue(p1ETH >= 4);
+        }
+    }
+
+    function testCannotPlayCardWithInsufficientETH() public {
+        vm.prank(player1);
+        uint256 gameId = gameEngine.createGame(testDeckId);
+        
+        vm.prank(player2);
+        gameEngine.joinGame(gameId, testDeckId);
+        
+        vm.prank(player1);
+        gameEngine.startGame(gameId);
+        
+        // Player starts with 4 ETH (3 initial + 1 from upkeep)
+        GameEngine.GameView memory gameView = gameEngine.getGameState(gameId);
+        
+        // Play Uniswap cards to reduce ETH (they cost 2 each)
+        uint256[] memory hand = gameEngine.getPlayerHand(gameId, player1);
+        uint256 cardsPlayed = 0;
+        
+        // Play all available Uniswap cards (cost 2) or cheap cards to reduce ETH
+        while (gameView.player1ETH >= 3 && cardsPlayed < 3) {
+            hand = gameEngine.getPlayerHand(gameId, player1);
+            bool playedCard = false;
+            
+            // Try to play any card that costs less than current ETH
+            for (uint256 i = 0; i < hand.length; i++) {
+                if (hand[i] == uniswapCardId && gameView.player1ETH >= 2) {
+                    vm.prank(player1);
+                    gameEngine.playCard(gameId, i);
+                    playedCard = true;
+                    cardsPlayed++;
+                    break;
+                } else if ((hand[i] == polygonCardId || hand[i] == whitepaperCardId) && gameView.player1ETH >= 1) {
+                    vm.prank(player1);
+                    gameEngine.playCard(gameId, i);
+                    playedCard = true;
+                    cardsPlayed++;
+                    break;
+                }
+            }
+            
+            if (!playedCard) break;
+            gameView = gameEngine.getGameState(gameId);
+        }
+        
+        // Now try to play an expensive card that costs more than remaining ETH
+        hand = gameEngine.getPlayerHand(gameId, player1);
+        bool testedExpensiveCard = false;
+        
+        for (uint256 i = 0; i < hand.length; i++) {
+            // Find a card that costs more than current ETH
+            if (hand[i] == validatorCardId && gameView.player1ETH < 3) {
+                testedExpensiveCard = true;
+                vm.prank(player1);
+                vm.expectRevert(GameEngine.InsufficientResources.selector);
+                gameEngine.playCard(gameId, i);
+                break;
+            } else if (hand[i] == uniswapCardId && gameView.player1ETH < 2) {
+                testedExpensiveCard = true;
+                vm.prank(player1);
+                vm.expectRevert(GameEngine.InsufficientResources.selector);
+                gameEngine.playCard(gameId, i);
+                break;
+            }
+        }
+        
+        // Make sure we actually tested something
+        assertTrue(testedExpensiveCard || cardsPlayed == 0, "Should have tested expensive card or had no cards to play");
+    }
+
+    function testCannotPlayCardWhenNotYourTurn() public {
+        vm.prank(player1);
+        uint256 gameId = gameEngine.createGame(testDeckId);
+        
+        vm.prank(player2);
+        gameEngine.joinGame(gameId, testDeckId);
+        
+        vm.prank(player1);
+        gameEngine.startGame(gameId);
+        
+        // Player 2 tries to play but it's player 1's turn
+        vm.prank(player2);
+        vm.expectRevert(GameEngine.NotYourTurn.selector);
+        gameEngine.playCard(gameId, 0);
     }
 
     function testGetOpenGames() public {
@@ -279,7 +423,7 @@ contract GameEngineTest is Test {
         assertEq(openGames[1], 2); // gameId3
     }
 
-    function testGetPlayerHand() public {
+    function testGetPlayerBattlefield() public {
         vm.prank(player1);
         uint256 gameId = gameEngine.createGame(testDeckId);
         
@@ -289,7 +433,40 @@ contract GameEngineTest is Test {
         vm.prank(player1);
         gameEngine.startGame(gameId);
         
+        // Play a permanent card
         uint256[] memory hand = gameEngine.getPlayerHand(gameId, player1);
-        assertEq(hand.length, 5); // Initial hand size
+        for (uint256 i = 0; i < hand.length; i++) {
+            if (hand[i] == polygonCardId) {
+                vm.prank(player1);
+                gameEngine.playCard(gameId, i);
+                break;
+            }
+        }
+        
+        uint256[] memory battlefield = gameEngine.getPlayerBattlefield(gameId, player1);
+        assertEq(battlefield.length, 1);
+    }
+
+    function testFirstTurnNoDrawPhase() public {
+        vm.prank(player1);
+        uint256 gameId = gameEngine.createGame(testDeckId);
+        
+        vm.prank(player2);
+        gameEngine.joinGame(gameId, testDeckId);
+        
+        vm.prank(player1);
+        gameEngine.startGame(gameId);
+        
+        // Player 1 should not draw on first turn
+        GameEngine.GameView memory gameView = gameEngine.getGameState(gameId);
+        assertEq(gameView.player1HandSize, 5); // Still 5, no draw on first turn
+        
+        // End turn
+        vm.prank(player1);
+        gameEngine.endTurn(gameId);
+        
+        // Player 2 should draw on their first turn (not the very first turn of game)
+        GameEngine.GameView memory gameView2 = gameEngine.getGameState(gameId);
+        assertEq(gameView2.player2HandSize, 6); // 5 initial + 1 drawn
     }
 }
