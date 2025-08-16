@@ -96,14 +96,15 @@ async function deployDecks() {
     process.stdout.write(`\r[${bar}] ${percentage}% (${current}/${total}) - ${message}`);
   }
   
-  console.log('⚡ Sending all deck transactions in parallel...\n');
+  console.log('⚡ Sending all deck transactions rapidly...\n');
   
   const transactions = [];
   const failedDecks = [];
   
-  // Create all transactions at once
-  const deckPromises = decksData.decks.map(async (deck, index) => {
-    updateProgress(index + 1, totalDecks, `Preparing: ${deck.name}`);
+  // Send all transactions without waiting
+  for (let i = 0; i < decksData.decks.length; i++) {
+    const deck = decksData.decks[i];
+    updateProgress(i + 1, totalDecks, `Sending: ${deck.name}`);
     
     // Prepare card names and counts arrays
     const cardNames = [];
@@ -127,30 +128,29 @@ async function deployDecks() {
         ],
       });
       
-      return { hash, deck: deck.name, success: true };
+      transactions.push({ hash, deck: deck.name });
+      
     } catch (error) {
-      console.error(`\n❌ Failed to send tx for ${deck.name}: ${error.message}`);
-      failedDecks.push(`${deck.name} (${error.message})`);
-      return { deck: deck.name, success: false, error: error.message };
+      console.error(`\n❌ Failed to send tx for ${deck.name}: ${error.message?.substring(0, 100)}`);
+      failedDecks.push(`${deck.name}`);
     }
-  });
+  }
   
-  // Wait for all transactions to be sent
-  const txResults = await Promise.all(deckPromises);
-  const successfulTxs = txResults.filter(r => r.success);
+  // Complete progress bar
+  updateProgress(totalDecks, totalDecks, 'All transactions sent!');
   
-  console.log('\n\n⏳ Waiting for all transactions to be confirmed...\n');
+  console.log(`\n⏳ Waiting for ${transactions.length} transactions to be confirmed...\n`);
   
-  // Now wait for all successful transactions to be confirmed
+  // Now wait for all transactions to be confirmed
   let confirmedCount = 0;
-  const confirmationPromises = successfulTxs.map(async (tx) => {
+  const confirmationPromises = transactions.map(async (tx) => {
     try {
       await publicClient.waitForTransactionReceipt({ hash: tx.hash });
       confirmedCount++;
-      updateProgress(confirmedCount, successfulTxs.length, `Confirmed: ${tx.deck}`);
+      updateProgress(confirmedCount, transactions.length, `Confirmed: ${tx.deck}`);
       return true;
     } catch (error) {
-      console.error(`\n❌ Failed to confirm ${tx.deck}: ${error.message}`);
+      console.error(`\n❌ Failed to confirm ${tx.deck}: ${error.message?.substring(0, 100)}`);
       failedDecks.push(`${tx.deck} (confirmation failed)`);
       return false;
     }
@@ -158,9 +158,6 @@ async function deployDecks() {
   
   const confirmationResults = await Promise.all(confirmationPromises);
   const successCount = confirmationResults.filter(r => r).length;
-  
-  // Complete progress bar
-  updateProgress(successfulTxs.length, successfulTxs.length, 'All transactions processed!');
   console.log('\n');
   
   // Show results

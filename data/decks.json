@@ -6,6 +6,16 @@
       "cards": [
         { "name": "Ethereum", "count": 30 }
       ]
+    },
+    {
+      "name": "All DeFi",
+      "description": "A balanced deck for beginners",
+      "cards": [
+        { "name": "Arbitrum", "count": 15 },
+        { "name": "Aave", "count": 15 },
+        { "name": "Diamond Hands", "count": 5 },
+        { "name": "Dune Research", "count": 5 }
+      ]
     }
   ]
 }

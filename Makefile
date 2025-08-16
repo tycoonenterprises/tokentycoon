@@ -80,14 +80,19 @@ install: ## Install dependencies
 	@forge install
 
 # Development workflow commands
-dev: ## Start Anvil and deploy (keeps Anvil in foreground)
-	@echo "Starting development environment..."
+dev: ## Start fresh Anvil chain and deploy everything with deterministic addresses
+	@echo "Starting fresh development environment..."
+	@echo "Stopping any existing Anvil processes..."
+	@pkill anvil || true
+	@sleep 1
 	@npm install
 	@make build
-	@echo "Starting Anvil (press Ctrl+C to stop)..."
-	@trap 'echo "\nStopping Anvil..."; exit 0' INT; \
-	anvil --host 0.0.0.0 --port 8545 & ANVIL_PID=$$!; \
-	sleep 2; \
+	@echo "Removing any existing Anvil state..."
+	@rm -rf ~/.foundry/anvil/tmp || true
+	@echo "Starting fresh Anvil with deterministic state..."
+	@trap 'echo "\nStopping Anvil..."; pkill anvil || true; exit 0' INT; \
+	anvil --host 0.0.0.0 --port 8545 --chain-id 31337 & ANVIL_PID=$$!; \
+	sleep 3; \
 	echo "Deploying contracts, cards, and decks..."; \
 	node scripts/deployAll.js; \
 	wait $$ANVIL_PID
