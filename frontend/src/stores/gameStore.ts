@@ -262,7 +262,7 @@ export const useGameStore = create<GameState & GameActions>()(
           isDemoMode: false,
           viewingPlayer: 'player1',
           activePlayer: 'player1',
-          currentPhase: 'main',
+          currentPhase: 'draw',
           players: {
             player1: {
               id: player1Id,
@@ -302,7 +302,7 @@ export const useGameStore = create<GameState & GameActions>()(
           isDemoMode: true,
           viewingPlayer: 'player1',
           activePlayer: 'player1',
-          currentPhase: 'main',
+          currentPhase: 'draw',
           players: {
             player1: {
               id: player1Id,
@@ -488,7 +488,7 @@ export const useGameStore = create<GameState & GameActions>()(
             activePlayer: newActivePlayer,
             currentTurn: newActivePlayer === 'player1' ? 0 : 1,
             turnNumber: newTurnNumber,
-            currentPhase: 'main', // Start each turn in main phase (draw happens automatically)
+            currentPhase: newTurnNumber === 1 && newActivePlayer === 'player1' ? 'main' : 'draw', // First player's first turn skips draw
             viewingPlayer: isDemoMode ? newActivePlayer : viewingPlayer, // Auto-switch viewing in demo mode
             players: {
               ...players,
@@ -498,12 +498,6 @@ export const useGameStore = create<GameState & GameActions>()(
               },
             },
           })
-          
-          // Auto-draw a card for the new player at the start of their turn
-          // Skip draw on turn 1 as per typical TCG rules
-          if (newTurnNumber > 1) {
-            get().drawCard(newActivePlayer)
-          }
         } else {
           // In contract mode, this would trigger the blockchain transaction
           console.log('Turn ended - contract should handle the transition')
@@ -562,7 +556,7 @@ export const useGameStore = create<GameState & GameActions>()(
       },
 
       drawCard: (playerId: string) => {
-        const { players } = get()
+        const { players, currentPhase } = get()
         const player = players[playerId as keyof typeof players]
         
         if (player.deck.length === 0) {
@@ -583,6 +577,8 @@ export const useGameStore = create<GameState & GameActions>()(
               deckRemaining: newDeck.length,
             },
           },
+          // Automatically transition from draw phase to main phase after drawing
+          currentPhase: currentPhase === 'draw' ? 'main' : currentPhase,
         })
         
         // Check for cold storage win condition

@@ -11,16 +11,19 @@ export function DeckElement({ playerId, position }: DeckElementProps) {
     activePlayer, 
     currentPhase, 
     viewingPlayer,
-    isDemoMode 
+    isDemoMode,
+    drawCard 
   } = useGameStore()
   
   const player = players[playerId as keyof typeof players]
   const isCurrentPlayer = viewingPlayer === playerId
+  const canDraw = activePlayer === playerId && currentPhase === 'draw' && (isDemoMode || playerId === 'player1')
   const deckSize = player?.deck?.length || 0
   
-  // Deck is no longer interactive - drawing happens automatically at turn start
   const handleDeckClick = () => {
-    // No manual drawing - cards are drawn automatically at the start of each turn
+    if (canDraw && deckSize > 0) {
+      drawCard(playerId)
+    }
   }
 
   const positionClasses = position === 'lower-left' 
@@ -30,14 +33,21 @@ export function DeckElement({ playerId, position }: DeckElementProps) {
   return (
     <div className={`fixed ${positionClasses} z-10`}>
       <div 
-        className="relative w-20 h-28 transition-all duration-200"
+        onClick={handleDeckClick}
+        className={`relative w-20 h-28 cursor-pointer transition-all duration-200 ${
+          canDraw 
+            ? 'hover:scale-105 hover:shadow-lg' 
+            : 'opacity-60 cursor-not-allowed'
+        }`}
       >
         {/* Deck Stack Effect */}
         <div className="absolute inset-0 bg-gray-800 border-2 border-gray-600 rounded-lg transform translate-x-1 translate-y-1" />
         <div className="absolute inset-0 bg-gray-700 border-2 border-gray-500 rounded-lg transform translate-x-0.5 translate-y-0.5" />
         
         {/* Main Deck Card */}
-        <div className="relative w-full h-full bg-gray-900 border-2 border-gray-400 rounded-lg flex flex-col items-center justify-center">
+        <div className={`relative w-full h-full bg-gray-900 border-2 rounded-lg flex flex-col items-center justify-center ${
+          canDraw ? 'border-eth-primary' : 'border-gray-400'
+        }`}>
           {/* Deck Icon */}
           <div className="text-2xl mb-1">🃏</div>
           
@@ -50,6 +60,13 @@ export function DeckElement({ playerId, position }: DeckElementProps) {
           <div className="text-xs text-gray-400">
             {isCurrentPlayer ? 'Your Deck' : `P${playerId === 'player1' ? '1' : '2'} Deck`}
           </div>
+          
+          {/* Draw Indicator */}
+          {canDraw && (
+            <div className="absolute -top-2 -right-2 bg-eth-primary text-xs px-2 py-1 rounded-full font-bold animate-pulse">
+              DRAW
+            </div>
+          )}
         </div>
         
         {/* Empty Deck Indicator */}
