@@ -56,6 +56,42 @@
         { "name": "Vitalik Tweet", "count": 3 },
         { "name": "Memecoin Launch", "count": 3 }
       ]
+    },
+    {
+      "name": "Time Bomb Casino",
+      "description": "A high-risk, high-reward strategy based on delayed effects, temporary gains, and explosive timing. Play with fire and profit from chaos.",
+      "cards": [
+        { "name": "Time Bomb Stablecoin", "count": 4 },
+        { "name": "Ponzinomics", "count": 4 },
+        { "name": "Pump and Dump", "count": 4 },
+        { "name": "Flash Loan", "count": 4 },
+        { "name": "Mini Flash Loan", "count": 4 },
+        { "name": "Memecoin Launch", "count": 4 },
+        { "name": "Hard Fork", "count": 3 },
+        { "name": "Testnet", "count": 3 },
+        { "name": "Ragequit", "count": 3 },
+        { "name": "Exit Scam", "count": 3 },
+        { "name": "Gasless Transaction", "count": 2 },
+        { "name": "Ape FOMO", "count": 2 }
+      ]
+    },
+    {
+      "name": "Reactive Parasite",
+      "description": "A cunning strategy that feeds off opponent actions through triggers, steals, and reactive effects. Profit from every move your opponent makes.",
+      "cards": [
+        { "name": "MEV Extractor", "count": 4 },
+        { "name": "Front-Run Bot", "count": 4 },
+        { "name": "Sandwich Attack", "count": 4 },
+        { "name": "Oracles", "count": 4 },
+        { "name": "Chainlink", "count": 4 },
+        { "name": "Diamond DAO", "count": 3 },
+        { "name": "Phishing Attack", "count": 3 },
+        { "name": "Secret Key Leak", "count": 2 },
+        { "name": "Bridge Exploit", "count": 3 },
+        { "name": "Bug Bounty", "count": 4 },
+        { "name": "Liquidity Mining", "count": 3 },
+        { "name": "Governance Vote", "count": 2 }
+      ]
     }
   ]
 }
