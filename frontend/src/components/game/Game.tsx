@@ -59,25 +59,6 @@ export function Game() {
     })
   }, [endTurn, playCard, stakeETH, getDetailedGameState, setContractFunctions, drawToStartTurn, getFullGameState])
 
-  // Check URL parameters on mount to restore PlayPage state
-  useEffect(() => {
-    const viewParam = searchParams.get('view')
-    const gameIdParam = searchParams.get('gameId')
-    
-    // If there's a view parameter or gameId, show the PlayPage
-    if (viewParam || gameIdParam) {
-      setShowPlayPage(true)
-      
-      // If there's a gameId, set it in the store
-      if (gameIdParam) {
-        const gameId = parseInt(gameIdParam)
-        if (!isNaN(gameId)) {
-          setContractGameId(gameId)
-        }
-      }
-    }
-  }, [searchParams, setContractGameId]) // Only run when search params change
-
   // Set up event listeners for the current game
   useEffect(() => {
     if (!gameId) return
@@ -314,12 +295,18 @@ export function Game() {
     setShowPlayPage(false)
     setContractGameId(gameId)
     
+    // Update URL to keep the gameId
+    const url = new URL(window.location.href)
+    url.searchParams.set('gameId', gameId.toString())
+    url.searchParams.delete('view') // Remove view param since we're in the game now
+    window.history.pushState({}, '', url.toString())
+    
     // Get the current user's wallet address
     const privyWallet = wallets.find(w => w.walletClientType === 'privy')
     const userAddress = privyWallet?.address
     
     // Load the game state from the blockchain
-    if (getDetailedGameState) {
+    if (getDetailedGameState && getFullGameState) {
       try {
         const gameStateView = await getDetailedGameState(gameId)
         if (gameStateView) {
@@ -343,12 +330,56 @@ export function Game() {
               switchViewingPlayer()
             }
           }
+          
+          // Load full game state including hands and battlefield
+          console.log('Loading full game state including hands and battlefield...')
+          await getFullGameState(gameId)
         }
       } catch (error) {
         console.error('Error loading game state:', error)
       }
     }
   }
+
+  // Check URL parameters on mount to restore game state
+  useEffect(() => {
+    const viewParam = searchParams.get('view')
+    const gameIdParam = searchParams.get('gameId')
+    
+    // If there's a gameId in the URL, we need to load the game from the contract
+    if (gameIdParam) {
+      const gameId = parseInt(gameIdParam)
+      if (!isNaN(gameId)) {
+        console.log('Found gameId in URL, loading game:', gameId)
+        setContractGameId(gameId)
+        
+        // Load the game state from the blockchain
+        if (getDetailedGameState) {
+          getDetailedGameState(gameId).then(gameStateView => {
+            if (gameStateView) {
+              console.log('Loaded game state from contract:', gameStateView)
+              
+              // Check if the game has started
+              if (gameStateView.isStarted) {
+                // Game has started, load it directly into the game view
+                handleOnchainGameStart(gameId)
+              } else {
+                // Game hasn't started yet, show the PlayPage/lobby
+                setShowPlayPage(true)
+              }
+            }
+          }).catch(error => {
+            console.error('Failed to load game from URL parameter:', error)
+            // Still show the PlayPage so user can see the error or try again
+            setShowPlayPage(true)
+          })
+        }
+      }
+    } else if (viewParam) {
+      // Just a view parameter without gameId
+      setShowPlayPage(true)
+    }
+  }, [searchParams, getDetailedGameState, startGame, switchViewingPlayer, wallets, setContractGameId, updateGameFromContract])
 
   return (
     <div className="min-h-screen bg-eth-dark flex flex-col">

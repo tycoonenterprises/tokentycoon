@@ -14,6 +14,8 @@ export interface Card {
   stakedETH?: number // For DeFi cards
   yieldAmount?: number // Yield multiplier for DeFi cards
   heldETH?: number // For wallet/EOA cards that can hold ETH
+  originalCardId?: number // Original card ID from contract
+  handIndex?: number // Index in player's hand for contract calls
 }
 
 // Convert contract enum to string
@@ -475,15 +477,36 @@ export const useGameStore = create<GameState & GameActions>()(
         const player = players[playerId as keyof typeof players]
         
         // Convert contract card IDs to game cards
-        const handCards = cardIds.map(cardId => {
-          const availableCard = availableCards.find(card => 
-            parseInt(card.id.split('-')[1]) === cardId
-          )
-          return availableCard ? {
-            ...availableCard,
-            id: `${availableCard.id}-hand-${cardId}`
-          } : null
-        }).filter(card => card !== null) as Card[]
+        const handCards = cardIds.map((cardId, index) => {
+          const availableCard = availableCards.find(card => {
+            // Try to match the card ID from available cards
+            const cardIdNum = parseInt(card.id.split('-').pop() || '0')
+            return cardIdNum === cardId
+          })
+          
+          if (availableCard) {
+            return {
+              ...availableCard,
+              // Store both the unique ID for React and the original card data
+              id: `hand-${playerId}-${index}-${cardId}`,
+              originalCardId: cardId, // Store the original contract card ID
+              handIndex: index // Store the index in hand for easy lookup
+            }
+          }
+          
+          // If card not found in available cards, create a placeholder
+          console.warn(`Card ID ${cardId} not found in available cards`)
+          return {
+            id: `hand-${playerId}-${index}-unknown`,
+            originalCardId: cardId,
+            handIndex: index,
+            name: `Unknown Card #${cardId}`,
+            type: 'Action' as const,
+            cost: 0,
+            text: 'Card data not loaded',
+            abilities: ''
+          }
+        })
         
         set({
           players: {

@@ -500,14 +500,36 @@ export function DragDropGameBoard() {
     const targetBoard = `${currentViewingPlayer}-board`
     if (source === 'hand' && overId === targetBoard && playerId === currentViewingPlayer) {
       if (canPlayCards && playerHand.eth >= card.cost) {
-        // Find the card index in the player's hand for contract call
-        const cardIndex = playerHand.hand.findIndex(c => c.id === card.id)
-        if (cardIndex !== -1) {
+        // Use the handIndex property if available, otherwise fall back to finding by ID
+        console.log('Playing card:', {
+          cardId: card.id,
+          cardName: card.name,
+          handIndex: card.handIndex,
+          originalCardId: card.originalCardId
+        })
+        
+        let cardIndex = card.handIndex
+        
+        // If handIndex is not available, try to find it
+        if (cardIndex === undefined || cardIndex === null) {
+          cardIndex = playerHand.hand.findIndex(c => c.id === card.id)
+          console.log('No handIndex, found card at index:', cardIndex)
+        }
+        
+        if (cardIndex !== undefined && cardIndex !== null && cardIndex >= 0) {
           console.log(`Playing card ${card.name} at index ${cardIndex}`)
           playCardByIndex(playerId, cardIndex)
         } else {
-          console.error('Card not found in hand:', card.id)
+          console.error('Card not found in hand! Card:', card, 'Hand:', playerHand.hand)
+          console.error('Unable to determine card index for contract call')
         }
+      } else {
+        console.log('Cannot play card:', {
+          canPlayCards,
+          playerETH: playerHand.eth,
+          cardCost: card.cost,
+          canAfford: playerHand.eth >= card.cost
+        })
       }
     }
     
