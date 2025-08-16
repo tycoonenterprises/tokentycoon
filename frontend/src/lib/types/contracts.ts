@@ -5,8 +5,8 @@ export interface ContractCard {
   name: string
   description: string
   cost: number
-  cardType: string
-  abilities: string
+  cardType: number // Enum: 0=Chain, 1=DeFi, 2=EOA, 3=Action
+  abilities: any[] // Complex struct array from contract
 }
 
 export interface ContractDeck {

@@ -13,18 +13,49 @@ export interface Card {
   abilities?: string // Abilities from contract
 }
 
+// Convert contract enum to string
+const cardTypeEnumToString = (enumValue: number): string => {
+  const cardTypes = ['Chain', 'DeFi', 'EOA', 'Action']
+  return cardTypes[enumValue] || 'unknown'
+}
+
+// Extract primary ability from contract abilities array
+const extractPrimaryAbility = (abilities: any[]): string => {
+  if (!Array.isArray(abilities) || abilities.length === 0) {
+    return ''
+  }
+  
+  // Return the name of the first ability
+  const firstAbility = abilities[0]
+  return firstAbility?.name || ''
+}
+
 // Convert contract card to game card
 export const contractCardToGameCard = (contractCard: ContractCard, instanceId?: string): Card => {
+  // Debug logging to see actual contract data structure
+  console.log('Converting contract card:', contractCard)
+  
+  // Convert enum cardType (0=Chain, 1=DeFi, 2=EOA, 3=Action)
+  const cardType = cardTypeEnumToString(Number(contractCard.cardType)).toLowerCase()
+  
+  // Extract primary ability
+  const primaryAbility = extractPrimaryAbility(contractCard.abilities)
+  
+  // Safely handle other fields
+  const safeName = String(contractCard.name || 'Unknown Card')
+  const safeDescription = String(contractCard.description || '')
+  const safeCost = Number(contractCard.cost || 0)
+  
   return {
-    id: instanceId || `${contractCard.name.toLowerCase().replace(/\s+/g, '-')}-${contractCard.id}`,
-    name: contractCard.name,
-    type: contractCard.cardType.toLowerCase() as Card['type'],
-    cost: contractCard.cost,
-    text: contractCard.description,
-    abilities: contractCard.abilities,
+    id: instanceId || `${safeName.toLowerCase().replace(/\s+/g, '-')}-${contractCard.id}`,
+    name: safeName,
+    type: cardType as Card['type'],
+    cost: safeCost,
+    text: safeDescription,
+    abilities: primaryAbility,
     // Default values for power/toughness - could be enhanced later
-    power: contractCard.cardType === 'unit' || contractCard.cardType === 'EOA' ? 2 : undefined,
-    toughness: contractCard.cardType === 'unit' || contractCard.cardType === 'EOA' ? 2 : undefined,
+    power: cardType === 'eoa' ? 2 : undefined,
+    toughness: cardType === 'eoa' ? 2 : undefined,
   }
 }
 
