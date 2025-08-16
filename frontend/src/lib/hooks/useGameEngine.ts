@@ -317,6 +317,59 @@ export const useGameEngine = () => {
   const depositToColdStorage = async (gameId: number, amount: number) => {
     try {
       console.log(`Depositing ${amount} ETH to cold storage for game ${gameId}`)
+      
+      // First, let's check the game state before attempting the transaction
+      try {
+        const gameState = await getDetailedGameState(gameId)
+        console.log('🔍 Game state before cold storage deposit:', gameState)
+        console.log('🔍 Current user address (wagmi):', address)
+        console.log('🔍 Game analysis:', {
+          gameId,
+          isStarted: gameState.isStarted,
+          isFinished: gameState.isFinished,
+          currentTurn: gameState.currentTurn,
+          player1: gameState.player1,
+          player2: gameState.player2,
+          player1ETH: gameState.player1ETH.toString(),
+          player2ETH: gameState.player2ETH.toString(),
+          currentPlayer: gameState.currentTurn === 0n ? gameState.player1 : gameState.player2,
+          transactionFrom: '0xeDd0a97Ae0524F50dE414c8805779d478E1a7C9c',
+          needsToDraw: gameState.needsToDraw
+        })
+        
+        // Check all the conditions that could cause revert
+        const conditions = {
+          gameNotActive: !gameState.isStarted || gameState.isFinished,
+          notInGame: '0xeDd0a97Ae0524F50dE414c8805779d478E1a7C9c' !== gameState.player1 && '0xeDd0a97Ae0524F50dE414c8805779d478E1a7C9c' !== gameState.player2,
+          notYourTurn: '0xeDd0a97Ae0524F50dE414c8805779d478E1a7C9c' !== (gameState.currentTurn === 0n ? gameState.player1 : gameState.player2),
+          insufficientETH: gameState.player1ETH < BigInt(amount)
+        }
+        console.log('🚨 Potential revert conditions:', conditions)
+        
+        // Check if any condition would cause a revert
+        if (conditions.gameNotActive) console.error('❌ REVERT: GameNotActive')
+        if (conditions.notInGame) console.error('❌ REVERT: NotInGame')
+        if (conditions.notYourTurn) console.error('❌ REVERT: NotYourTurn')
+        if (conditions.insufficientETH) console.error('❌ REVERT: InsufficientETH')
+        
+        // Since all conditions are false, let's test if the contract exists by calling a simple view function
+        try {
+          const { readContract } = await import('wagmi/actions')
+          const nextGameIdTest = await readContract(wagmiConfig, {
+            address: CONTRACT_ADDRESSES.GAME_ENGINE,
+            abi: GameEngineABI,
+            functionName: 'nextGameId',
+            args: [],
+          })
+          console.log('✅ Contract exists, nextGameId:', nextGameIdTest)
+        } catch (contractError) {
+          console.error('❌ Contract does not exist or is not responding:', contractError)
+        }
+        
+      } catch (debugError) {
+        console.warn('Could not fetch game state for debugging:', debugError)
+      }
+      
       const args = [BigInt(gameId), BigInt(amount)]
       
       const result = await privyWriteContract({

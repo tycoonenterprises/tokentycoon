@@ -45,7 +45,12 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
       isTransferring,
       hotWalletBalance,
       transferAmount,
-      hasEnoughBalance: hotWalletBalance >= transferAmount
+      hasEnoughBalance: hotWalletBalance >= transferAmount,
+      activePlayer,
+      userAddress,
+      isCurrentPlayer,
+      playerId,
+      players
     })
     
     if (!canTransfer || gameId === null || gameId === undefined || isTransferring) {
