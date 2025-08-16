@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Search, Filter } from 'lucide-react';
+import { CardImage } from '@/components/ui/CardImage';
 
 interface CardsPageProps {
   onClose: () => void;
@@ -163,15 +164,11 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose }) => {
                   >
                     <div className="bg-gray-800 rounded-lg p-2 border border-gray-700 hover:border-cyan-500">
                       {/* Card Image */}
-                      <div className="aspect-[3/4] bg-gray-900 rounded mb-2 flex items-center justify-center overflow-hidden">
-                        <img 
-                          src={card.imagePath} 
-                          alt={card.name}
-                          className="w-full h-full object-contain"
-                          onError={(e) => {
-                            // Fallback to placeholder if image doesn't load
-                            e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI4MCIgZmlsbD0iIzFmMjkzNyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSIjNmI3MjgwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+';
-                          }}
+                      <div className="aspect-[3/4] bg-gray-900 rounded mb-2 overflow-hidden">
+                        <CardImage 
+                          card={card} 
+                          className="w-full h-full"
+                          fallbackIcon="🃏"
                         />
                       </div>
                       
@@ -208,13 +205,10 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose }) => {
               {/* Card Image */}
               <div className="w-64 flex-shrink-0">
                 <div className="aspect-[3/4] bg-gray-800 rounded-lg overflow-hidden">
-                  <img 
-                    src={selectedCard.imagePath} 
-                    alt={selectedCard.name}
-                    className="w-full h-full object-contain"
-                    onError={(e) => {
-                      e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI4MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjI4MCIgZmlsbD0iIzFmMjkzNyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSIjNmI3MjgwIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+';
-                    }}
+                  <CardImage 
+                    card={selectedCard} 
+                    className="w-full h-full"
+                    fallbackIcon="🃏"
                   />
                 </div>
               </div>

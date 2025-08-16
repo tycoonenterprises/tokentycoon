@@ -7,6 +7,7 @@ import { useGameStore, type Card } from '@/stores/gameStore'
 import { DeckElement } from './DeckElement'
 import { ColdStorage } from './ColdStorage'
 import { HotWallet } from './HotWallet'
+import { CardImage } from '@/components/ui/CardImage'
 
 interface WalletCardFooterProps {
   card: Card
@@ -194,34 +195,54 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
       </div>
 
       {/* Card Body */}
-      <div className="p-2 flex-1">
-        <h4 className={`${source === 'board' ? 'text-xs' : 'text-sm'} font-bold text-white mb-2 leading-tight`}>
-          {card.name}
-        </h4>
-        
-        {source === 'hand' && (
-          <>
-            <p className="text-xs text-gray-300 leading-tight">
-              {card.text}
-            </p>
+      <div className="flex-1 relative">
+        {source === 'hand' ? (
+          // Full card view for hand
+          <div className="h-full flex flex-col">
+            {/* Card Image */}
+            <div className="flex-1 p-2">
+              <CardImage 
+                card={card} 
+                className="w-full h-full rounded"
+                fallbackIcon={getTypeIcon(card.type)}
+              />
+            </div>
             
-            {/* Status message for unplayable cards */}
-            {cardState === 'cant-afford' && (
-              <div className="mt-2 text-xs text-red-400 font-semibold">
-                💸 Need {card.cost - playerETH} more ETH
+            {/* Card Name Overlay */}
+            <div className="absolute bottom-2 left-2 right-2">
+              <div className="bg-black/70 rounded px-2 py-1">
+                <h4 className="text-xs font-bold text-white leading-tight">
+                  {card.name}
+                </h4>
+                
+                {/* Status message for unplayable cards */}
+                {cardState === 'cant-afford' && (
+                  <div className="text-xs text-red-400 font-semibold">
+                    💸 Need {card.cost - playerETH} more ETH
+                  </div>
+                )}
+                {cardState === 'wrong-phase' && (
+                  <div className="text-xs text-yellow-400 font-semibold">
+                    🕐 Wrong phase
+                  </div>
+                )}
+                {cardState === 'not-your-turn' && (
+                  <div className="text-xs text-gray-400 font-semibold">
+                    ⏳ Not your turn
+                  </div>
+                )}
               </div>
-            )}
-            {cardState === 'wrong-phase' && (
-              <div className="mt-2 text-xs text-yellow-400 font-semibold">
-                🕐 Wrong phase
-              </div>
-            )}
-            {cardState === 'not-your-turn' && (
-              <div className="mt-2 text-xs text-gray-400 font-semibold">
-                ⏳ Not your turn
-              </div>
-            )}
-          </>
+            </div>
+          </div>
+        ) : (
+          // Compact view for board
+          <div className="p-1 h-full">
+            <CardImage 
+              card={card} 
+              className="w-full h-full rounded"
+              fallbackIcon={getTypeIcon(card.type)}
+            />
+          </div>
         )}
       </div>
 
@@ -425,8 +446,12 @@ export function DragDropGameBoard() {
                         {card.name}
                       </div>
                     </div>
-                    <div className="p-1 flex-1 flex items-center justify-center">
-                      <div className="text-lg">🃏</div>
+                    <div className="p-1 flex-1">
+                      <CardImage 
+                        card={card} 
+                        className="w-full h-full rounded"
+                        fallbackIcon="🃏"
+                      />
                     </div>
                     {card.type === 'unit' && (
                       <div className="p-1 border-t border-gray-600">
@@ -548,8 +573,12 @@ export function DragDropGameBoard() {
                   {draggedCard.name}
                 </div>
               </div>
-              <div className="p-2 flex-1 flex items-center justify-center">
-                <div className="text-2xl">🃏</div>
+              <div className="p-2 flex-1">
+                <CardImage 
+                  card={draggedCard} 
+                  className="w-full h-full rounded"
+                  fallbackIcon="🃏"
+                />
               </div>
             </div>
           ) : null}

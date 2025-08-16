@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNFTCards } from '@/lib/hooks/useNFTCards'
 import type { Card } from '@/stores/gameStore'
+import { CardImage } from '@/components/ui/CardImage'
 
 interface DeckBuilderProps {
   onDeckReady: (deck: Card[]) => void
@@ -175,7 +176,7 @@ export function DeckBuilder({ onDeckReady, onClose }: DeckBuilderProps) {
                       }`}
                       onClick={() => toggleCardSelection(card.tokenId.toString())}
                     >
-                      <div className="p-3">
+                      <div className="p-2 h-full flex flex-col">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-xs text-gray-400">
                             #{card.tokenId}
@@ -187,27 +188,35 @@ export function DeckBuilder({ onDeckReady, onClose }: DeckBuilderProps) {
                           )}
                         </div>
                         
-                        <h4 className="text-sm font-bold text-white mb-2 leading-tight">
-                          {card.name}
-                        </h4>
+                        {/* Card Image */}
+                        <div className="flex-1 mb-2">
+                          <CardImage 
+                            card={card} 
+                            className="w-full h-full rounded"
+                            fallbackIcon="🃏"
+                          />
+                        </div>
                         
-                        <p className="text-xs text-gray-300 mb-2 leading-tight">
-                          {card.text}
-                        </p>
-                        
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-gray-400 capitalize">
-                            {card.cardType}
-                          </span>
-                          {card.cardType === 'unit' && (
-                            <span className="text-white">
-                              {card.power}/{card.toughness}
+                        {/* Card Name Overlay */}
+                        <div className="bg-black/70 rounded px-2 py-1">
+                          <h4 className="text-xs font-bold text-white text-center leading-tight">
+                            {card.name}
+                          </h4>
+                          
+                          <div className="flex items-center justify-between text-xs mt-1">
+                            <span className="text-gray-400 capitalize">
+                              {card.cardType}
                             </span>
-                          )}
+                            {card.cardType === 'unit' && (
+                              <span className="text-white">
+                                {card.power}/{card.toughness}
+                              </span>
+                            )}
+                          </div>
                         </div>
                         
                         {isSelected && (
-                          <div className="absolute top-2 right-2 w-6 h-6 bg-eth-primary rounded-full flex items-center justify-center">
+                          <div className="absolute top-2 right-2 w-6 h-6 bg-eth-primary rounded-full flex items-center justify-center z-10">
                             <span className="text-white text-xs">✓</span>
                           </div>
                         )}

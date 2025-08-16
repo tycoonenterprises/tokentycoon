@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import type { Card } from '@/stores/gameStore'
+import { CardImage } from '@/components/ui/CardImage'
 
 interface AnimatedCardProps {
   card: Card
@@ -105,20 +106,32 @@ export function AnimatedCard({
 
       {/* Card Body */}
       <motion.div 
-        className="p-2 flex-1 relative z-10"
+        className="p-2 flex-1 relative z-10 flex flex-col"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
       >
-        <h4 className={`${textSizes[size].title} font-bold text-white mb-2 leading-tight`}>
-          {card.name}
-        </h4>
+        {/* Card Image */}
+        <div className="flex-1 mb-2">
+          <CardImage 
+            card={card} 
+            className="w-full h-full rounded"
+            fallbackIcon={getTypeIcon(card.type)}
+          />
+        </div>
         
-        {size !== 'small' && (
-          <p className={`${textSizes[size].body} text-gray-300 leading-tight`}>
-            {card.text}
-          </p>
-        )}
+        {/* Card Name Overlay */}
+        <div className="bg-black/70 rounded px-2 py-1">
+          <h4 className={`${textSizes[size].title} font-bold text-white leading-tight text-center`}>
+            {card.name}
+          </h4>
+          
+          {size === 'large' && card.text && (
+            <p className={`${textSizes[size].body} text-gray-300 leading-tight text-center mt-1`}>
+              {card.text.substring(0, 50)}{card.text.length > 50 ? '...' : ''}
+            </p>
+          )}
+        </div>
       </motion.div>
 
       {/* Card Footer - Power/Toughness for units */}
