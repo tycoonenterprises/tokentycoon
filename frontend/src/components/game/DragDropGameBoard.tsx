@@ -285,7 +285,7 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
   }
 
   const visualState = getCardVisualState()
-  const cardSize = source === 'board' ? 'w-24 h-32' : 'w-32 h-44'
+  const cardSize = source === 'board' ? 'w-20 h-28' : 'w-28 h-40'
 
   return (
     <div
@@ -296,7 +296,7 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
       }}
       {...attributes}
       {...(canDrag ? listeners : {})}
-      className={`${cardSize} card transition-all duration-200 ${getTypeColor(card.type)} ${visualState.className} ${isDragging ? 'z-50' : ''}`}
+      className={`${cardSize} flex-shrink-0 card transition-all duration-200 ${getTypeColor(card.type)} ${visualState.className} ${isDragging ? 'z-50' : ''}`}
     >
       {/* Card Header */}
       <div className="p-2 border-b border-gray-600">
@@ -802,7 +802,7 @@ export function DragDropGameBoard() {
                   </div>
                 </div>
                 
-                <div className="flex gap-3 overflow-x-auto pb-2">
+                <div className="flex gap-2 overflow-x-auto pb-2 min-h-0">
                   <SortableContext 
                     items={playerHand.hand.map(card => `hand-${card.id}`)}
                     strategy={verticalListSortingStrategy}
