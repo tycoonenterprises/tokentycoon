@@ -1,0 +1,14 @@
+{
+  "decks": [
+    {
+      "name": "Starter Deck",
+      "description": "A balanced deck for beginners",
+      "cards": [
+        { "name": "Polygon", "count": 15 },
+        { "name": "Uniswap", "count": 15 },
+        { "name": "Validator Node", "count": 5 },
+        { "name": "Read a Whitepaper", "count": 5 }
+      ]
+    }
+  ]
+}

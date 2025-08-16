@@ -6,7 +6,7 @@ import "../src/CardRegistry.sol";
 import "../src/DeckRegistry.sol";
 import "../src/GameEngine.sol";
 
-contract Deploy is Script {
+contract DeployAll is Script {
     function run() external returns (CardRegistry, DeckRegistry, GameEngine) {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         

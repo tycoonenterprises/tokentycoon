@@ -31,12 +31,22 @@ deploy-cards: ## Initialize cards from JSON (requires CARD_REGISTRY_ADDRESS)
 	@npm install
 	@node scripts/deployCards.js $(CARD_REGISTRY_ADDRESS)
 
+deploy-decks: ## Initialize decks from JSON (requires DECK_REGISTRY_ADDRESS)
+	@echo "Initializing decks from JSON..."
+	@npm install
+	@node scripts/deployDecks.js $(DECK_REGISTRY_ADDRESS)
+
+deploy-all: ## Deploy all contracts and initialize cards/decks
+	@echo "Deploying all contracts and initializing data..."
+	@npm install
+	@node scripts/deployAll.js
+
 deploy-local: ## Deploy contracts and initialize cards
 	@echo "Deploying contracts and initializing cards..."
 	@npm install
 	@node scripts/deploy.js
 
-deploy: anvil-background deploy-local ## Start Anvil and deploy everything
+deploy: anvil-background deploy-all ## Start Anvil and deploy everything
 	@echo "Deployment complete!"
 
 stop: ## Stop Anvil if running in background
@@ -78,8 +88,8 @@ dev: ## Start Anvil and deploy (keeps Anvil in foreground)
 	@trap 'echo "\nStopping Anvil..."; exit 0' INT; \
 	anvil --host 0.0.0.0 --port 8545 & ANVIL_PID=$$!; \
 	sleep 2; \
-	echo "Deploying contracts and cards..."; \
-	node scripts/deploy.js; \
+	echo "Deploying contracts, cards, and decks..."; \
+	node scripts/deployAll.js; \
 	wait $$ANVIL_PID
 
 verify-deployment: ## Verify contract deployment on localhost
