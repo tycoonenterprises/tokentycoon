@@ -2,7 +2,7 @@ import { useReadContract, useWriteContract } from 'wagmi'
 import { CONTRACT_ADDRESSES } from '@/lib/web3/config'
 import { GameEngineABI } from '@/lib/contracts/GameEngineABI'
 import { useAccount } from 'wagmi'
-import { GameSession, PlayerHand } from '@/lib/types/contracts'
+import type { GameSession, PlayerHand } from '@/lib/types/contracts'
 
 export const useGameEngine = () => {
   const { address } = useAccount()

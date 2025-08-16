@@ -1,15 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-
-// Temporary inline type definition to fix import issue
-export interface ContractCard {
-  id: number
-  name: string
-  description: string
-  cost: number
-  cardType: string
-  abilities: string
-}
+import type { ContractCard } from '@/lib/types/contracts'
 
 export interface Card {
   id: string

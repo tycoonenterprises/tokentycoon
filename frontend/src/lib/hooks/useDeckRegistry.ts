@@ -1,7 +1,7 @@
 import { useReadContract, useWriteContract } from 'wagmi'
 import { CONTRACT_ADDRESSES } from '@/lib/web3/config'
 import { DeckRegistryABI } from '@/lib/contracts/DeckRegistryABI'
-import { ContractDeck, ExpandedDeckCard } from '@/lib/types/contracts'
+import type { ContractDeck, ExpandedDeckCard } from '@/lib/types/contracts'
 
 export const useDeckRegistry = () => {
   // Read functions
