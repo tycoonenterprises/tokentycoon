@@ -248,7 +248,19 @@ export function DragDropGameBoard() {
     }
     
     if (source === 'hand') {
-      return canPlayCards && playerHand.eth >= card.cost
+      const canDrag = canPlayCards && playerHand.eth >= card.cost
+      // Debug logging
+      console.log('Drag check:', {
+        cardName: card.name,
+        cardCost: card.cost,
+        canPlayCards,
+        playerETH: playerHand.eth,
+        activePlayer,
+        currentViewingPlayer,
+        currentPhase,
+        canDrag
+      })
+      return canDrag
     }
     return false // Board cards can't be moved yet
   }

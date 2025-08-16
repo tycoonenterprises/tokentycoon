@@ -262,7 +262,7 @@ export const useGameStore = create<GameState & GameActions>()(
           isDemoMode: false,
           viewingPlayer: 'player1',
           activePlayer: 'player1',
-          currentPhase: 'draw',
+          currentPhase: 'main',
           players: {
             player1: {
               id: player1Id,
@@ -302,7 +302,7 @@ export const useGameStore = create<GameState & GameActions>()(
           isDemoMode: true,
           viewingPlayer: 'player1',
           activePlayer: 'player1',
-          currentPhase: 'draw',
+          currentPhase: 'main',
           players: {
             player1: {
               id: player1Id,
@@ -477,7 +477,7 @@ export const useGameStore = create<GameState & GameActions>()(
         const { activePlayer, players, turnNumber, isGameStarted, isDemoMode, viewingPlayer } = get()
         
         // In practice/demo mode (when not connected to contract), simulate turn progression
-        if (!isGameStarted) {
+        if (!isGameStarted || isDemoMode) {
           const newActivePlayer = activePlayer === 'player1' ? 'player2' : 'player1'
           const newTurnNumber = activePlayer === 'player2' ? turnNumber + 1 : turnNumber
           
@@ -488,7 +488,7 @@ export const useGameStore = create<GameState & GameActions>()(
             activePlayer: newActivePlayer,
             currentTurn: newActivePlayer === 'player1' ? 0 : 1,
             turnNumber: newTurnNumber,
-            currentPhase: 'main', // Skip draw/upkeep phases in practice mode
+            currentPhase: 'main', // Start each turn in main phase (draw happens automatically)
             viewingPlayer: isDemoMode ? newActivePlayer : viewingPlayer, // Auto-switch viewing in demo mode
             players: {
               ...players,
@@ -499,8 +499,11 @@ export const useGameStore = create<GameState & GameActions>()(
             },
           })
           
-          // Auto-draw a card for the new player
-          get().drawCard(newActivePlayer)
+          // Auto-draw a card for the new player at the start of their turn
+          // Skip draw on turn 1 as per typical TCG rules
+          if (newTurnNumber > 1) {
+            get().drawCard(newActivePlayer)
+          }
         } else {
           // In contract mode, this would trigger the blockchain transaction
           console.log('Turn ended - contract should handle the transition')
