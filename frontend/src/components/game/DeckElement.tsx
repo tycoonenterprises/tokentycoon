@@ -9,13 +9,10 @@ export function DeckElement({ playerId, position }: DeckElementProps) {
   const { 
     players, 
     activePlayer, 
-    viewingPlayer,
-    isDemoMode,
     drawCard 
   } = useGameStore()
   
   const player = players[playerId as keyof typeof players]
-  const isCurrentPlayer = viewingPlayer === playerId
   const canDraw = false // Manual drawing disabled - automatic on turn start
   const deckSize = player?.deck?.length || 0
   
@@ -56,7 +53,7 @@ export function DeckElement({ playerId, position }: DeckElementProps) {
           
           {/* Player Indicator */}
           <div className="text-xs text-gray-400">
-            {isCurrentPlayer ? 'Your Deck' : `P${playerId === 'player1' ? '1' : '2'} Deck`}
+            {`P${playerId === 'player1' ? '1' : '2'} Deck`}
           </div>
           
           {/* Draw Indicator */}

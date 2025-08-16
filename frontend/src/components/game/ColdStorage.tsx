@@ -8,9 +8,7 @@ interface ColdStorageProps {
 export function ColdStorage({ playerId }: ColdStorageProps) {
   const { 
     players, 
-    viewingPlayer, 
     activePlayer, 
-    isDemoMode, 
     transferToColdStorage, 
     transferFromColdStorage,
     transferFromWalletCardToColdStorage,
@@ -21,8 +19,9 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
   const [selectedSource, setSelectedSource] = useState<'hot-wallet' | string>('hot-wallet')
   
   const player = players[playerId as keyof typeof players]
-  const isCurrentPlayer = viewingPlayer === playerId
-  const canTransfer = activePlayer === playerId && (isDemoMode || playerId === 'player1')
+  // For now, determine if current player based on playerId (simplified after demo mode removal)
+  const isCurrentPlayer = true // Will be enhanced with wallet address detection
+  const canTransfer = activePlayer === playerId
   
   const coldStorageBalance = player?.coldStorage || 0
   const hotWalletBalance = player?.eth || 0
@@ -102,7 +101,7 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
             {coldStorageBalance.toFixed(1)} ETH
           </div>
           <div className="text-xs text-gray-400">
-            {isCurrentPlayer ? 'Your cold storage' : `Player ${playerId === 'player1' ? '1' : '2'}'s storage`}
+'Your cold storage'
           </div>
         </div>
 

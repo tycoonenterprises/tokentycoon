@@ -5,10 +5,11 @@ interface HotWalletProps {
 }
 
 export function HotWallet({ playerId }: HotWalletProps) {
-  const { players, viewingPlayer, activePlayer } = useGameStore()
+  const { players, activePlayer } = useGameStore()
   
   const player = players[playerId as keyof typeof players]
-  const isCurrentPlayer = viewingPlayer === playerId
+  // For now, determine if current player based on playerId (simplified after demo mode removal)
+  const isCurrentPlayer = true // Will be enhanced with wallet address detection
   const balance = Number(player?.eth) || 0
   
   // Show earnings animation during turn start
@@ -50,7 +51,7 @@ export function HotWallet({ playerId }: HotWalletProps) {
           {balance.toFixed(1)} ETH
         </div>
         <div className="text-xs text-gray-400">
-          {isCurrentPlayer ? 'Your hot wallet' : `Player ${playerId === 'player1' ? '1' : '2'}'s wallet`}
+'Your hot wallet'
         </div>
       </div>
 

@@ -8,11 +8,12 @@ interface DeckProps {
 }
 
 export function Deck({ playerId, isActive, canDraw }: DeckProps) {
-  const { players, drawCard, viewingPlayer, isDemoMode } = useGameStore()
+  const { players, drawCard } = useGameStore()
   const [isDrawing, setIsDrawing] = useState(false)
   
   const player = players[playerId as keyof typeof players]
-  const isViewingPlayer = viewingPlayer === playerId
+  // For now, determine if current player based on playerId (simplified after demo mode removal)
+  const isViewingPlayer = true // Will be enhanced with wallet address detection
   
   const handleDrawCard = async () => {
     if (!canDraw || !isActive) return
@@ -32,7 +33,7 @@ export function Deck({ playerId, isActive, canDraw }: DeckProps) {
     <div className="flex flex-col items-center gap-2">
       {/* Deck Label */}
       <div className="text-sm font-medium text-gray-300">
-        {isViewingPlayer ? 'Your Deck' : `Player ${playerId === 'player1' ? '1' : '2'} Deck`}
+'Your Deck'
       </div>
       
       {/* Deck Stack */}
@@ -108,7 +109,7 @@ export function Deck({ playerId, isActive, canDraw }: DeckProps) {
         
         {!isActive && (
           <div className="text-xs text-gray-500">
-            {isDemoMode ? 'Not your turn' : 'Waiting...'}
+'Waiting...'
           </div>
         )}
         

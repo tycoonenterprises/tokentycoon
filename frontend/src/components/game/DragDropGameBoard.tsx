@@ -9,6 +9,7 @@ import { ColdStorage } from './ColdStorage'
 import { HotWallet } from './HotWallet'
 import { CardImage } from '@/components/ui/CardImage'
 import { useGameEngine } from '@/lib/hooks/useGameEngine'
+import { useWallets } from '@privy-io/react-auth'
 
 interface WalletCardFooterProps {
   card: Card
@@ -445,26 +446,28 @@ export function DragDropGameBoard() {
   const { 
     players, 
     activePlayer, 
-    viewingPlayer,
-    isDemoMode,
     playCard,
     playCardByIndex,
     moveCard,
     gameId 
   } = useGameStore()
   
+  const { wallets } = useWallets()
   const [activeId, setActiveId] = useState<string | null>(null)
   const [draggedCard, setDraggedCard] = useState<Card | null>(null)
 
   const { player1, player2 } = players
   
+  // Get current user's wallet address
+  const privyWallet = wallets.find(w => w.walletClientType === 'privy')
+  const userAddress = privyWallet?.address
+  
   // Determine which player we're viewing based on wallet address
-  // viewingPlayer now contains the actual wallet address
-  const isViewingPlayer1 = viewingPlayer === player1.id
+  const isViewingPlayer1 = userAddress?.toLowerCase() === player1.id?.toLowerCase()
   const currentViewingPlayer = isViewingPlayer1 ? 'player1' : 'player2'
   
-  // Simplified: in demo mode, always allow the viewing player to play cards if it's their turn and main phase
-  const canPlayCards = activePlayer === viewingPlayer // Always allow playing cards during your turn
+  // Only allow playing cards if it's your turn
+  const canPlayCards = activePlayer === userAddress
   
   // Determine which player's perspective we're showing
   const playerHand = isViewingPlayer1 ? player1 : player2
@@ -541,13 +544,8 @@ export function DragDropGameBoard() {
   }
 
   const canDragCard = (card: Card, source: 'hand' | 'board', playerId: string) => {
-    // In demo mode, allow the current viewing player to drag their cards
-    // In practice mode, only allow player1
-    if (isDemoMode) {
-      if (playerId !== currentViewingPlayer) return false
-    } else {
-      if (playerId !== 'player1') return false
-    }
+    // Only allow the current player to drag their cards
+    if (playerId !== currentViewingPlayer) return false
     
     if (source === 'hand') {
       const canDrag = canPlayCards && playerHand.eth >= card.cost
@@ -668,10 +666,8 @@ export function DragDropGameBoard() {
                         <span className="text-eth-success">⚡ Drag cards to board to play</span>
                         <span className="text-gray-400 ml-4">💰 {playerHand.eth} ETH available</span>
                       </>
-                    ) : activePlayer !== currentViewingPlayer ? (
-                      <span className="text-gray-400">⏳ Opponent's turn</span>
                     ) : (
-                      <span className="text-gray-400">⏸ Not your turn</span>
+                      <span className="text-gray-400">⏳ Opponent's turn</span>
                     )}
                   </div>
                 </div>
@@ -699,12 +695,6 @@ export function DragDropGameBoard() {
                 {canPlayCards && (
                   <div className="mt-3 text-xs text-gray-400">
                     💡 Drag cards from hand to board to play them. ETH available: {playerHand.eth}
-                  </div>
-                )}
-                
-                {isDemoMode && !canPlayCards && (
-                  <div className="mt-3 text-xs text-yellow-400">
-                    🔄 {activePlayer !== currentViewingPlayer ? 'Not your turn' : 'Wrong phase'} - Use "Switch Player" or "Next Phase" to continue
                   </div>
                 )}
                 </div>
@@ -741,13 +731,6 @@ export function DragDropGameBoard() {
         position="lower-left"
       />
       
-      {/* Opponent's deck (upper right) - only visible in demo mode */}
-      {isDemoMode && (
-        <DeckElement 
-          playerId={currentViewingPlayer === 'player1' ? 'player2' : 'player1'}
-          position="upper-right"
-        />
-      )}
 
       {/* Player's wallet controls (lower right) */}
       <div className="fixed bottom-4 right-4 z-10 flex flex-col gap-3">
@@ -755,13 +738,6 @@ export function DragDropGameBoard() {
         <ColdStorage playerId={currentViewingPlayer} />
       </div>
 
-      {/* Opponent's wallet displays (upper left) - only in demo mode */}
-      {isDemoMode && (
-        <div className="fixed top-4 left-4 z-10 flex flex-col gap-3">
-          <HotWallet playerId={currentViewingPlayer === 'player1' ? 'player2' : 'player1'} />
-          <ColdStorage playerId={currentViewingPlayer === 'player1' ? 'player2' : 'player1'} />
-        </div>
-      )}
     </div>
   )
 }

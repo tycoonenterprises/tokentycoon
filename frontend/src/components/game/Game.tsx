@@ -22,12 +22,9 @@ export function Game() {
   const [searchParams] = useSearchParams()
   const { 
     startGame,
-    startDemoMode,
-    switchViewingPlayer,
     resetGame, 
     isGameActive, 
     activePlayer,
-    isDemoMode,
     winner,
     setContractFunctions,
     setContractGameId,
@@ -192,10 +189,6 @@ export function Game() {
     startGame(user?.id || 'player1', 'player2')
   }
 
-  const handleStartDemoMode = () => {
-    startDemoMode(user?.id || 'player1', 'player2')
-  }
-
   const handleStartWithCustomDeck = () => {
     setShowDeckBuilder(true)
   }
@@ -204,19 +197,12 @@ export function Game() {
     setCustomDeck(deck)
     setShowDeckBuilder(false)
     // Here you would modify the game store to use the custom deck
-    // For now, we'll just start demo mode
-    startDemoMode(user?.id || 'player1', 'player2')
+    startGame(user?.id || 'player1', 'player2')
   }
 
   const handleEndTurn = () => {
-    // End turn is now handled directly by the contract
-    // The contract automatically handles draw and upkeep for the next player
-    // For demo mode, we need to call the game store's endTurn function
-    if (isDemoMode) {
-      useGameStore.getState().endTurn(false) // Don't use contract in demo mode for now
-    } else {
-      useGameStore.getState().endTurn(true) // Use contract in real games
-    }
+    // End turn using contract
+    useGameStore.getState().endTurn()
   }
 
   const handleDrawToStartTurn = async () => {
@@ -238,7 +224,6 @@ export function Game() {
       activePlayer: state.activePlayer,
       isGameActive: state.isGameActive,
       isGameStarted: state.isGameStarted,
-      isDemoMode: state.isDemoMode,
       players: {
         player1: {
           id: state.players.player1.id,
@@ -326,8 +311,7 @@ export function Game() {
               // Current user is player1
               // viewingPlayer should already be set to 'player1' by startGame
             } else if (userAddress.toLowerCase() === player2Address.toLowerCase()) {
-              // Current user is player2, switch viewing player
-              switchViewingPlayer()
+              // Current user is player2 - viewing will be handled by DragDropGameBoard
             }
           }
           
@@ -379,7 +363,7 @@ export function Game() {
       // Just a view parameter without gameId
       setShowPlayPage(true)
     }
-  }, [searchParams, getDetailedGameState, startGame, switchViewingPlayer, wallets, setContractGameId, updateGameFromContract])
+  }, [searchParams, getDetailedGameState, startGame, wallets, setContractGameId, updateGameFromContract])
 
   return (
     <div className="min-h-screen bg-eth-dark flex flex-col">
@@ -416,19 +400,11 @@ export function Game() {
                 >
                   🎮 Play
                 </button>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleStartDemoMode}
-                    className="btn-primary"
-                  >
-                    Demo Mode
-                  </button>
-                </div>
               </>
             ) : (
               <div className="flex items-center gap-2">
                 {/* Draw Card button when turn needs to be started */}
-                {needsToDraw && !isDemoMode && activePlayer === 'player1' && (
+                {needsToDraw && activePlayer === user?.wallet?.address && (
                   <button
                     onClick={handleDrawToStartTurn}
                     className="btn-primary text-sm animate-pulse"
@@ -437,22 +413,11 @@ export function Game() {
                   </button>
                 )}
                 
-                {isDemoMode && (
-                  <button
-                    onClick={switchViewingPlayer}
-                    className="btn-secondary text-sm"
-                    disabled={!isDemoMode}
-                  >
-                    Switch Player
-                  </button>
-                )}
-                
-                {/* Only show End Turn button if not waiting to draw */}
-                {!needsToDraw && (
+                {/* Only show End Turn button if not waiting to draw and it's your turn */}
+                {!needsToDraw && activePlayer === user?.wallet?.address && (
                   <button
                     onClick={handleEndTurn}
                     className="btn-primary text-sm"
-                    disabled={!isDemoMode && activePlayer !== 'player1'}
                   >
                     End Turn
                   </button>
@@ -499,15 +464,14 @@ export function Game() {
                   Ready to Play?
                 </h2>
                 <p className="text-gray-400 mb-8 max-w-lg">
-                  Start Demo Mode to control both players and fully test all game mechanics, 
-                  card interactions, and onchain functionality.
+                  Join an onchain game to play against other players with real blockchain transactions.
                 </p>
                 <div className="flex gap-4 justify-center">
                   <button
-                    onClick={handleStartDemoMode}
+                    onClick={() => setShowPlayPage(true)}
                     className="btn-primary text-lg px-8 py-3"
                   >
-                    🔄 Start Demo Mode
+                    🎮 Start Playing
                   </button>
                   <button
                     onClick={handleStartWithCustomDeck}
@@ -540,7 +504,7 @@ export function Game() {
                 </p>
                 <div className="flex gap-4 justify-center">
                   <button
-                    onClick={handleStartDemoMode}
+                    onClick={() => setShowPlayPage(true)}
                     className="btn-primary"
                   >
                     Play Again
@@ -572,15 +536,13 @@ export function Game() {
       {isGameActive && !winner && (
         <div className="fixed bottom-4 left-4 bg-eth-dark border border-gray-700 rounded-lg px-4 py-2">
           <div className="text-sm text-white">
-            <div className="font-bold">TURN {gameId ? 'ACTIVE' : 'DEMO'}</div>
+            <div className="font-bold">TURN ACTIVE</div>
             <div className="text-gray-400 text-xs">
-              {needsToDraw && !isDemoMode && activePlayer === 'player1' 
+              {needsToDraw && activePlayer === user?.wallet?.address
                 ? '🃏 Draw card to start turn'
-                : isDemoMode 
-                  ? `Player ${activePlayer === 'player1' ? '1' : '2'}'s turn`
-                  : activePlayer === 'player1' 
-                    ? 'Your turn' 
-                    : "Opponent's turn"
+                : activePlayer === user?.wallet?.address
+                  ? 'Your turn' 
+                  : "Opponent's turn"
               }
             </div>
           </div>

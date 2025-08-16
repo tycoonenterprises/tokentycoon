@@ -85,8 +85,6 @@ export interface GameState {
   currentTurn: number
   turnNumber: number // Turn number from contract
   activePlayer: string
-  viewingPlayer: string // Which player's perspective we're viewing in demo mode
-  isDemoMode: boolean // Whether we're in demo mode (user plays both sides)
   needsToDraw: boolean // Whether current player needs to draw to start turn (from contract)
   players: {
     player1: PlayerState
@@ -105,8 +103,6 @@ export interface GameState {
 export interface GameActions {
   // Game management
   startGame: (player1Id: string, player2Id: string) => void
-  startDemoMode: (player1Id: string, player2Id: string) => void
-  switchViewingPlayer: () => void
   endGame: (winnerId?: string) => void
   // nextPhase removed - turns handled by contract endTurn
   endTurn: (useContract?: boolean) => void
@@ -237,8 +233,6 @@ const initialState: GameState = {
   currentTurn: 0, // Contract uses 0 for player1, 1 for player2
   turnNumber: 1,
   activePlayer: 'player1',
-  viewingPlayer: 'player1',
-  isDemoMode: false,
   needsToDraw: false, // Initially false
   players: {
     player1: {
@@ -295,9 +289,7 @@ export const useGameStore = create<GameState & GameActions>()(
           matchId: `game-${Date.now()}`,
           isGameActive: true,
           isGameStarted: true,
-          isDemoMode: false,
-          viewingPlayer: player1Id, // Use actual player ID
-          activePlayer: player1Id,  // Use actual player ID
+          activePlayer: player1Id,
           players: {
             player1: {
               id: player1Id,
@@ -325,59 +317,6 @@ export const useGameStore = create<GameState & GameActions>()(
             },
           },
         })
-      },
-
-      startDemoMode: (player1Id: string, player2Id: string) => {
-        const { availableCards } = get()
-        const player1Deck = getRandomCards(availableCards, 30)
-        const player2Deck = getRandomCards(availableCards, 30)
-        
-        set({
-          matchId: `demo-${Date.now()}`,
-          isGameActive: true,
-          isGameStarted: false,
-          isDemoMode: true,
-          viewingPlayer: 'player1',
-          activePlayer: 'player1',
-          players: {
-            player1: {
-              id: player1Id,
-              balance: 20,
-              eth: 3,
-              coldStorage: 0,
-              coldStorageWithdrawnThisTurn: 0,
-              hand: player1Deck.slice(0, 5),
-              board: [],
-              deck: player1Deck.slice(5),
-              deckRemaining: 25,
-              battlefieldSize: 0,
-            },
-            player2: {
-              id: player2Id,
-              balance: 20,
-              eth: 3,
-              coldStorage: 0,
-              coldStorageWithdrawnThisTurn: 0,
-              hand: player2Deck.slice(0, 5),
-              board: [],
-              deck: player2Deck.slice(5),
-              deckRemaining: 25,
-              battlefieldSize: 0,
-            },
-          },
-        })
-      },
-
-      switchViewingPlayer: () => {
-        const { viewingPlayer, isDemoMode, players } = get()
-        if (isDemoMode) {
-          // Switch between actual player IDs
-          const player1Id = players.player1.id
-          const player2Id = players.player2.id
-          set({
-            viewingPlayer: viewingPlayer === player1Id ? player2Id : player1Id
-          })
-        }
       },
 
       // Initialize game from contract state (for onchain games)
@@ -398,8 +337,6 @@ export const useGameStore = create<GameState & GameActions>()(
           currentTurn: convertBigInt(gameView.currentTurn),
           turnNumber: convertBigInt(gameView.turnNumber),
           activePlayer,
-          viewingPlayer: 'player1', // Always view as player1 initially
-          isDemoMode: false,
           needsToDraw: gameView.needsToDraw || false,
           isGameActive: gameView.isStarted && !gameView.isFinished,
           isGameStarted: gameView.isStarted,
@@ -585,13 +522,13 @@ export const useGameStore = create<GameState & GameActions>()(
         })
       },
 
-      // nextPhase removed - use endTurn directly
+      // Contract-only endTurn - no demo mode support
 
-      endTurn: async (useContract = true) => {
-        const { gameId, isDemoMode, activePlayer, players, currentTurn } = get()
+      endTurn: async () => {
+        const { gameId } = get()
         
-        // Use contract for real games
-        if (useContract && contractFunctions.endTurn && gameId !== null) {
+        // Use contract for all games
+        if (contractFunctions.endTurn && gameId !== null) {
           try {
             console.log('Ending turn using contract for game', gameId)
             await contractFunctions.endTurn(gameId)
@@ -610,44 +547,6 @@ export const useGameStore = create<GameState & GameActions>()(
             console.error('Contract endTurn failed:', error)
             throw error
           }
-        } else if (isDemoMode) {
-          // Demo mode - simulate turn switching locally
-          const nextPlayer = activePlayer === 'player1' ? 'player2' : 'player1'
-          const nextPlayerState = players[nextPlayer]
-          
-          // Simulate drawing a card (like the contract's _startTurn function)
-          let newHand = nextPlayerState.hand
-          let newDeck = nextPlayerState.deck
-          let newDeckIndex = nextPlayerState.deckRemaining
-          
-          if (newDeck.length > 0 && newHand.length < 10) {
-            const drawnCard = newDeck[0]
-            newHand = [...newHand, drawnCard]
-            newDeck = newDeck.slice(1)
-            newDeckIndex = newDeck.length
-          }
-          
-          // Simulate gaining 1 ETH (like the contract's upkeep)
-          const newETH = nextPlayerState.eth + 1
-          
-          set({
-            activePlayer: nextPlayer,
-            currentTurn: currentTurn === 0 ? 1 : 0,
-            turnNumber: get().turnNumber + 1,
-            players: {
-              ...players,
-              [nextPlayer]: {
-                ...nextPlayerState,
-                hand: newHand,
-                deck: newDeck,
-                deckRemaining: newDeckIndex,
-                eth: newETH,
-                coldStorageWithdrawnThisTurn: 0, // Reset withdrawal limit
-              }
-            }
-          })
-          
-          console.log(`Demo mode: Turn ended, now ${nextPlayer}'s turn`)
         } else {
           console.warn('Cannot end turn: missing contract functions or gameId')
         }
@@ -798,22 +697,7 @@ export const useGameStore = create<GameState & GameActions>()(
 
       updatePlayerETH: (playerId: string, amount: number) => {
         // ETH resources are managed by the contract in real games
-        // In demo mode, allow local updates for simulation
-        const { isDemoMode, players } = get()
-        if (isDemoMode) {
-          const player = players[playerId as keyof typeof players]
-          set({
-            players: {
-              ...players,
-              [playerId]: {
-                ...player,
-                eth: Math.max(0, player.eth + amount),
-              },
-            },
-          })
-        } else {
-          console.log(`updatePlayerETH called for ${playerId} with ${amount} - handled by contract`)
-        }
+        console.log(`updatePlayerETH called for ${playerId} with ${amount} - handled by contract`)
       },
 
       updatePlayerBalance: (playerId: string, amount: number) => {

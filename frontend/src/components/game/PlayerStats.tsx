@@ -6,8 +6,6 @@ export function PlayerStats() {
     currentTurn, 
     turnNumber,
     activePlayer,
-    viewingPlayer,
-    isDemoMode,
     isGameActive,
     isGameStarted
   } = useGameStore()
@@ -24,16 +22,8 @@ export function PlayerStats() {
             <span>Turn {turnNumber}</span>
             <span>•</span>
             <span className={`font-medium ${isGameStarted ? 'text-eth-success' : 'text-yellow-500'}`}>
-              {isGameStarted ? 'Game Started' : isDemoMode ? 'Demo Mode' : 'Practice Mode'}
+              {isGameStarted ? 'Game Started' : 'Practice Mode'}
             </span>
-            {isDemoMode && (
-              <>
-                <span>•</span>
-                <span className="text-eth-primary">
-                  Viewing: Player {viewingPlayer === 'player1' ? '1' : '2'}
-                </span>
-              </>
-            )}
           </div>
         </div>
 
