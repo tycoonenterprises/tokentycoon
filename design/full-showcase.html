@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethereum TCG - Complete Card Collection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #10b981, #f59e0b, #dc2626, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            font-size: 1.3rem;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid;
+            text-align: center;
+        }
+        
+        .stat-card.chain { border-color: #3b82f6; }
+        .stat-card.defi { border-color: #10b981; }
+        .stat-card.action { border-color: #dc2626; }
+        .stat-card.eoa { border-color: #0891b2; }
+        .stat-card.ability { border-color: #6b7280; }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .chain .stat-number { color: #3b82f6; }
+        .defi .stat-number { color: #10b981; }
+        .action .stat-number { color: #dc2626; }
+        .eoa .stat-number { color: #0891b2; }
+        .ability .stat-number { color: #6b7280; }
+        
+        .filter-controls {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+        
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .filter-btn.chain.active { background: #3b82f6; border-color: #3b82f6; }
+        .filter-btn.defi.active { background: #10b981; border-color: #10b981; }
+        .filter-btn.action.active { background: #dc2626; border-color: #dc2626; }
+        .filter-btn.eoa.active { background: #0891b2; border-color: #0891b2; }
+        .filter-btn.ability.active { background: #6b7280; border-color: #6b7280; }
+        
+        .search-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 1rem;
+            margin: 0 auto 2rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            color: #e2e8f0;
+            font-size: 1rem;
+            display: block;
+        }
+        
+        .search-box::placeholder {
+            color: #64748b;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .section-count {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .card-section {
+            margin-bottom: 4rem;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .card-item {
+            background: rgba(30, 41, 59, 0.3);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+        
+        .card-item.chain:hover { border-color: #3b82f6; box-shadow: 0 15px 35px rgba(59, 130, 246, 0.3); }
+        .card-item.defi:hover { border-color: #10b981; box-shadow: 0 15px 35px rgba(16, 185, 129, 0.3); }
+        .card-item.action:hover { border-color: #dc2626; box-shadow: 0 15px 35px rgba(220, 38, 38, 0.3); }
+        .card-item.eoa:hover { border-color: #0891b2; box-shadow: 0 15px 35px rgba(8, 145, 178, 0.3); }
+        .card-item.ability:hover { border-color: #6b7280; box-shadow: 0 15px 35px rgba(107, 114, 128, 0.3); }
+        
+        .card-image {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            border-radius: 0.75rem;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .card-item:hover .card-image {
+            transform: scale(1.02);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .card-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        
+        .card-cost {
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding: 0.5rem;
+            border-radius: 50%;
+            min-width: 2.5rem;
+            text-align: center;
+            color: white;
+        }
+        
+        .chain .card-cost { background: #3b82f6; }
+        .defi .card-cost { background: #10b981; }
+        .action .card-cost { background: #dc2626; }
+        .eoa .card-cost { background: #0891b2; }
+        .ability .card-cost { background: #6b7280; }
+        
+        .card-type-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        
+        .chain .card-type-badge { background: #3b82f6; color: white; }
+        .defi .card-type-badge { background: #10b981; color: white; }
+        .action .card-type-badge { background: #dc2626; color: white; }
+        .eoa .card-type-badge { background: #0891b2; color: white; }
+        .ability .card-type-badge { background: #6b7280; color: white; }
+        
+        .card-description {
+            color: #cbd5e1;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .card-abilities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .ability-tag {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .card-rarity {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .rarity-common { background: #6b7280; }
+        .rarity-uncommon { background: #10b981; }
+        .rarity-rare { background: #3b82f6; }
+        .rarity-epic { background: #8b5cf6; }
+        .rarity-legendary { background: #f59e0b; }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #64748b;
+            font-size: 1.2rem;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: #1e293b;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-close:hover {
+            color: #e2e8f0;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .filter-controls {
+                gap: 0.5rem;
+            }
+            
+            .filter-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chain-gradient { background: linear-gradient(135deg, #3b82f6, #1e40af); }
+        .defi-gradient { background: linear-gradient(135deg, #10b981, #f59e0b); }
+        .action-gradient { background: linear-gradient(135deg, #dc2626, #f59e0b); }
+        .eoa-gradient { background: linear-gradient(135deg, #0891b2, #fbbf24); }
+        .ability-gradient { background: linear-gradient(135deg, #6b7280, #6366f1); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Ethereum TCG</h1>
+            <p>Complete Card Collection - 72 Unique Cards</p>
+            
+            <div class="stats-overview">
+                <div class="stat-card chain">
+                    <div class="stat-number">6</div>
+                    <div>Chain Cards</div>
+                </div>
+                <div class="stat-card defi">
+                    <div class="stat-number">21</div>
+                    <div>DeFi Cards</div>
+                </div>
+                <div class="stat-card action">
+                    <div class="stat-number">28</div>
+                    <div>Action Cards</div>
+                </div>
+                <div class="stat-card eoa">
+                    <div class="stat-number">8</div>
+                    <div>EOA Cards</div>
+                </div>
+                <div class="stat-card ability">
+                    <div class="stat-number">9</div>
+                    <div>Ability Cards</div>
+                </div>
+            </div>
+            
+            <input type="text" class="search-box" placeholder="Search cards by name, description, or ability..." id="searchBox">
+            
+            <div class="filter-controls">
+                <button class="filter-btn active" data-filter="all">All Cards</button>
+                <button class="filter-btn chain" data-filter="Chain">Chains</button>
+                <button class="filter-btn defi" data-filter="DeFi">DeFi</button>
+                <button class="filter-btn action" data-filter="Action">Actions</button>
+                <button class="filter-btn eoa" data-filter="EOA">EOA</button>
+                <button class="filter-btn ability" data-filter="Ability">Abilities</button>
+                <button class="filter-btn" data-filter="cost-low">Low Cost (1-2)</button>
+                <button class="filter-btn" data-filter="cost-high">High Cost (4+)</button>
+            </div>
+        </header>
+
+        <!-- Featured Generated Cards Section -->
+        <div class="card-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="chain-gradient" style="padding: 1rem; border-radius: 0.5rem;">Featured Generated Cards</span>
+                    <span class="section-count">12 Featured Cards</span>
+                </h2>
+            </div>
+            
+            <div class="card-grid" id="featuredCards">
+                <div class="card-item chain" data-cost="2" data-type="Chain">
+                    <div class="card-rarity rarity-common"></div>
+                    <div class="card-header">
+                        <div class="card-name">Arbitrum</div>
+                        <div class="card-cost">2</div>
+                    </div>
+                    <div class="card-type-badge">Chain</div>
+                    <img src="all-cards/arbitrum.svg" alt="Arbitrum" class="card-image">
+                    <div class="card-description">Generates 1 ETH per turn. Layer 2 scaling solution for Ethereum.</div>
+                    <div class="card-abilities">
+                        <span class="ability-tag">Income: 1 ETH</span>
+                    </div>
+                </div>
+                
+                <div class="card-item chain" data-cost="2" data-type="Chain">
+                    <div class="card-rarity rarity-common"></div>
+                    <div class="card-header">
+                        <div class="card-name">Base</div>
+                        <div class="card-cost">2</div>
+                    </div>
+                    <div class="card-type-badge">Chain</div>
+                    <img src="all-cards/base.svg" alt="Base" class="card-image">
+                    <div class="card-description">Generates 1 ETH per turn. Coinbase's L2 built for everyone.</div>
+                    <div class="card-abilities">
+                        <span class="ability-tag">Income: 1 ETH</span>
+                    </div>
+                </div>
+                
+                <div class="card-item chain" data-cost="2" data-type="Chain">
+                    <div class="card-rarity rarity-common"></div>
+                    <div class="card-header">
+                        <div class="card-name">Polygon</div>
+                        <div class="card-cost">2</div>
+                    </div>
+                    <div class="card-type-badge">Chain</div>
+                    <img src="all-cards/polygon.svg" alt="Polygon" class="card-image">
+                    <div class="card-description">Gain 1 ETH per turn. Ethereum's internet of blockchains.</div>
+                    <div class="card-abilities">
+                        <span class="ability-tag">Income: 1 ETH</span>
+                    </div>
+                </div>
+                
+                <div class="card-item defi" data-cost="4" data-type="DeFi">
+                    <div class="card-rarity rarity-rare"></div>
+                    <div class="card-header">
+                        <div class="card-name">Altcoin Validator</div>
+                        <div class="card-cost">4</div>
+                    </div>
+                    <div class="card-type-badge">DeFi</div>
+                    <img src="all-cards/altcoin-validator.svg" alt="Altcoin Validator" class="card-image">
+                    <div class="card-description">Gain 2 ETH every turn per ETH stored here. Multi-chain validation rewards.</div>
+                    <div class="card-abilities">
+                        <span class="ability-tag">Income: 2x stored</span>
+                        <span class="ability-tag">Staking</span>
+                    </div>
+                </div>
+                
+                <div class="card-item defi" data-cost="2" data-type="DeFi">
+                    <div class="card-rarity rarity-common"></div>
+                    <div class="card-header">
+                        <div class="card-name">Jito</div>
+                        <div class="card-cost">2</div>
+                    </div>
+                    <div class="card-type-badge">DeFi</div>
+                    <img src="all-cards/jito.svg" alt="Jito" class="card-image">
+                    <div class="card-description">Gain 1 ETH every turn. Solana liquid staking and MEV extraction.</div>
+                    <div class="card-abilities">
+                        <span class="ability-tag">Yield: 1 ETH</span>
+                        <span class="ability-tag">Auto-compound</span>
+                    </div>
+                </div>
+                
+                <div class="card-item defi" data-cost="4" data-type="DeFi">
+                    <div class="card-rarity rarity-rare"></div>
+                    <div class="card-header">
+                        <div class="card-name">Aave</div>
+                        <div class="card-cost">4</div>
+                    </div>
+                    <div class="card-type-badge">DeFi</div>
+                    <img src="all-cards/aave.svg" alt="Aave" class="card-image">
+                    <div class="card-description">Gain 2 ETH per turn per ETH stored here. Decentralized lending protocol.</div>
+                    <div class="card-abilities">
+                        <span class="ability-tag">Yield: 2x stored</span>
+                        <span class="ability-tag">Lending</span>
+                    </div>
+                </div>
+                
+                <div class="card-item action" data-cost="5" data-type="Action">
+                    <div class="card-rarity rarity-epic"></div>
+                    <div class="card-header">
+                        <div class="card-name">Secret Key Leak</div>
+                        <div class="card-cost">5</div>
+                    </div>
+                    <div class="card-type-badge">Action</div>
+                    <img src="all-cards/secret-key-leak.svg" alt="Secret Key Leak" class="card-image">
+                    <div class="card-description">Steal up to 3 ETH from a target wallet. Private key compromise attack.</div>
+                    <div class="card-abilities">
+                        <span class="ability-tag">Steal: 3 ETH</span>
+                        <span class="ability-tag">One-time use</span>
+                    </div>
+                </div>
+                
+                <div class="card-item eoa" data-cost="5" data-type="EOA">
+                    <div class="card-rarity rarity-epic"></div>
+                    <div class="card-header">
+                        <div class="card-name">Crypto Whale</div>
+                        <div class="card-cost">5</div>
+                    </div>
+                    <div class="card-type-badge">EOA</div>
+                    <img src="all-cards/crypto-whale.svg" alt="Crypto Whale" class="card-image">
+                    <div class="card-description">Add 1 ETH per DeFi governance control. High net worth individual.</div>
+                    <div class="card-abilities">
+                        <span class="ability-tag">Income: 1 ETH/DeFi</span>
+                        <span class="ability-tag">Governance</span>
+                    </div>
+                </div>
+                
+                <div class="card-item ability" data-cost="3" data-type="Ability">
+                    <div class="card-rarity rarity-uncommon"></div>
+                    <div class="card-header">
+                        <div class="card-name">DeFi Llama Research</div>
+                        <div class="card-cost">3</div>
+                    </div>
+                    <div class="card-type-badge">Ability</div>
+                    <img src="all-cards/defi-llama-research.svg" alt="DeFi Llama Research" class="card-image">
+                    <div class="card-description">Draw 2 cards. Comprehensive DeFi protocol analytics platform.</div>
+                    <div class="card-abilities">
+                        <span class="ability-tag">Draw: 2 cards</span>
+                        <span class="ability-tag">Research</span>
+                    </div>
+                </div>
+                
+                <div class="card-item chain" data-cost="3" data-type="Chain">
+                    <div class="card-rarity rarity-uncommon"></div>
+                    <div class="card-header">
+                        <div class="card-name">Rollup Wars</div>
+                        <div class="card-cost">3</div>
+                    </div>
+                    <div class="card-type-badge">Chain</div>
+                    <img src="all-cards/rollup-wars.svg" alt="Rollup Wars" class="card-image">
+                    <div class="card-description">Choose a Chain you control. It produces +1 ETH per turn.</div>
+                    <div class="card-abilities">
+                        <span class="ability-tag">Boost: +1 ETH</span>
+                        <span class="ability-tag">Target Chain</span>
+                    </div>
+                </div>
+                
+                <div class="card-item chain" data-cost="5" data-type="Chain">
+                    <div class="card-rarity rarity-epic"></div>
+                    <div class="card-header">
+                        <div class="card-name">Sharding</div>
+                        <div class="card-cost">5</div>
+                    </div>
+                    <div class="card-type-badge">Chain</div>
+                    <img src="all-cards/sharding.svg" alt="Sharding" class="card-image">
+                    <div class="card-description">Your Chains generate +1 ETH per turn. Parallel processing upgrade.</div>
+                    <div class="card-abilities">
+                        <span class="ability-tag">Boost: All Chains +1</span>
+                        <span class="ability-tag">Permanent</span>
+                    </div>
+                </div>
+                
+                <div class="card-item chain" data-cost="0" data-type="Chain">
+                    <div class="card-rarity rarity-common"></div>
+                    <div class="card-header">
+                        <div class="card-name">Testnet</div>
+                        <div class="card-cost">0</div>
+                    </div>
+                    <div class="card-type-badge">Chain</div>
+                    <img src="all-cards/testnet.svg" alt="Testnet" class="card-image">
+                    <div class="card-description">Play this Chain for free. It disappears after 2 of your turns.</div>
+                    <div class="card-abilities">
+                        <span class="ability-tag">Free play</span>
+                        <span class="ability-tag">Duration: 2 turns</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- All Cards from JSON -->
+        <div class="card-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="defi-gradient" style="padding: 1rem; border-radius: 0.5rem;">Complete Card Database</span>
+                    <span class="section-count" id="totalCount">72 Cards</span>
+                </h2>
+            </div>
+            
+            <div class="card-grid" id="allCards">
+                <!-- Cards will be dynamically loaded here -->
+            </div>
+        </div>
+        
+        <div class="no-results hidden" id="noResults">
+            <p>No cards found matching your search criteria.</p>
+        </div>
+    </div>
+
+    <!-- Modal for card details -->
+    <div class="modal" id="cardModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Card data from JSON - All 72 cards
+        const cardData = [
+            {"name": "DeFi Llama Research", "description": "Draw 2 cards.", "cost": 3, "cardType": "Ability", "abilities": {"draw": {"amount": 2}}},
+            {"name": "Altcoin Validator", "description": "Gain 2 ETH every turn per ETH stored here.", "cost": 4, "cardType": "DeFi", "abilities": {"income": {"amount": 2}}},
+            {"name": "Secret Key Leak", "description": "Steal up to 3 ETH from a target wallet.", "cost": 5, "cardType": "Action", "abilities": {"steal": {"amount": 3}}},
+            {"name": "Attend a Conference", "description": "Draw 3 cards.", "cost": 5, "cardType": "Ability", "abilities": {"draw": {"amount": 3}}},
+            {"name": "Rocketpool Validator", "description": "Gain 1 ETH every turn per ETH stored here.", "cost": 2, "cardType": "EOA", "abilities": {"income": {"amount": 1}}},
+            {"name": "Jito", "description": "Gain 1 ETH every turn.", "cost": 2, "cardType": "DeFi", "abilities": {"yield": {"amount": 1}}},
+            {"name": "Flashbots", "description": "Gain 1 ETH every turn.", "cost": 5, "cardType": "DeFi", "abilities": {"yield": {"amount": 1}}},
+            {"name": "Lido", "description": "Gain 1 ETH per ETH stored here.", "cost": 3, "cardType": "DeFi", "abilities": {"yield": {"amount": 1}}},
+            {"name": "Invalid OP-Code", "description": "Target opponent discards a card.", "cost": 3, "cardType": "Action", "abilities": {"discard": {"amount": 1}}},
+            {"name": "Lost Keys", "description": "Target wallet loses all of its ETH.", "cost": 4, "cardType": "Action", "abilities": {"destroy": {"amount": 100}}},
+            {"name": "Validator Cluster", "description": "Gain 2 ETH every turn.", "cost": 4, "cardType": "EOA", "abilities": {"yield": {"amount": 2}}},
+            {"name": "Flow", "description": "Generates 1 ETH per turn.", "cost": 5, "cardType": "DeFi", "abilities": {"income": {"amount": 1}}},
+            {"name": "Jupiter", "description": "Gain 2 ETH every turn.", "cost": 2, "cardType": "DeFi", "abilities": {"yield": {"amount": 2}}},
+            {"name": "Curve", "description": "Gain 1 ETH per ETH stored here.", "cost": 2, "cardType": "DeFi", "abilities": {"yield": {"amount": 1}}},
+            {"name": "Ethena", "description": "Gain 3 ETH every turn.", "cost": 5, "cardType": "DeFi", "abilities": {"yield": {"amount": 3}}},
+            {"name": "Pendle", "description": "Gain 1 ETH per ETH stored here.", "cost": 2, "cardType": "DeFi", "abilities": {"yield": {"amount": 1}}},
+            {"name": "Aave", "description": "Gain 2 ETH per turn per ETH stored here.", "cost": 4, "cardType": "DeFi", "abilities": {"yield": {"amount": 2}}},
+            {"name": "Arbitrum", "description": "Generates 1 ETH per turn.", "cost": 2, "cardType": "Chain", "abilities": {"income": {"amount": 1}}},
+            {"name": "Base", "description": "Generates 1 ETH per turn.", "cost": 2, "cardType": "Chain", "abilities": {"income": {"amount": 1}}},
+            {"name": "Morpho", "description": "Gain 1 ETH per turn per ETH stored here.", "cost": 2, "cardType": "DeFi", "abilities": {"income": {"amount": 1}}},
+            {"name": "Insurance", "description": "This chain and all DeFi protocols on it can't be destroyed.", "cost": 4, "cardType": "DeFi", "abilities": {"invincible": {"amount": 1}}},
+            {"name": "Crypto Whale", "description": "Add 1 ETH per DeFi governance control.", "cost": 5, "cardType": "EOA", "abilities": {"income": {"amount": 1}}},
+            {"name": "Fork", "description": "Copy target DeFi protocol you control.", "cost": 3, "cardType": "Action", "abilities": {"takeover": {"amount": 1}}},
+            {"name": "Wormhole", "description": "If you control 2+ Chains, gain 2 ETH per turn per ETH stored here (max +2 ETH/turn).", "cost": 3, "cardType": "DeFi", "abilities": {"yield": {"amount": 2}}},
+            {"name": "Re-entrant Attack", "description": "Destroy target DeFi protocol.", "cost": 3, "cardType": "Action", "abilities": {"destroy": {"amount": 1}}},
+            {"name": "51% Attack", "description": "Take control of target Chain.", "cost": 5, "cardType": "Action", "abilities": {"destroy": {"amount": 1}, "takeover": {"amount": 5}}},
+            {"name": "Wallet", "description": "Place max 5 ETH here.", "cost": 1, "cardType": "EOA", "abilities": {"storage": {"max": 5, "type": "ETH"}}},
+            {"name": "Dune Research", "description": "Draw 2 cards.", "cost": 3, "cardType": "Ability", "abilities": {"draw": {"amount": 2}}},
+            {"name": "Polygon", "description": "Gain 1 ETH per turn.", "cost": 2, "cardType": "Chain", "abilities": {"income": {"amount": 1}}},
+            {"name": "Uniswap", "description": "Gain 1 ETH per turn per ETH stored here.", "cost": 2, "cardType": "DeFi", "abilities": {"yield": {"amount": 1}}},
+            {"name": "Validator Node", "description": "Gain 1 ETH every turn.", "cost": 2, "cardType": "EOA", "abilities": {"income": {"amount": 1}}},
+            {"name": "Read a Whitepaper", "description": "Draw 2 cards.", "cost": 3, "cardType": "Action", "abilities": {"draw": {"amount": 2}}},
+            {"name": "Gas War", "description": "Each opponent pays 1 ETH upkeep on their turn.", "cost": 3, "cardType": "Action", "abilities": {"tax": {"amount": 1}}},
+            {"name": "Diamond Hands", "description": "ETH in this wallet can't be removed by opponents.", "cost": 4, "cardType": "EOA", "abilities": {"lock": {"amount": 1}}},
+            {"name": "Force Sell", "description": "Target opponent loses 2 ETH from one of their wallets.", "cost": 2, "cardType": "Action", "abilities": {"destroy": {"amount": 2}}},
+            {"name": "EIP-1559 Burn", "description": "Burn 1 ETH from each opponent. Then gain 1 ETH.", "cost": 3, "cardType": "Action", "abilities": {"burn": {"amount": 1}, "gain": {"amount": 1}}},
+            {"name": "Vitalik Tweet", "description": "All players draw 1 card. You gain 1 ETH.", "cost": 2, "cardType": "Ability", "abilities": {"draw": {"amount": 1}, "gain": {"amount": 1}}},
+            {"name": "DAO Hack", "description": "Destroy up to 2 opponent DeFi on a single Chain.", "cost": 5, "cardType": "Action", "abilities": {"destroy": {"amount": 2}}},
+            {"name": "NFT Rugpull", "description": "Target opponent loses 3 ETH.", "cost": 2, "cardType": "Action", "abilities": {"destroy": {"amount": 3}}},
+            {"name": "Pump and Dump", "description": "Gain 6 ETH now. Lose 3 ETH at the start of your next turn.", "cost": 3, "cardType": "Action", "abilities": {"gain": {"amount": 6}, "loseNext": {"amount": 3}}},
+            {"name": "Sandwich Attack", "description": "Once per turn, when an opponent plays an Action, steal 1 ETH from them.", "cost": 3, "cardType": "Action", "abilities": {"trigger": {"on": "opponentAction", "steal": 1, "perTurnMax": 1}}},
+            {"name": "Front-Run Bot", "description": "Once per turn, when an opponent plays an Action, gain 1 ETH.", "cost": 4, "cardType": "DeFi", "abilities": {"trigger": {"on": "opponentAction", "gain": 1, "perTurnMax": 1}}},
+            {"name": "Rollup Wars", "description": "Choose a Chain you control. It produces +1 ETH per turn.", "cost": 3, "cardType": "Chain", "abilities": {"boost": {"amount": 1}}},
+            {"name": "Liquidation Cascade", "description": "Destroy all opponent wallets with 4+ ETH.", "cost": 5, "cardType": "Action", "abilities": {"destroy": {"amount": 99}}},
+            {"name": "Ragequit", "description": "Destroy one of your DeFi. Gain 5 ETH.", "cost": 2, "cardType": "Action", "abilities": {"destroy": {"amount": 1}, "gain": {"amount": 5}}},
+            {"name": "Ape FOMO", "description": "You may draw 3 cards. If you do, lose 2 ETH.", "cost": 2, "cardType": "Ability", "abilities": {"draw": {"amount": 3}, "destroy": {"amount": 2}, "choice": {"optional": true}}},
+            {"name": "Hard Fork", "description": "Create a temporary Chain token that generates 1 ETH per turn for 2 turns.", "cost": 4, "cardType": "Action", "abilities": {"copy": {"amount": 1}, "duration": {"turns": 2}}},
+            {"name": "Soft Fork", "description": "Until your next turn, opponent Actions cost +1 ETH.", "cost": 2, "cardType": "Action", "abilities": {"tax": {"amount": 1}, "duration": {"turns": 1}}},
+            {"name": "Bridge Exploit", "description": "Steal 3 ETH from an opponent's Chain.", "cost": 4, "cardType": "Action", "abilities": {"steal": {"amount": 3}}},
+            {"name": "Sharding", "description": "Your Chains generate +1 ETH per turn.", "cost": 5, "cardType": "Chain", "abilities": {"boost": {"amount": 1}}},
+            {"name": "Slashing", "description": "Target opponent loses 2 ETH for each Validator Node they control.", "cost": 3, "cardType": "Action", "abilities": {"destroy": {"amount": 2}, "scale": {"by": "opponentValidatorNodes"}}},
+            {"name": "Governance Vote", "description": "Draw 2 cards. Each opponent discards 1 card.", "cost": 3, "cardType": "Ability", "abilities": {"draw": {"amount": 2}, "opponentDiscard": {"amount": 1}}},
+            {"name": "Testnet", "description": "Play this Chain for free. It disappears after 2 of your turns.", "cost": 0, "cardType": "Chain", "abilities": {"income": {"amount": 1}, "duration": {"turns": 2}}},
+            {"name": "Gas Fee Spike", "description": "This turn, opponent Actions cost +1 ETH.", "cost": 2, "cardType": "Action", "abilities": {"tax": {"amount": 1}, "duration": {"turns": 1}}},
+            {"name": "Diamond DAO", "description": "Gain 1 ETH per DeFi you control.", "cost": 4, "cardType": "DeFi", "abilities": {"yield": {"amount": 1}, "scale": {"by": "yourDeFi"}}},
+            {"name": "Oracles", "description": "Once per turn, when you gain ETH, draw 1 card.", "cost": 3, "cardType": "Ability", "abilities": {"trigger": {"on": "youGainETH", "draw": 1, "perTurnMax": 1}}},
+            {"name": "Time Bomb Stablecoin", "description": "Gain 5 ETH now. At the end of your 3rd turn after this, lose 5 ETH unless this is destroyed.", "cost": 3, "cardType": "DeFi", "abilities": {"gain": {"amount": 5}, "delayedLose": {"turns": 3, "amount": 5}}},
+            {"name": "Dust Attack", "description": "Target opponent wallet can't receive ETH for 2 turns.", "cost": 2, "cardType": "Action", "abilities": {"lock": {"amount": 1}, "duration": {"turns": 2}}},
+            {"name": "Exit Scam", "description": "Destroy one of your DeFi. Gain 8 ETH.", "cost": 4, "cardType": "Action", "abilities": {"destroy": {"amount": 1}, "gain": {"amount": 8}}},
+            {"name": "Liquidity Mining", "description": "Draw 1 card per DeFi you control (max 3).", "cost": 3, "cardType": "Ability", "abilities": {"draw": {"amount": 3}, "cap": {"max": 3}}},
+            {"name": "MEV Extractor", "description": "Once per turn, when an opponent gains ETH, steal 1 ETH from them.", "cost": 4, "cardType": "DeFi", "abilities": {"trigger": {"on": "opponentGainETH", "steal": 1, "perTurnMax": 1}}},
+            {"name": "Ponzinomics", "description": "Gain 4 ETH now. Lose 2 ETH at the start of your next turn.", "cost": 2, "cardType": "DeFi", "abilities": {"gain": {"amount": 4}, "loseNext": {"amount": 2}}},
+            {"name": "Proof of Work", "description": "Exhaust up to 2 opponent EOAs for 1 turn (they produce 0).", "cost": 1, "cardType": "Action", "abilities": {"freeze": {"targets": "opponentEOA", "count": 2, "duration": 1}}},
+            {"name": "Proof of Stake", "description": "If at least 1 ETH is stored here, gain 2 ETH per turn.", "cost": 3, "cardType": "DeFi", "abilities": {"yield": {"amount": 2}, "requires": {"storedETH": 1}}},
+            {"name": "Gasless Transaction", "description": "This turn, you may play one Action for free.", "cost": 2, "cardType": "Action", "abilities": {"freePlay": {"type": "Action", "count": 1}, "duration": {"turns": 1}}},
+            {"name": "Auditor", "description": "Destroy target opponent DeFi with cost 3 or less.", "cost": 3, "cardType": "Action", "abilities": {"destroy": {"amount": 1}, "limit": {"maxCost": 3}}},
+            {"name": "Bug Bounty", "description": "Draw 2 cards. If an opponent destroyed one of your cards last turn, gain 2 ETH.", "cost": 2, "cardType": "Ability", "abilities": {"draw": {"amount": 2}, "conditionalGain": {"amount": 2}}},
+            {"name": "Multi-sig Wallet", "description": "Storage max 8. The first time each turn this would be stolen from or destroyed, prevent it.", "cost": 3, "cardType": "EOA", "abilities": {"storage": {"max": 8, "type": "ETH"}, "shield": {"perTurn": 1}}},
+            {"name": "Cold Storage", "description": "Storage max 10. ETH newly placed here can't be targeted by Actions for 2 turns.", "cost": 3, "cardType": "EOA", "abilities": {"storage": {"max": 10, "type": "ETH"}, "lock": {"amount": 1}, "duration": {"turns": 2}}},
+            {"name": "Flash Loan", "description": "Gain 4 ETH for this turn. At end of turn, repay 4 ETH or destroy one of your DeFi.", "cost": 1, "cardType": "Action", "abilities": {"gainTemp": {"amount": 4}, "repayOrSacrifice": {"repay": 4, "fallbackDestroy": 1}}},
+            {"name": "Yield Aggregator", "description": "This turn, your DeFi with yield/income produce +1 ETH.", "cost": 2, "cardType": "DeFi", "abilities": {"boost": {"amount": 1}, "duration": {"turns": 1}}},
+            {"name": "Sequencer Outage", "description": "Choose a Chain. It produces 0 ETH next turn.", "cost": 2, "cardType": "Action", "abilities": {"debuff": {"amount": 0}, "duration": {"turns": 1}}}
+        ];
+        
+        function getRarityClass(cost) {
+            if (cost <= 1) return 'rarity-common';
+            if (cost === 2) return 'rarity-common';
+            if (cost === 3) return 'rarity-uncommon';
+            if (cost === 4) return 'rarity-rare';
+            return 'rarity-epic';
+        }
+        
+        function getCardImagePath(cardName) {
+            // Convert card name to SVG filename format
+            const filename = cardName
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .replace('51-attack', '51-percent-attack'); // Special case for "51% Attack"
+            
+            // List of cards that have SVG files (based on directory listing)
+            const availableImages = [
+                '51-percent-attack', 'aave', 'altcoin-validator', 'ape-fomo', 'arbitrum',
+                'attend-a-conference', 'auditor', 'base', 'bridge-exploit', 'bug-bounty',
+                'cold-storage', 'crypto-whale', 'curve', 'dao-hack', 'defi-llama-research',
+                'diamond-dao', 'diamond-hands', 'dune-research', 'dust-attack', 'eip-1559-burn',
+                'ethena', 'exit-scam', 'flash-loan', 'flashbots', 'flow', 'force-sell',
+                'fork', 'front-run-bot', 'gas-fee-spike', 'gas-war', 'gasless-transaction',
+                'governance-vote', 'hard-fork', 'insurance', 'invalid-op-code', 'jito',
+                'jupiter', 'lido', 'liquidation-cascade', 'liquidity-mining', 'lost-keys',
+                'mev-extractor', 'morpho', 'multi-sig-wallet', 'nft-rugpull', 'oracles',
+                'pendle', 'polygon', 'ponzinomics', 'proof-of-stake', 'proof-of-work',
+                'pump-and-dump', 'ragequit', 're-entrant-attack', 'read-a-whitepaper',
+                'rocketpool-validator', 'rollup-wars', 'sandwich-attack', 'secret-key-leak',
+                'sequencer-outage', 'sharding', 'slashing', 'soft-fork', 'testnet',
+                'time-bomb-stablecoin', 'uniswap', 'validator-cluster', 'validator-node',
+                'vitalik-tweet', 'wallet', 'wormhole', 'yield-aggregator'
+            ];
+            
+            if (availableImages.includes(filename)) {
+                return `all-cards/${filename}.svg`;
+            }
+            
+            return null; // No image available
+        }
+        
+        function getAbilityTags(abilities) {
+            const tags = [];
+            if (abilities.income) tags.push(`Income: ${abilities.income.amount} ETH`);
+            if (abilities.yield) tags.push(`Yield: ${abilities.yield.amount}x`);
+            if (abilities.draw) tags.push(`Draw: ${abilities.draw.amount} cards`);
+            if (abilities.destroy) tags.push(`Destroy: ${abilities.destroy.amount}`);
+            if (abilities.steal) tags.push(`Steal: ${abilities.steal.amount} ETH`);
+            if (abilities.storage) tags.push(`Storage: ${abilities.storage.max} ETH`);
+            if (abilities.gain) tags.push(`Gain: ${abilities.gain.amount} ETH`);
+            if (abilities.boost) tags.push(`Boost: +${abilities.boost.amount} ETH`);
+            if (abilities.tax) tags.push(`Tax: ${abilities.tax.amount} ETH`);
+            if (abilities.lock) tags.push('Protection');
+            if (abilities.invincible) tags.push('Invincible');
+            return tags;
+        }
+        
+        function renderCards(cards, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            cards.forEach((card, index) => {
+                const cardElement = document.createElement('div');
+                cardElement.className = `card-item ${card.cardType.toLowerCase()}`;
+                cardElement.setAttribute('data-cost', card.cost);
+                cardElement.setAttribute('data-type', card.cardType);
+                
+                const abilities = getAbilityTags(card.abilities);
+                const abilityElements = abilities.map(tag => 
+                    `<span class="ability-tag">${tag}</span>`
+                ).join('');
+                
+                const imagePath = getCardImagePath(card.name);
+                const imageHtml = imagePath ? `<img src="${imagePath}" alt="${card.name}" class="card-image">` : '';
+                
+                cardElement.innerHTML = `
+                    <div class="card-rarity ${getRarityClass(card.cost)}"></div>
+                    <div class="card-header">
+                        <div class="card-name">${card.name}</div>
+                        <div class="card-cost">${card.cost}</div>
+                    </div>
+                    <div class="card-type-badge">${card.cardType}</div>
+                    ${imageHtml}
+                    <div class="card-description">${card.description}</div>
+                    <div class="card-abilities">${abilityElements}</div>
+                `;
+                
+                cardElement.addEventListener('click', () => showCardModal(card));
+                container.appendChild(cardElement);
+            });
+        }
+        
+        function showCardModal(card) {
+            const modal = document.getElementById('cardModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            const abilities = getAbilityTags(card.abilities);
+            const abilityElements = abilities.map(tag => 
+                `<span class="ability-tag">${tag}</span>`
+            ).join('');
+            
+            const imagePath = getCardImagePath(card.name);
+            const imageHtml = imagePath ? `<img src="${imagePath}" alt="${card.name}" class="card-image" style="max-width: 100%; margin: 1rem 0;">` : '';
+            
+            modalContent.innerHTML = `
+                <div class="card-item ${card.cardType.toLowerCase()}" style="max-width: 400px; margin: 0 auto;">
+                    <div class="card-rarity ${getRarityClass(card.cost)}"></div>
+                    <div class="card-header">
+                        <div class="card-name" style="font-size: 1.5rem;">${card.name}</div>
+                        <div class="card-cost" style="font-size: 1.5rem;">${card.cost}</div>
+                    </div>
+                    <div class="card-type-badge">${card.cardType}</div>
+                    ${imageHtml}
+                    <div class="card-description" style="font-size: 1.1rem; margin: 1.5rem 0;">${card.description}</div>
+                    <div class="card-abilities">${abilityElements}</div>
+                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #334155;">
+                        <h4 style="margin-bottom: 1rem; color: #f8fafc;">Card Details</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1rem;">
+                            <div class="stat">
+                                <div class="stat-label">Cost</div>
+                                <div class="stat-value">${card.cost} ETH</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">Type</div>
+                                <div class="stat-value">${card.cardType}</div>
+                            </div>
+                            <div class="stat">
+                                <div class="stat-label">Rarity</div>
+                                <div class="stat-value">${getRarityClass(card.cost).replace('rarity-', '').replace('-', ' ')}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('cardModal').style.display = 'none';
+        }
+        
+        // Filter functionality
+        let currentFilter = 'all';
+        let searchTerm = '';
+        
+        function applyFilters() {
+            let filteredCards = cardData;
+            
+            // Apply type filter
+            if (currentFilter !== 'all') {
+                if (currentFilter === 'cost-low') {
+                    filteredCards = filteredCards.filter(card => card.cost <= 2);
+                } else if (currentFilter === 'cost-high') {
+                    filteredCards = filteredCards.filter(card => card.cost >= 4);
+                } else {
+                    filteredCards = filteredCards.filter(card => card.cardType === currentFilter);
+                }
+            }
+            
+            // Apply search filter
+            if (searchTerm) {
+                filteredCards = filteredCards.filter(card => 
+                    card.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    card.description.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+            
+            renderCards(filteredCards, 'allCards');
+            document.getElementById('totalCount').textContent = `${filteredCards.length} Cards`;
+            
+            // Show/hide no results message
+            const noResults = document.getElementById('noResults');
+            if (filteredCards.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Render all cards initially
+            renderCards(cardData, 'allCards');
+            
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.getAttribute('data-filter');
+                    applyFilters();
+                });
+            });
+            
+            // Search box
+            document.getElementById('searchBox').addEventListener('input', function(e) {
+                searchTerm = e.target.value;
+                applyFilters();
+            });
+            
+            // Modal close on background click
+            document.getElementById('cardModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
