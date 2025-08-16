@@ -11,11 +11,11 @@ help: ## Show this help message
 
 anvil: ## Start Anvil local blockchain
 	@echo "Starting Anvil..."
-	@anvil --host 0.0.0.0 --port 8545
+	@anvil --host 0.0.0.0 --port 8545 --silent
 
 anvil-background: ## Start Anvil in background
 	@echo "Starting Anvil in background..."
-	@anvil --host 0.0.0.0 --port 8545 > anvil.log 2>&1 &
+	@anvil --host 0.0.0.0 --port 8545 --silent > anvil.log 2>&1 &
 	@echo "Anvil started. Check anvil.log for output"
 	@sleep 2
 
@@ -91,7 +91,7 @@ dev: ## Start fresh Anvil chain and deploy everything with deterministic address
 	@rm -rf ~/.foundry/anvil/tmp || true
 	@echo "Starting fresh Anvil with deterministic state..."
 	@trap 'echo "\nStopping Anvil..."; pkill anvil || true; exit 0' INT; \
-	anvil --host 0.0.0.0 --port 8545 --chain-id 31337 & ANVIL_PID=$$!; \
+	anvil --host 0.0.0.0 --port 8545 --chain-id 31337 --silent & ANVIL_PID=$$!; \
 	sleep 3; \
 	echo "Deploying contracts, cards, and decks..."; \
 	node scripts/deployAll.js; \

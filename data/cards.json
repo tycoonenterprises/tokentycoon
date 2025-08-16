@@ -93,13 +93,6 @@
       "abilities": { "destroy": { "amount": 1 } }
     },
     {
-      "name": "Read a Whitepaper",
-      "description": "Draw 2 cards.",
-      "cost": 2,
-      "cardType": "Action",
-      "abilities": { "draw": { "amount": 2 } }
-    },
-    {
       "name": "Flash Loan",
       "description": "Gain 10 ETH. Repay 10 ETH next turn.",
       "cost": 3,
@@ -626,7 +619,7 @@
       "abilities": { "storage": { "max": 10, "type": "ETH" }, "lock": { "amount": 1 }, "duration": { "turns": 2 } }
     },
     {
-      "name": "Flash Loan",
+      "name": "Mini Flash Loan",
       "description": "Gain 4 ETH for this turn. At end of turn, repay 4 ETH or destroy one of your DeFi.",
       "cost": 1,
       "cardType": "Action",
