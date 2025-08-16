@@ -322,11 +322,6 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
                   : 'bg-eth-secondary text-white'
               }`}>
                 {card.cost} ETH
-                {cardState === 'cant-afford' && (
-                  <div className="text-xs text-red-300 mt-1">
-                    Need {card.cost - playerETH} more
-                  </div>
-                )}
               </div>
             )}
           </div>
