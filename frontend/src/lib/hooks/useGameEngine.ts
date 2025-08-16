@@ -4,19 +4,8 @@ import { wagmiConfig } from '@/lib/web3/wagmiConfig'
 import { GameEngineABI } from '@/lib/contracts/GameEngineABI'
 import { usePrivySmartContract } from './usePrivySmartContract'
 import type { GameSession, PlayerHand } from '@/lib/types/contracts'
-import { useState, useCallback } from 'react'
-
-interface TransactionRecord {
-  id: string
-  functionName: string
-  args: any[]
-  hash: string
-  gasUsed: bigint
-  gasPrice: bigint
-  totalCost: bigint
-  timestamp: number
-  status: 'pending' | 'success' | 'failed'
-}
+import { useCallback } from 'react'
+import { useTransactionStore, type TransactionRecord } from '@/stores/transactionStore'
 
 export const useGameEngine = () => {
   const { address } = useAccount()
@@ -24,8 +13,8 @@ export const useGameEngine = () => {
   // Use Privy's smart contract hook for write operations
   const { writeContract: privyWriteContract, isPending: isPrivyPending } = usePrivySmartContract()
 
-  // Transaction tracking state
-  const [transactions, setTransactions] = useState<TransactionRecord[]>([])
+  // Use global transaction store
+  const { addTransaction, updateTransaction } = useTransactionStore()
   
   // Helper function to track transactions
   const trackTransaction = useCallback(async (
@@ -48,12 +37,11 @@ export const useGameEngine = () => {
       status: 'pending'
     }
     
-    // Add to transactions list
-    setTransactions(prev => [initialRecord, ...prev])
+    // Add to global transaction store
+    addTransaction(initialRecord)
     
     try {
       // Wait for transaction receipt to get gas information
-      const { readContract } = await import('wagmi/actions')
       const { createPublicClient, http } = await import('viem')
       
       const publicClient = createPublicClient({
@@ -73,10 +61,8 @@ export const useGameEngine = () => {
         status: receipt.status === 'success' ? 'success' : 'failed'
       }
       
-      // Update the transaction in the list
-      setTransactions(prev => 
-        prev.map(tx => tx.id === txId ? updatedRecord : tx)
-      )
+      // Update in global store
+      updateTransaction(txId, updatedRecord)
       
       return updatedRecord
     } catch (error) {
@@ -88,13 +74,12 @@ export const useGameEngine = () => {
         status: 'failed'
       }
       
-      setTransactions(prev => 
-        prev.map(tx => tx.id === txId ? failedRecord : tx)
-      )
+      // Update in global store
+      updateTransaction(txId, failedRecord)
       
       return failedRecord
     }
-  }, [])
+  }, [addTransaction, updateTransaction])
 
   // Read functions
   const { data: sessionCount } = useReadContract({
@@ -458,15 +443,11 @@ export const useGameEngine = () => {
     }
   }
 
-  // Calculate cumulative gas cost
-  const totalGasCost = transactions
-    .filter(tx => tx.status === 'success')
-    .reduce((total, tx) => total + tx.totalCost, 0n)
-
-  // Clear transactions function
-  const clearTransactions = useCallback(() => {
-    setTransactions([])
-  }, [])
+  // Get transactions and controls from global store
+  const transactions = useTransactionStore(state => state.transactions)
+  const clearTransactions = useTransactionStore(state => state.clearTransactions)
+  const getTotalGasCost = useTransactionStore(state => state.getTotalGasCost)
+  const totalGasCost = getTotalGasCost()
 
   return {
     // Data

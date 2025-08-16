@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { usePublicClient, useWatchContractEvent } from 'wagmi';
 import { GameEngineABI } from '@/lib/contracts/GameEngineABI';
 import { formatEther } from 'viem';
-import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, Activity, AlertCircle, CheckCircle, XCircle, Trash2, Clock } from 'lucide-react';
+import { useGameEngine } from '@/lib/hooks/useGameEngine';
 
 interface DebugEvent {
   id: string;
@@ -26,9 +27,13 @@ export const ContractDebugPanel: React.FC<ContractDebugPanelProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [events, setEvents] = useState<DebugEvent[]>([]);
-  const [filter, setFilter] = useState<'all' | 'events' | 'functions' | 'errors'>('all');
+  const [filter, setFilter] = useState<'all' | 'events' | 'functions' | 'errors' | 'transactions'>('all');
+  const [activeTab, setActiveTab] = useState<'events' | 'transactions'>('transactions');
   const publicClient = usePublicClient();
   const eventIdCounter = useRef(0);
+  
+  // Get transaction data from useGameEngine hook
+  const { transactions, totalGasCost, clearTransactions } = useGameEngine();
 
   const addEvent = (event: Omit<DebugEvent, 'id' | 'timestamp'>) => {
     const newEvent: DebugEvent = {
@@ -321,6 +326,28 @@ export const ContractDebugPanel: React.FC<ContractDebugPanelProps> = ({
       .join(', ');
   };
 
+  const formatGas = (value: bigint) => {
+    const ethValue = formatEther(value);
+    return `${ethValue} ETH`;
+  };
+
+  const truncateHash = (hash: string) => {
+    return `${hash.slice(0, 6)}...${hash.slice(-4)}`;
+  };
+
+  const getTransactionStatusIcon = (status: string) => {
+    switch (status) {
+      case 'success':
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case 'failed':
+        return <XCircle className="w-4 h-4 text-red-500" />;
+      case 'pending':
+        return <Clock className="w-4 h-4 text-yellow-500 animate-pulse" />;
+      default:
+        return <Activity className="w-4 h-4 text-gray-500" />;
+    }
+  };
+
   return (
     <div className="fixed bottom-4 right-4 z-50 w-96 max-w-[90vw]">
       <div className="bg-gray-900 border border-gray-700 rounded-lg shadow-xl">
@@ -331,7 +358,14 @@ export const ContractDebugPanel: React.FC<ContractDebugPanelProps> = ({
           <div className="flex items-center gap-2">
             <Activity className="w-5 h-5 text-cyan-400" />
             <span className="font-semibold text-white">Contract Debug</span>
-            <span className="text-xs text-gray-400">({events.length} events)</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-400">({transactions.length} tx)</span>
+              {totalGasCost > 0n && (
+                <span className="text-xs text-cyan-400 font-mono">
+                  {formatGas(totalGasCost)}
+                </span>
+              )}
+            </div>
           </div>
           {isOpen ? (
             <ChevronUp className="w-5 h-5 text-gray-400" />
@@ -342,95 +376,219 @@ export const ContractDebugPanel: React.FC<ContractDebugPanelProps> = ({
 
         {isOpen && (
           <div className="border-t border-gray-700">
-            <div className="p-3 flex gap-2 border-b border-gray-700">
+            {/* Tab buttons */}
+            <div className="flex border-b border-gray-700">
               <button
-                onClick={() => setFilter('all')}
-                className={`px-2 py-1 text-xs rounded ${
-                  filter === 'all' 
-                    ? 'bg-cyan-600 text-white' 
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                onClick={() => setActiveTab('transactions')}
+                className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${
+                  activeTab === 'transactions'
+                    ? 'text-cyan-400 border-b-2 border-cyan-400'
+                    : 'text-gray-400 hover:text-white'
                 }`}
               >
-                All
+                Transactions ({transactions.length})
               </button>
               <button
-                onClick={() => setFilter('events')}
-                className={`px-2 py-1 text-xs rounded ${
-                  filter === 'events' 
-                    ? 'bg-blue-600 text-white' 
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                onClick={() => setActiveTab('events')}
+                className={`flex-1 px-3 py-2 text-sm font-medium transition-colors ${
+                  activeTab === 'events'
+                    ? 'text-cyan-400 border-b-2 border-cyan-400'
+                    : 'text-gray-400 hover:text-white'
                 }`}
               >
-                Events
-              </button>
-              <button
-                onClick={() => setFilter('functions')}
-                className={`px-2 py-1 text-xs rounded ${
-                  filter === 'functions' 
-                    ? 'bg-green-600 text-white' 
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                }`}
-              >
-                Functions
-              </button>
-              <button
-                onClick={() => setFilter('errors')}
-                className={`px-2 py-1 text-xs rounded ${
-                  filter === 'errors' 
-                    ? 'bg-red-600 text-white' 
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                }`}
-              >
-                Errors
-              </button>
-              <button
-                onClick={() => setEvents([])}
-                className="ml-auto px-2 py-1 text-xs bg-gray-800 text-gray-400 hover:bg-gray-700 rounded"
-              >
-                Clear
+                Events ({events.length})
               </button>
             </div>
 
-            <div className="max-h-96 overflow-y-auto">
-              {filteredEvents.length === 0 ? (
-                <div className="p-4 text-center text-gray-500 text-sm">
-                  No events captured yet
+            {/* Transactions Tab */}
+            {activeTab === 'transactions' && (
+              <>
+                {/* Summary */}
+                <div className="p-3 bg-gray-800/50">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-gray-300">Total Gas Cost:</span>
+                    <span className="text-sm font-mono text-cyan-400">
+                      {formatGas(totalGasCost)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-300">Transactions:</span>
+                    <div className="flex gap-2">
+                      <span className="text-xs text-green-400">
+                        {transactions.filter(tx => tx.status === 'success').length} success
+                      </span>
+                      <span className="text-xs text-red-400">
+                        {transactions.filter(tx => tx.status === 'failed').length} failed
+                      </span>
+                      <span className="text-xs text-yellow-400">
+                        {transactions.filter(tx => tx.status === 'pending').length} pending
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <div className="divide-y divide-gray-800">
-                  {filteredEvents.map(event => (
-                    <div key={event.id} className="p-2 hover:bg-gray-800/50 text-xs">
-                      <div className="flex items-start gap-2">
-                        {getEventIcon(event.type)}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between">
-                            <span className="font-medium text-white">{event.name}</span>
+
+                {/* Clear button */}
+                {transactions.length > 0 && (
+                  <div className="p-2 border-b border-gray-700">
+                    <button
+                      onClick={clearTransactions}
+                      className="w-full flex items-center justify-center gap-2 px-3 py-1.5 text-xs text-gray-400 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      Clear Transactions
+                    </button>
+                  </div>
+                )}
+
+                {/* Transaction list */}
+                <div className="max-h-64 overflow-y-auto custom-scrollbar">
+                  {transactions.length === 0 ? (
+                    <div className="p-4 text-center text-gray-500 text-sm">
+                      No transactions yet
+                    </div>
+                  ) : (
+                    <div className="space-y-1 p-2">
+                      {transactions.map((tx) => (
+                        <div
+                          key={tx.id}
+                          className="p-2 bg-gray-800/30 rounded border border-gray-700/50 text-xs"
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                              {getTransactionStatusIcon(tx.status)}
+                              <span className="text-white font-medium">
+                                {tx.functionName}
+                              </span>
+                            </div>
                             <span className="text-gray-500">
-                              {event.timestamp.toLocaleTimeString()}
+                              {new Date(tx.timestamp).toLocaleTimeString()}
                             </span>
                           </div>
-                          {event.args && (
-                            <div className="mt-1 text-gray-400 break-all">
-                              {formatArgs(event.args)}
+                          
+                          <div className="space-y-1 text-gray-400">
+                            <div>
+                              <span className="text-gray-500">Hash:</span> {truncateHash(tx.hash)}
                             </div>
-                          )}
-                          {event.transactionHash && (
-                            <div className="mt-1 text-gray-500">
-                              tx: {event.transactionHash.slice(0, 10)}...
-                            </div>
-                          )}
-                          {event.error && (
-                            <div className="mt-1 text-red-400">
-                              Error: {event.error}
-                            </div>
-                          )}
+                            
+                            {tx.args.length > 0 && (
+                              <div>
+                                <span className="text-gray-500">Args:</span> {formatArgs(tx.args)}
+                              </div>
+                            )}
+                            
+                            {tx.status === 'success' && tx.gasUsed > 0n && (
+                              <div className="flex justify-between">
+                                <span>
+                                  <span className="text-gray-500">Gas:</span> {tx.gasUsed.toString()}
+                                </span>
+                                <span className="text-cyan-400 font-mono">
+                                  {formatGas(tx.totalCost)}
+                                </span>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              )}
-            </div>
+              </>
+            )}
+
+            {/* Events Tab */}
+            {activeTab === 'events' && (
+              <>
+                <div className="p-3 flex gap-2 border-b border-gray-700">
+                  <button
+                    onClick={() => setFilter('all')}
+                    className={`px-2 py-1 text-xs rounded ${
+                      filter === 'all' 
+                        ? 'bg-cyan-600 text-white' 
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    }`}
+                  >
+                    All
+                  </button>
+                  <button
+                    onClick={() => setFilter('events')}
+                    className={`px-2 py-1 text-xs rounded ${
+                      filter === 'events' 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    }`}
+                  >
+                    Events
+                  </button>
+                  <button
+                    onClick={() => setFilter('functions')}
+                    className={`px-2 py-1 text-xs rounded ${
+                      filter === 'functions' 
+                        ? 'bg-green-600 text-white' 
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    }`}
+                  >
+                    Functions
+                  </button>
+                  <button
+                    onClick={() => setFilter('errors')}
+                    className={`px-2 py-1 text-xs rounded ${
+                      filter === 'errors' 
+                        ? 'bg-red-600 text-white' 
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    }`}
+                  >
+                    Errors
+                  </button>
+                  <button
+                    onClick={() => setEvents([])}
+                    className="ml-auto px-2 py-1 text-xs bg-gray-800 text-gray-400 hover:bg-gray-700 rounded"
+                  >
+                    Clear
+                  </button>
+                </div>
+
+                <div className="max-h-96 overflow-y-auto">
+                  {filteredEvents.length === 0 ? (
+                    <div className="p-4 text-center text-gray-500 text-sm">
+                      No events captured yet
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-gray-800">
+                      {filteredEvents.map(event => (
+                        <div key={event.id} className="p-2 hover:bg-gray-800/50 text-xs">
+                          <div className="flex items-start gap-2">
+                            {getEventIcon(event.type)}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <span className="font-medium text-white">{event.name}</span>
+                                <span className="text-gray-500">
+                                  {event.timestamp.toLocaleTimeString()}
+                                </span>
+                              </div>
+                              {event.args && (
+                                <div className="mt-1 text-gray-400 break-all">
+                                  {formatArgs(event.args)}
+                                </div>
+                              )}
+                              {event.transactionHash && (
+                                <div className="mt-1 text-gray-500">
+                                  tx: {event.transactionHash.slice(0, 10)}...
+                                </div>
+                              )}
+                              {event.error && (
+                                <div className="mt-1 text-red-400">
+                                  Error: {event.error}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
