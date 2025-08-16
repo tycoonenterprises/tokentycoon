@@ -1,14 +1,31 @@
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
+import { ContractCard } from '@/lib/hooks/useCardRegistry'
 
 export interface Card {
   id: string
   name: string
-  type: 'unit' | 'spell' | 'upgrade' | 'resource'
-  cost: { gas?: number; collateral?: number }
+  type: 'unit' | 'spell' | 'upgrade' | 'resource' | 'Chain' | 'DeFi' | 'EOA' | 'Action'
+  cost: number // Gas cost from contract
   power?: number
   toughness?: number
-  text: string
+  text: string // Description from contract
+  abilities?: string // Abilities from contract
+}
+
+// Convert contract card to game card
+export const contractCardToGameCard = (contractCard: ContractCard, instanceId?: string): Card => {
+  return {
+    id: instanceId || `${contractCard.name.toLowerCase().replace(/\s+/g, '-')}-${contractCard.id}`,
+    name: contractCard.name,
+    type: contractCard.cardType.toLowerCase() as Card['type'],
+    cost: contractCard.cost,
+    text: contractCard.description,
+    abilities: contractCard.abilities,
+    // Default values for power/toughness - could be enhanced later
+    power: contractCard.cardType === 'unit' || contractCard.cardType === 'EOA' ? 2 : undefined,
+    toughness: contractCard.cardType === 'unit' || contractCard.cardType === 'EOA' ? 2 : undefined,
+  }
 }
 
 export interface PlayerState {
@@ -33,6 +50,11 @@ export interface GameState {
   }
   winner: string | null
   isGameActive: boolean
+  
+  // Card registry from blockchain
+  availableCards: Card[]
+  isLoadingCards: boolean
+  cardLoadError: string | null
 }
 
 export interface GameActions {
@@ -51,55 +73,36 @@ export interface GameActions {
   updatePlayerGas: (playerId: string, amount: number) => void
   updatePlayerBalance: (playerId: string, amount: number) => void
   
+  // Card registry actions
+  loadCardsFromBlockchain: (contractCards: ContractCard[]) => void
+  setCardLoadError: (error: string | null) => void
+  setLoadingCards: (loading: boolean) => void
+  
   // Reset
   resetGame: () => void
 }
 
-// Mock card data for testing
-const MOCK_CARDS: Card[] = [
-  {
-    id: 'mining-rig-1',
-    name: 'Mining Rig',
-    type: 'unit',
-    cost: { gas: 2 },
-    power: 2,
-    toughness: 1,
-    text: 'Generate 1 gas per turn'
-  },
-  {
-    id: 'smart-contract-1',
-    name: 'Smart Contract',
-    type: 'spell',
-    cost: { gas: 1 },
-    text: 'Draw a card'
-  },
-  {
-    id: 'validator-1',
-    name: 'Validator Node',
-    type: 'unit',
-    cost: { gas: 3 },
-    power: 3,
-    toughness: 3,
-    text: 'Cannot be blocked'
-  },
-  {
-    id: 'gas-station-1',
-    name: 'Gas Station',
-    type: 'resource',
-    cost: { gas: 1 },
-    text: 'Add 2 gas to your pool'
-  },
-  {
-    id: 'firewall-1',
-    name: 'Firewall',
-    type: 'upgrade',
-    cost: { gas: 2 },
-    text: 'Prevent 1 damage to all your units'
-  },
-]
-
-const getRandomCards = (count: number): Card[] => {
-  const shuffled = [...MOCK_CARDS].sort(() => 0.5 - Math.random())
+// Helper function to get random cards from available cards
+const getRandomCards = (availableCards: Card[], count: number): Card[] => {
+  if (availableCards.length === 0) {
+    // Fallback: return empty array if no cards are loaded
+    return []
+  }
+  
+  // Create multiple instances of each card for deck variety
+  const expandedCards: Card[] = []
+  availableCards.forEach((card, index) => {
+    // Add multiple copies of each card type (simulating a deck)
+    const copies = card.type === 'unit' || card.type === 'EOA' ? 3 : 2
+    for (let i = 0; i < copies; i++) {
+      expandedCards.push({
+        ...card,
+        id: `${card.id}-instance-${index}-${i}` // Unique instance ID
+      })
+    }
+  })
+  
+  const shuffled = [...expandedCards].sort(() => 0.5 - Math.random())
   return shuffled.slice(0, count)
 }
 
@@ -114,7 +117,7 @@ const initialState: GameState = {
       balance: 20,
       gas: 1,
       maxGas: 1,
-      hand: getRandomCards(5),
+      hand: [], // Will be populated once cards are loaded from blockchain
       board: [],
     },
     player2: {
@@ -122,12 +125,17 @@ const initialState: GameState = {
       balance: 20,
       gas: 1,
       maxGas: 1,
-      hand: getRandomCards(5),
+      hand: [], // Will be populated once cards are loaded from blockchain
       board: [],
     },
   },
   winner: null,
   isGameActive: false,
+  
+  // Card registry state
+  availableCards: [],
+  isLoadingCards: false,
+  cardLoadError: null,
 }
 
 export const useGameStore = create<GameState & GameActions>()(
@@ -136,6 +144,7 @@ export const useGameStore = create<GameState & GameActions>()(
       ...initialState,
 
       startGame: (player1Id: string, player2Id: string) => {
+        const { availableCards } = get()
         set({
           matchId: `match-${Date.now()}`,
           isGameActive: true,
@@ -145,7 +154,7 @@ export const useGameStore = create<GameState & GameActions>()(
               balance: 20,
               gas: 1,
               maxGas: 1,
-              hand: getRandomCards(5),
+              hand: getRandomCards(availableCards, 5),
               board: [],
             },
             player2: {
@@ -153,11 +162,39 @@ export const useGameStore = create<GameState & GameActions>()(
               balance: 20,
               gas: 1,
               maxGas: 1,
-              hand: getRandomCards(5),
+              hand: getRandomCards(availableCards, 5),
               board: [],
             },
           },
         })
+      },
+
+      // Card registry actions
+      loadCardsFromBlockchain: (contractCards: ContractCard[]) => {
+        try {
+          const gameCards = contractCards.map(contractCard => 
+            contractCardToGameCard(contractCard)
+          )
+          set({
+            availableCards: gameCards,
+            isLoadingCards: false,
+            cardLoadError: null,
+          })
+        } catch (error) {
+          console.error('Failed to convert contract cards:', error)
+          set({
+            cardLoadError: 'Failed to load cards from blockchain',
+            isLoadingCards: false,
+          })
+        }
+      },
+
+      setCardLoadError: (error: string | null) => {
+        set({ cardLoadError: error })
+      },
+
+      setLoadingCards: (loading: boolean) => {
+        set({ isLoadingCards: loading })
       },
 
       endGame: (winnerId?: string) => {
@@ -213,14 +250,14 @@ export const useGameStore = create<GameState & GameActions>()(
         const player = players[playerId as keyof typeof players]
         const card = player.hand.find(c => c.id === cardId)
         
-        if (!card || !card.cost.gas || player.gas < card.cost.gas) {
-          return // Cannot play card
+        if (!card || player.gas < card.cost) {
+          return // Cannot play card - insufficient gas or card not found
         }
         
         const newHand = player.hand.filter(c => c.id !== cardId)
-        const newGas = player.gas - card.cost.gas
+        const newGas = player.gas - card.cost
         
-        if (card.type === 'unit') {
+        if (card.type === 'unit' || card.type === 'EOA') {
           // Place unit on board
           const newBoard = [...player.board, card]
           set({
@@ -235,7 +272,20 @@ export const useGameStore = create<GameState & GameActions>()(
             },
           })
         } else {
-          // Handle spell/resource/upgrade effects
+          // Handle spell/resource/upgrade/action effects
+          let effectApplied = false
+          
+          // Apply card-specific effects based on abilities
+          if (card.abilities === 'draw') {
+            // Draw a card effect
+            get().drawCard(playerId)
+            effectApplied = true
+          } else if (card.abilities === 'income') {
+            // Income effect - add gas
+            get().updatePlayerGas(playerId, 1)
+            effectApplied = true
+          }
+          
           set({
             players: {
               ...players,
@@ -250,9 +300,16 @@ export const useGameStore = create<GameState & GameActions>()(
       },
 
       drawCard: (playerId: string) => {
-        const { players } = get()
+        const { players, availableCards } = get()
         const player = players[playerId as keyof typeof players]
-        const newCard = getRandomCards(1)[0]
+        const newCards = getRandomCards(availableCards, 1)
+        
+        if (newCards.length === 0) {
+          console.warn('Cannot draw card: no available cards loaded from blockchain')
+          return
+        }
+        
+        const newCard = newCards[0]
         
         set({
           players: {
@@ -328,16 +385,18 @@ export const useGameStore = create<GameState & GameActions>()(
       },
 
       resetGame: () => {
+        const { availableCards } = get()
         set({
           ...initialState,
+          availableCards, // Preserve loaded cards
           players: {
             player1: {
               ...initialState.players.player1,
-              hand: getRandomCards(5),
+              hand: getRandomCards(availableCards, 5),
             },
             player2: {
               ...initialState.players.player2,
-              hand: getRandomCards(5),
+              hand: getRandomCards(availableCards, 5),
             },
           },
         })
