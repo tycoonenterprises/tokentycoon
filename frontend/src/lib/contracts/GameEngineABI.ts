@@ -1,5 +1,4 @@
-export const GameEngineABI = 
-[
+export const GameEngineABI = [
   {
     "type": "constructor",
     "inputs": [
@@ -1230,5 +1229,4 @@ export const GameEngineABI =
     "name": "NotYourTurn",
     "inputs": []
   }
-]
- as const;
+] as const;
