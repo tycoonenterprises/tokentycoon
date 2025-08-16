@@ -11,7 +11,7 @@ export const useCardRegistry = () => {
     functionName: 'getAllCards',
   })
 
-  const { data: cardCount } = useReadContract({
+  const { data: cardCountData } = useReadContract({
     address: CONTRACT_ADDRESSES.CARD_REGISTRY,
     abi: CardRegistryABI,
     functionName: 'getCardCount',
@@ -41,10 +41,46 @@ export const useCardRegistry = () => {
     })
   }
 
+  // Helper function to get a single card
+  const getCard = async (cardId: number) => {
+    try {
+      // For now, return mock data since contract reading is complex
+      return null
+    } catch (error) {
+      console.error(`Error fetching card ${cardId}:`, error)
+      return null
+    }
+  }
+
+  // Helper function to get all cards
+  const getAllCards = async () => {
+    try {
+      const count = Number(cardCountData || 0)
+      const allCards = []
+      
+      for (let i = 1; i <= count; i++) {
+        const card = await getCard(i)
+        if (card) {
+          allCards.push({ id: i, ...card })
+        }
+      }
+      
+      return allCards
+    } catch (error) {
+      console.error('Error fetching all cards:', error)
+      return []
+    }
+  }
+
+  // Helper to get card count as a function
+  const cardCount = async () => {
+    return Number(cardCountData || 0)
+  }
+
   return {
     // Data
     cards: cards as ContractCard[] | undefined,
-    cardCount: cardCount as number | undefined,
+    cardCount,
     isInitialized: isInitialized as boolean | undefined,
     
     // Loading states
@@ -54,6 +90,8 @@ export const useCardRegistry = () => {
     // Actions
     addCard: handleAddCard,
     refetchCards,
+    getCard,
+    getAllCards,
   }
 }
 

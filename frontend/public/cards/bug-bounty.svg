@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- Ability Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#abilityGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#6b7280" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#6b7280" stroke="#9ca3af" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">2</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="47" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Bug Bounty</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="75" height="20" rx="10" fill="#6b7280" stroke="#4b5563" stroke-width="1"/>
+  <text x="237" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">ABILITY</text>
+  
+  <!-- Art Area with Bug Hunt Scene -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Computer Screen with Code -->
+  <rect x="40" y="95" width="220" height="130" rx="8" fill="#111827" stroke="#374151" stroke-width="2"/>
+  <rect x="45" y="100" width="210" height="100" rx="5" fill="#0f172a"/>
+  
+  <!-- Terminal/Code Editor -->
+  <text x="55" y="115" font-family="monospace" font-size="10" fill="#34d399">$ audit contract.sol</text>
+  <text x="55" y="130" font-family="monospace" font-size="9" fill="#e2e8f0">function withdraw() public {</text>
+  <text x="55" y="145" font-family="monospace" font-size="9" fill="#e2e8f0">  require(balances[msg.sender] > 0);</text>
+  <text x="55" y="160" font-family="monospace" font-size="9" fill="#ef4444">  msg.sender.call{value: balance}("");</text>
+  <text x="55" y="175" font-family="monospace" font-size="9" fill="#ef4444">  balances[msg.sender] = 0; // BUG!</text>
+  <text x="55" y="190" font-family="monospace" font-size="9" fill="#e2e8f0">}</text>
+  
+  <!-- Bug indicator arrows -->
+  <g stroke="#dc2626" stroke-width="2" fill="#dc2626">
+    <path d="M230 160 L240 160 L235 155 M240 160 L235 165" opacity="0.8"/>
+    <path d="M230 175 L240 175 L235 170 M240 175 L235 180" opacity="0.8"/>
+  </g>
+  
+  <!-- Bug icons -->
+  <g transform="translate(200, 120)" opacity="0.6">
+    <ellipse cx="0" cy="0" rx="8" ry="5" fill="#dc2626"/>
+    <circle cx="-3" cy="-2" r="1" fill="#0f172a"/>
+    <circle cx="3" cy="-2" r="1" fill="#0f172a"/>
+    <path d="M-6 -1 L-10 -3 M6 -1 L10 -3 M-6 1 L-10 3 M6 1 L10 3" stroke="#dc2626" stroke-width="1"/>
+  </g>
+  
+  <!-- Security Badge/Certificate -->
+  <rect x="50" y="210" width="80" height="30" rx="5" fill="#059669" stroke="#10b981" stroke-width="1"/>
+  <text x="90" y="225" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">SECURITY</text>
+  <text x="90" y="235" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#a7f3d0">AUDIT PASS</text>
+  
+  <!-- Bounty Reward -->
+  <g transform="translate(170, 210)">
+    <rect x="0" y="0" width="80" height="30" rx="5" fill="#f59e0b" stroke="#fbbf24" stroke-width="1"/>
+    <text x="40" y="15" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">REWARD</text>
+    <text x="40" y="25" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#fde68a">$50,000</text>
+  </g>
+  
+  <!-- Magnifying glass for bug hunting -->
+  <g transform="translate(25, 130)" opacity="0.5">
+    <circle cx="0" cy="0" r="12" fill="none" stroke="#9ca3af" stroke-width="2"/>
+    <line x1="8" y1="8" x2="18" y2="18" stroke="#9ca3af" stroke-width="3"/>
+    <path d="M-5 -5 L5 5 M5 -5 L-5 5" stroke="#dc2626" stroke-width="1.5"/>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="100" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="12" fill="#e2e8f0">Draw 2 cards. If an opponent destroyed one</text>
+  <text x="25" y="300" font-family="Arial, sans-serif" font-size="12" fill="#e2e8f0">of your cards last turn, gain 2 ETH.</text>
+  
+  <!-- Knowledge/Study Effect -->
+  <g transform="translate(15, 375)">
+    <rect width="100" height="25" rx="5" fill="#dc2626" stroke="#ef4444" stroke-width="1"/>
+    <text x="50" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">SECURITY</text>
+  </g>
+  
+  <!-- Draw/Effect Amount -->
+  <g transform="translate(130, 375)">
+    <rect width="80" height="25" rx="5" fill="#6b7280" stroke="#9ca3af" stroke-width="1"/>
+    <text x="40" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">Reactive</text>
+  </g>
+  
+  <!-- Intelligence Icon -->
+  <g transform="translate(230, 375)">
+    <circle cx="12" cy="12" r="12" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+    <text x="12" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">🔍</text>
+  </g>
+  
+  <!-- Rarity Indicator - Common (cost 2) -->
+  <g transform="translate(250, 340)">
+    <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#64748b" stroke="#475569" stroke-width="1"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="abilityGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6b7280;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#4b5563;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.4" />
+    </linearGradient>
+  </defs>
+</svg>

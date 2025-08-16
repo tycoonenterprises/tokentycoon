@@ -19,4 +19,11 @@ export default defineConfig({
   optimizeDeps: {
     include: ['@privy-io/react-auth', 'wagmi', 'viem'],
   },
+  publicDir: 'public',
+  server: {
+    fs: {
+      // Allow serving files from the parent directory (for design folder)
+      allow: ['..']
+    }
+  }
 })

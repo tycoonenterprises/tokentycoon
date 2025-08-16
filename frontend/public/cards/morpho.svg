@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- DeFi Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#defiGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#10b981" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">2</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="47" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Morpho</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="70" height="20" rx="10" fill="#059669" stroke="#047857" stroke-width="1"/>
+  <text x="235" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">DeFi</text>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Morpho Art -->
+  <g transform="translate(150, 165)">
+    <!-- Butterfly/transformation symbol -->
+    <g opacity="0.8">
+      <!-- Upper wings -->
+      <ellipse cx="-20" cy="-15" rx="25" ry="15" fill="#3b82f6" opacity="0.7"/>
+      <ellipse cx="20" cy="-15" rx="25" ry="15" fill="#3b82f6" opacity="0.7"/>
+      
+      <!-- Lower wings -->
+      <ellipse cx="-15" cy="15" rx="20" ry="12" fill="#1d4ed8" opacity="0.6"/>
+      <ellipse cx="15" cy="15" rx="20" ry="12" fill="#1d4ed8" opacity="0.6"/>
+      
+      <!-- Body -->
+      <ellipse cx="0" cy="0" rx="3" ry="25" fill="#1e293b"/>
+      
+      <!-- Wing patterns -->
+      <circle cx="-20" cy="-10" r="5" fill="#60a5fa" opacity="0.8"/>
+      <circle cx="20" cy="-10" r="5" fill="#60a5fa" opacity="0.8"/>
+      <circle cx="-15" cy="10" r="4" fill="#93c5fd" opacity="0.7"/>
+      <circle cx="15" cy="10" r="4" fill="#93c5fd" opacity="0.7"/>
+      
+      <!-- Antennae -->
+      <path d="M-2,-25 Q-8,-35 -12,-30" stroke="#94a3b8" stroke-width="1" fill="none"/>
+      <path d="M2,-25 Q8,-35 12,-30" stroke="#94a3b8" stroke-width="1" fill="none"/>
+      <circle cx="-12" cy="-30" r="1.5" fill="#94a3b8"/>
+      <circle cx="12" cy="-30" r="1.5" fill="#94a3b8"/>
+    </g>
+    
+    <!-- Optimization/metamorphosis indicators -->
+    <g transform="translate(0, 40)">
+      <text x="0" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#34d399">OPTIMIZE</text>
+    </g>
+    
+    <!-- Efficiency arrows -->
+    <g opacity="0.6">
+      <path d="M-40,-30 L-30,-25" stroke="#22c55e" stroke-width="2" marker-end="url(#arrowhead)"/>
+      <path d="M40,-30 L30,-25" stroke="#22c55e" stroke-width="2" marker-end="url(#arrowhead)"/>
+    </g>
+  </g>
+  
+  <!-- DeFi Motif Overlay -->
+  <g opacity="0.3">
+    <!-- Income arrows (not yield) -->
+    <path d="M20 90 L35 85 L35 95 Z" fill="#22c55e"/>
+    <path d="M40 85 L55 90 L40 95 Z" fill="#22c55e"/>
+    
+    <!-- Income indicator -->
+    <rect x="240" y="85" width="20" height="15" rx="3" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
+    <text x="250" y="95" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="white">GEN</text>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="80" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="14" fill="#e2e8f0">Gain 1 ETH per turn per ETH stored here.</text>
+  
+  <!-- Income Indicator -->
+  <g transform="translate(200, 275)">
+    <rect width="60" height="25" rx="5" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
+    <text x="30" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">+1Ξ</text>
+  </g>
+  
+  <!-- Staking Box -->
+  <rect x="15" y="355" width="80" height="30" rx="5" fill="#374151" stroke="#6b7280" stroke-width="1"/>
+  <text x="25" y="375" font-family="Arial, sans-serif" font-size="12" fill="#e2e8f0">Staked: 0Ξ</text>
+  
+  <!-- ETH Icon -->
+  <circle cx="120" cy="370" r="12" fill="#10b981" stroke="#34d399" stroke-width="2"/>
+  <text x="120" y="376" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">Ξ</text>
+  
+  <!-- Rarity Indicator (Common - cost 2) -->
+  <g transform="translate(250, 355)">
+    <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#94a3b8" stroke="#64748b" stroke-width="1"/>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e"/>
+    </marker>
+    
+    <linearGradient id="defiGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#059669;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.8" />
+    </linearGradient>
+  </defs>
+</svg>

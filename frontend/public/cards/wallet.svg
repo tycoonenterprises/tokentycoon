@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- EOA Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#eoaGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#0891b2" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#0891b2" stroke="#06b6d4" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">1</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="47" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Wallet</text>
+  
+  <!-- Type Label -->
+  <rect x="210" y="25" width="60" height="20" rx="10" fill="#0891b2" stroke="#0e7490" stroke-width="1"/>
+  <text x="240" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">EOA</text>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Wallet Art -->
+  <g transform="translate(150, 165)">
+    <!-- Main wallet body -->
+    <rect x="-40" y="-25" width="80" height="50" rx="8" fill="#374151" stroke="#4b5563" stroke-width="3"/>
+    
+    <!-- Wallet fold/crease -->
+    <line x1="-40" y1="0" x2="40" y2="0" stroke="#1f2937" stroke-width="2"/>
+    
+    <!-- Wallet clasp/button -->
+    <circle cx="30" cy="0" r="4" fill="#6b7280" stroke="#4b5563" stroke-width="1"/>
+    <circle cx="30" cy="0" r="2" fill="#9ca3af"/>
+    
+    <!-- ETH symbols inside wallet -->
+    <g transform="translate(-20, -10)">
+      <circle r="8" fill="#0891b2" opacity="0.8"/>
+      <text x="0" y="3" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">Ξ</text>
+    </g>
+    
+    <g transform="translate(0, -10)">
+      <circle r="8" fill="#06b6d4" opacity="0.7"/>
+      <text x="0" y="3" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">Ξ</text>
+    </g>
+    
+    <g transform="translate(15, -10)">
+      <circle r="6" fill="#0891b2" opacity="0.6"/>
+      <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="white">Ξ</text>
+    </g>
+    
+    <!-- Credit card slots -->
+    <rect x="-35" y="8" width="25" height="3" rx="1" fill="#1f2937"/>
+    <rect x="-35" y="13" width="25" height="3" rx="1" fill="#1f2937"/>
+    <rect x="-35" y="18" width="25" height="3" rx="1" fill="#1f2937"/>
+    
+    <!-- Storage indicator -->
+    <g transform="translate(0, 35)">
+      <rect x="-25" y="-5" width="50" height="10" rx="5" fill="#0891b2" opacity="0.7"/>
+      <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">Max 5 ETH</text>
+    </g>
+    
+    <!-- Simple wallet icon overlay -->
+    <g opacity="0.3" transform="translate(-50, -35)">
+      <rect width="20" height="15" rx="2" fill="#0891b2" stroke="#06b6d4" stroke-width="1"/>
+      <rect x="2" y="2" width="16" height="3" rx="1" fill="#0f172a"/>
+      <rect x="2" y="7" width="16" height="3" rx="1" fill="#0f172a"/>
+    </g>
+  </g>
+  
+  <!-- EOA Motif Overlay -->
+  <g opacity="0.3">
+    <!-- Basic wallet icon -->
+    <rect x="20" y="85" width="20" height="15" rx="2" fill="#0891b2" stroke="#06b6d4" stroke-width="1"/>
+    <rect x="22" y="87" width="16" height="3" rx="1" fill="#0f172a"/>
+    <rect x="22" y="92" width="16" height="3" rx="1" fill="#0f172a"/>
+    
+    <!-- Storage indicator -->
+    <rect x="240" y="85" width="25" height="15" rx="3" fill="#fbbf24" stroke="#f59e0b" stroke-width="1" opacity="0.7"/>
+    <text x="252.5" y="95" text-anchor="middle" font-family="Arial, sans-serif" font-size="7" fill="#1f2937">5Ξ</text>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="80" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="14" fill="#e2e8f0">Place max 5 ETH here.</text>
+  
+  <!-- Storage Capacity -->
+  <g transform="translate(15, 355)">
+    <rect width="100" height="25" rx="5" fill="#374151" stroke="#6b7280" stroke-width="1"/>
+    <text x="50" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#e2e8f0">Max: 5Ξ</text>
+  </g>
+  
+  <!-- Storage Indicator -->
+  <g transform="translate(130, 355)">
+    <rect width="60" height="25" rx="5" fill="#fbbf24" stroke="#f59e0b" stroke-width="1"/>
+    <text x="30" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">STORE</text>
+  </g>
+  
+  <!-- ETH Icon -->
+  <circle cx="220" cy="367" r="12" fill="#0891b2" stroke="#06b6d4" stroke-width="2"/>
+  <text x="220" y="373" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">Ξ</text>
+  
+  <!-- Rarity Indicator (Common - cost 1) -->
+  <g transform="translate(250, 355)">
+    <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#6b7280" stroke="#4b5563" stroke-width="1"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="eoaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0891b2;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0e7490;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:0.4" />
+    </linearGradient>
+  </defs>
+</svg>

@@ -47,7 +47,8 @@ const CardTypes = {
   'Chain': 0,
   'DeFi': 1,
   'EOA': 2,
-  'Action': 3
+  'Action': 3,
+  'Ability': 3  // Map Ability to Action type
 };
 
 async function deployCards() {
@@ -89,11 +90,27 @@ async function deployCards() {
   const cardsPath = join(__dirname, '..', 'data', 'cards.json');
   const cardsData = JSON.parse(readFileSync(cardsPath, 'utf8'));
   
-  console.log(`Loading ${cardsData.cards.length} cards from cards.json...`);
+  const totalCards = cardsData.cards.length;
+  console.log(`\nLoading ${totalCards} cards from cards.json...\n`);
+  
+  // Function to update progress bar
+  function updateProgress(current, total, cardName) {
+    const percentage = Math.round((current / total) * 100);
+    const barLength = 30;
+    const filledLength = Math.round((current / total) * barLength);
+    const bar = '█'.repeat(filledLength) + '░'.repeat(barLength - filledLength);
+    
+    // Clear current line and write progress
+    process.stdout.write(`\r[${bar}] ${percentage}% (${current}/${total}) - ${cardName}`);
+  }
+  
+  let successCount = 0;
+  let failedCards = [];
   
   // Deploy each card
-  for (const card of cardsData.cards) {
-    console.log(`\nAdding card: ${card.name}`);
+  for (let i = 0; i < cardsData.cards.length; i++) {
+    const card = cardsData.cards[i];
+    updateProgress(i + 1, totalCards, `Adding: ${card.name}`);
     
     // Prepare abilities data
     const abilityNames = [];
@@ -123,8 +140,7 @@ async function deployCards() {
     
     // Validate card type
     if (!CardTypes.hasOwnProperty(card.cardType)) {
-      console.error(`  ✗ Invalid card type: ${card.cardType}`);
-      console.error(`    Valid types are: ${Object.keys(CardTypes).join(', ')}`);
+      failedCards.push(`${card.name} (invalid type: ${card.cardType})`);
       continue;
     }
     
@@ -146,13 +162,9 @@ async function deployCards() {
           ],
         });
         
-        console.log(`  Transaction hash: ${hash}`);
-        
         // Wait for transaction
         await publicClient.waitForTransactionReceipt({ hash });
-        console.log(`  ✓ Card added successfully`);
-        console.log(`    Type: ${card.cardType}`);
-        console.log(`    Abilities: ${abilityNames.join(', ')}`);
+        successCount++;
       } else {
         const hash = await walletClient.writeContract({
           address: CARD_REGISTRY_ADDRESS,
@@ -166,20 +178,27 @@ async function deployCards() {
           ],
         });
         
-        console.log(`  Transaction hash: ${hash}`);
-        
         // Wait for transaction
         await publicClient.waitForTransactionReceipt({ hash });
-        console.log(`  ✓ Card added successfully (no abilities)`);
-        console.log(`    Type: ${card.cardType}`);
+        successCount++;
       }
     } catch (error) {
-      console.error(`  ✗ Failed to add card: ${error.message}`);
+      failedCards.push(`${card.name} (${error.message})`);
     }
   }
   
+  // Complete progress bar
+  updateProgress(totalCards, totalCards, 'Complete!');
+  console.log('\n');
+  
+  // Show results
+  if (failedCards.length > 0) {
+    console.log(`\n⚠️  Failed to add ${failedCards.length} cards:`);
+    failedCards.forEach(card => console.log(`   - ${card}`));
+  }
+  
   // Mark as initialized
-  console.log('\nMarking registry as initialized...');
+  process.stdout.write('Marking registry as initialized...');
   const initHash = await walletClient.writeContract({
     address: CARD_REGISTRY_ADDRESS,
     abi: cardRegistryAbi,
@@ -187,7 +206,7 @@ async function deployCards() {
   });
   
   await publicClient.waitForTransactionReceipt({ hash: initHash });
-  console.log('✓ Registry marked as initialized');
+  console.log(' ✓');
   
   // Get final card count
   const cardCount = await publicClient.readContract({
@@ -196,7 +215,8 @@ async function deployCards() {
     functionName: 'getCardCount',
   });
   
-  console.log(`\n✅ Successfully deployed ${cardCount} cards!`);
+  console.log(`\n✅ Successfully deployed ${successCount}/${totalCards} cards!`);
+  console.log(`   Total cards in registry: ${cardCount}`);
 }
 
 // Run deployment

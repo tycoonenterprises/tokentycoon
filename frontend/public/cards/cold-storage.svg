@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- EOA Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#eoaGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#0891b2" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#0891b2" stroke="#06b6d4" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">3</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="40" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Cold</text>
+  <text x="65" y="55" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Storage</text>
+  
+  <!-- Type Label -->
+  <rect x="210" y="25" width="60" height="20" rx="10" fill="#0891b2" stroke="#0e7490" stroke-width="1"/>
+  <text x="240" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">EOA</text>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Cold Storage Art -->
+  <g transform="translate(150, 165)">
+    <!-- Vault/safe -->
+    <rect x="-40" y="-35" width="80" height="70" rx="8" fill="#374151" stroke="#4b5563" stroke-width="4"/>
+    
+    <!-- Vault door -->
+    <rect x="-35" y="-30" width="70" height="60" rx="5" fill="#1f2937" stroke="#374151" stroke-width="2"/>
+    
+    <!-- Combination lock -->
+    <circle cx="0" cy="0" r="15" fill="#6b7280" stroke="#4b5563" stroke-width="2"/>
+    <circle cx="0" cy="0" r="10" fill="#9ca3af" stroke="#6b7280" stroke-width="1"/>
+    
+    <!-- Lock numbers/ticks -->
+    <g opacity="0.8">
+      <line x1="0" y1="-8" x2="0" y2="-6" stroke="#374151" stroke-width="1"/>
+      <line x1="6" y1="-6" x2="5" y2="-5" stroke="#374151" stroke-width="1"/>
+      <line x1="8" y1="0" x2="6" y2="0" stroke="#374151" stroke-width="1"/>
+      <line x1="6" y1="6" x2="5" y2="5" stroke="#374151" stroke-width="1"/>
+      <line x1="0" y1="8" x2="0" y2="6" stroke="#374151" stroke-width="1"/>
+      <line x1="-6" y1="6" x2="-5" y2="5" stroke="#374151" stroke-width="1"/>
+      <line x1="-8" y1="0" x2="-6" y2="0" stroke="#374151" stroke-width="1"/>
+      <line x1="-6" y1="-6" x2="-5" y2="-5" stroke="#374151" stroke-width="1"/>
+    </g>
+    
+    <!-- Lock handle -->
+    <circle cx="0" cy="0" r="3" fill="#fbbf24" stroke="#f59e0b" stroke-width="1"/>
+    
+    <!-- Frozen/cold indicators -->
+    <g opacity="0.7">
+      <!-- Ice crystals -->
+      <g transform="translate(-25, -20)">
+        <path d="M0,-4 L2,0 L0,4 L-2,0 Z M-4,0 L4,0 M-2,-2 L2,2 M2,-2 L-2,2" stroke="#60a5fa" stroke-width="1" fill="none"/>
+      </g>
+      
+      <g transform="translate(25, -20)">
+        <path d="M0,-4 L2,0 L0,4 L-2,0 Z M-4,0 L4,0 M-2,-2 L2,2 M2,-2 L-2,2" stroke="#60a5fa" stroke-width="1" fill="none"/>
+      </g>
+      
+      <g transform="translate(-25, 20)">
+        <path d="M0,-4 L2,0 L0,4 L-2,0 Z M-4,0 L4,0 M-2,-2 L2,2 M2,-2 L-2,2" stroke="#60a5fa" stroke-width="1" fill="none"/>
+      </g>
+      
+      <g transform="translate(25, 20)">
+        <path d="M0,-4 L2,0 L0,4 L-2,0 Z M-4,0 L4,0 M-2,-2 L2,2 M2,-2 L-2,2" stroke="#60a5fa" stroke-width="1" fill="none"/>
+      </g>
+    </g>
+    
+    <!-- Hardware wallet devices inside -->
+    <g transform="translate(-20, 15)" opacity="0.8">
+      <rect x="-4" y="-6" width="8" height="12" rx="2" fill="#0891b2" stroke="#0e7490" stroke-width="1"/>
+      <rect x="-3" y="-4" width="6" height="2" rx="1" fill="#34d399"/>
+      <rect x="-3" y="0" width="6" height="2" rx="1" fill="#22c55e"/>
+    </g>
+    
+    <g transform="translate(20, 15)" opacity="0.8">
+      <rect x="-4" y="-6" width="8" height="12" rx="2" fill="#0891b2" stroke="#0e7490" stroke-width="1"/>
+      <rect x="-3" y="-4" width="6" height="2" rx="1" fill="#34d399"/>
+      <rect x="-3" y="0" width="6" height="2" rx="1" fill="#22c55e"/>
+    </g>
+    
+    <!-- Temperature indicator -->
+    <g transform="translate(0, 45)">
+      <rect x="-15" y="-5" width="30" height="10" rx="5" fill="#3b82f6" opacity="0.8"/>
+      <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">-20°C</text>
+    </g>
+    
+    <!-- Security level -->
+    <text x="0" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#60a5fa">Max Security Storage</text>
+  </g>
+  
+  <!-- EOA Motif Overlay -->
+  <g opacity="0.3">
+    <!-- Frozen wallet icon -->
+    <rect x="20" y="85" width="20" height="15" rx="2" fill="#0891b2" stroke="#06b6d4" stroke-width="1"/>
+    <rect x="22" y="87" width="16" height="3" rx="1" fill="#60a5fa"/>
+    <rect x="22" y="92" width="16" height="3" rx="1" fill="#60a5fa"/>
+    
+    <!-- Ice crystal -->
+    <g transform="translate(250, 92)">
+      <path d="M0,-4 L2,0 L0,4 L-2,0 Z M-4,0 L4,0 M-2,-2 L2,2 M2,-2 L-2,2" stroke="#60a5fa" stroke-width="1" fill="none"/>
+    </g>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="80" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="278" font-family="Arial, sans-serif" font-size="11" fill="#e2e8f0">Storage max 10. ETH newly placed here</text>
+  <text x="25" y="291" font-family="Arial, sans-serif" font-size="11" fill="#e2e8f0">can't be targeted by Actions for 2 turns.</text>
+  
+  <!-- Storage Capacity -->
+  <g transform="translate(15, 355)">
+    <rect width="100" height="25" rx="5" fill="#374151" stroke="#6b7280" stroke-width="1"/>
+    <text x="50" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#e2e8f0">Max: 10Ξ</text>
+  </g>
+  
+  <!-- Cold Protection Indicator -->
+  <g transform="translate(130, 355)">
+    <rect width="60" height="25" rx="5" fill="#3b82f6" stroke="#1d4ed8" stroke-width="1"/>
+    <text x="30" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">FREEZE</text>
+  </g>
+  
+  <!-- ETH Icon -->
+  <circle cx="220" cy="367" r="12" fill="#0891b2" stroke="#06b6d4" stroke-width="2"/>
+  <text x="220" y="373" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">Ξ</text>
+  
+  <!-- Rarity Indicator (Uncommon - cost 3) -->
+  <g transform="translate(250, 355)">
+    <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="eoaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0891b2;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0e7490;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:0.4" />
+    </linearGradient>
+  </defs>
+</svg>

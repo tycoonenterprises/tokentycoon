@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- EOA Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#eoaGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#0891b2" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#0891b2" stroke="#06b6d4" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">4</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="40" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Validator</text>
+  <text x="65" y="55" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Cluster</text>
+  
+  <!-- Type Label -->
+  <rect x="210" y="25" width="60" height="20" rx="10" fill="#0891b2" stroke="#0e7490" stroke-width="1"/>
+  <text x="240" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">EOA</text>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Validator Cluster Art -->
+  <g transform="translate(150, 165)">
+    <!-- Central coordinator node -->
+    <circle cx="0" cy="0" r="18" fill="#3b82f6" stroke="#1d4ed8" stroke-width="3" opacity="0.9"/>
+    <text x="0" y="-3" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">MAIN</text>
+    <text x="0" y="6" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">NODE</text>
+    
+    <!-- Cluster of validator nodes around -->
+    <g transform="translate(-40, -30)">
+      <circle r="10" fill="#10b981" stroke="#059669" stroke-width="2" opacity="0.8"/>
+      <text x="0" y="3" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="white">V1</text>
+    </g>
+    
+    <g transform="translate(40, -30)">
+      <circle r="10" fill="#10b981" stroke="#059669" stroke-width="2" opacity="0.8"/>
+      <text x="0" y="3" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="white">V2</text>
+    </g>
+    
+    <g transform="translate(-40, 30)">
+      <circle r="10" fill="#10b981" stroke="#059669" stroke-width="2" opacity="0.8"/>
+      <text x="0" y="3" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="white">V3</text>
+    </g>
+    
+    <g transform="translate(40, 30)">
+      <circle r="10" fill="#10b981" stroke="#059669" stroke-width="2" opacity="0.8"/>
+      <text x="0" y="3" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="white">V4</text>
+    </g>
+    
+    <!-- Additional smaller validators -->
+    <g transform="translate(-25, -45)">
+      <circle r="6" fill="#22c55e" opacity="0.7"/>
+      <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="4" fill="white">V</text>
+    </g>
+    
+    <g transform="translate(25, -45)">
+      <circle r="6" fill="#22c55e" opacity="0.7"/>
+      <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="4" fill="white">V</text>
+    </g>
+    
+    <g transform="translate(-25, 45)">
+      <circle r="6" fill="#22c55e" opacity="0.7"/>
+      <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="4" fill="white">V</text>
+    </g>
+    
+    <g transform="translate(25, 45)">
+      <circle r="6" fill="#22c55e" opacity="0.7"/>
+      <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="4" fill="white">V</text>
+    </g>
+    
+    <!-- Connection lines between nodes -->
+    <g opacity="0.6">
+      <line x1="-30" y1="-22" x2="-13" y2="-9" stroke="#0891b2" stroke-width="1"/>
+      <line x1="30" y1="-22" x2="13" y2="-9" stroke="#0891b2" stroke-width="1"/>
+      <line x1="-30" y1="22" x2="-13" y2="9" stroke="#0891b2" stroke-width="1"/>
+      <line x1="30" y1="22" x2="13" y2="9" stroke="#0891b2" stroke-width="1"/>
+      
+      <!-- Cross connections -->
+      <line x1="-30" y1="-22" x2="30" y2="-22" stroke="#06b6d4" stroke-width="1" opacity="0.4"/>
+      <line x1="-30" y1="22" x2="30" y2="22" stroke="#06b6d4" stroke-width="1" opacity="0.4"/>
+    </g>
+    
+    <!-- Yield indicator -->
+    <text x="0" y="65" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#22c55e">+2 ETH/turn</text>
+  </g>
+  
+  <!-- EOA Motif Overlay -->
+  <g opacity="0.3">
+    <!-- Multi-validator icon -->
+    <rect x="18" y="83" width="6" height="6" rx="1" fill="#0891b2"/>
+    <rect x="26" y="83" width="6" height="6" rx="1" fill="#0891b2"/>
+    <rect x="34" y="83" width="6" height="6" rx="1" fill="#0891b2"/>
+    <rect x="18" y="91" width="6" height="6" rx="1" fill="#0891b2"/>
+    <rect x="26" y="91" width="6" height="6" rx="1" fill="#0891b2"/>
+    <rect x="34" y="91" width="6" height="6" rx="1" fill="#0891b2"/>
+    
+    <!-- Cluster indicator -->
+    <circle cx="250" cy="92" r="8" fill="#3b82f6" stroke="#1d4ed8" stroke-width="1" opacity="0.7"/>
+    <text x="250" y="95" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="white">CLSTR</text>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="80" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="14" fill="#e2e8f0">Gain 2 ETH every turn.</text>
+  
+  <!-- Yield Indicator -->
+  <g transform="translate(130, 355)">
+    <rect width="60" height="25" rx="5" fill="#0891b2" stroke="#06b6d4" stroke-width="1"/>
+    <text x="30" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">+2Ξ</text>
+  </g>
+  
+  <!-- ETH Icon -->
+  <circle cx="220" cy="367" r="12" fill="#0891b2" stroke="#06b6d4" stroke-width="2"/>
+  <text x="220" y="373" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">Ξ</text>
+  
+  <!-- Rarity Indicator (Uncommon - cost 4) -->
+  <g transform="translate(250, 355)">
+    <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="eoaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0891b2;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#0e7490;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:0.4" />
+    </linearGradient>
+  </defs>
+</svg>

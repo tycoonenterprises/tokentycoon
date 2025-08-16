@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useCardRegistry } from '@/lib/hooks/useCardRegistry'
 import { useGameStore } from '@/stores/gameStore'
 
@@ -8,31 +8,33 @@ import { useGameStore } from '@/stores/gameStore'
  */
 export function CardLoader() {
   const { cards, isLoadingCards: isContractLoading, cardCount } = useCardRegistry()
-  const { 
-    loadCardsFromBlockchain, 
-    setLoadingCards, 
-    setCardLoadError,
-    isLoadingCards,
-    cardLoadError,
-    availableCards
-  } = useGameStore()
+  const availableCards = useGameStore(state => state.availableCards)
+  
+  // Use ref to track if we've already loaded cards to prevent infinite loops
+  const hasLoadedRef = useRef(false)
 
   // Load cards when component mounts and when contract data changes
   useEffect(() => {
+    const store = useGameStore.getState()
+    
+    // Early return if we're still loading from contract
     if (isContractLoading) {
-      setLoadingCards(true)
-      setCardLoadError(null)
+      store.setLoadingCards(true)
+      store.setCardLoadError(null)
       return
     }
 
-    if (cards && cards.length > 0) {
+    // Only load cards once when they become available
+    if (cards && cards.length > 0 && !hasLoadedRef.current) {
       console.log(`Loading ${cards.length} cards from CardRegistry into game store`)
-      loadCardsFromBlockchain(cards)
-    } else if (cardCount === 0) {
-      setCardLoadError('No cards found in CardRegistry. Please deploy cards to the contract.')
-      setLoadingCards(false)
+      store.loadCardsFromBlockchain(cards)
+      hasLoadedRef.current = true
+    } else if (!hasLoadedRef.current && cardCount === 0) {
+      store.setCardLoadError('No cards found in CardRegistry. Please deploy cards to the contract.')
+      store.setLoadingCards(false)
+      hasLoadedRef.current = true
     }
-  }, [cards, isContractLoading, cardCount, loadCardsFromBlockchain, setLoadingCards, setCardLoadError])
+  }, [cards, isContractLoading, cardCount])
 
   // Debug logging
   useEffect(() => {

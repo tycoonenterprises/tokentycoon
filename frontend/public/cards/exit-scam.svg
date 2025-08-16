@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- Action Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#actionGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#dc2626" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#dc2626" stroke="#ef4444" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">4</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="47" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Exit Scam</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="70" height="20" rx="10" fill="#b91c1c" stroke="#991b1b" stroke-width="1"/>
+  <text x="235" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Action</text>
+  
+  <!-- Rarity (Rare) -->
+  <rect x="270" y="20" width="16" height="10" rx="2" fill="#3b82f6" stroke="#2563eb" stroke-width="1"/>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Exit Scam Art -->
+  <g transform="translate(150, 165)">
+    <!-- DeFi protocol being shut down -->
+    <g opacity="0.9">
+      <!-- DeFi building/protocol -->
+      <rect x="-25" y="-20" width="50" height="40" rx="5" fill="#10b981" stroke="#059669" stroke-width="2"/>
+      <text x="0" y="-5" text-anchor="middle" font-size="10" font-weight="bold" fill="white">DeFi</text>
+      <text x="0" y="8" text-anchor="middle" font-size="8" fill="white">PROTOCOL</text>
+      
+      <!-- Shutdown/closed signs -->
+      <g opacity="0.8">
+        <!-- X marks over the building -->
+        <line x1="-25" y1="-20" x2="25" y2="20" stroke="#dc2626" stroke-width="4"/>
+        <line x1="25" y1="-20" x2="-25" y2="20" stroke="#dc2626" stroke-width="4"/>
+        
+        <!-- CLOSED sign -->
+        <rect x="-20" y="25" width="40" height="12" rx="2" fill="#dc2626" stroke="#b91c1c" stroke-width="1"/>
+        <text x="0" y="33" text-anchor="middle" font-size="8" font-weight="bold" fill="white">CLOSED</text>
+      </g>
+      
+      <!-- Money bag with dollar signs (stolen funds) -->
+      <g transform="translate(45, 0)" opacity="0.9">
+        <ellipse cx="0" cy="0" rx="15" ry="12" fill="#1f2937" stroke="#374151" stroke-width="2"/>
+        <text x="0" y="-8" text-anchor="middle" font-size="8" font-weight="bold" fill="#fbbf24">$</text>
+        <text x="0" y="2" text-anchor="middle" font-size="8" font-weight="bold" fill="#fbbf24">$</text>
+        <text x="0" y="12" text-anchor="middle" font-size="8" font-weight="bold" fill="#fbbf24">$</text>
+      </g>
+      
+      <!-- Escaping figure -->
+      <g transform="translate(65, -15)" opacity="0.8">
+        <circle cx="0" cy="0" r="6" fill="#374151" stroke="#4b5563" stroke-width="1"/>
+        <rect x="-3" y="6" width="6" height="12" rx="1" fill="#1f2937" stroke="#374151" stroke-width="1"/>
+        
+        <!-- Running motion lines -->
+        <g stroke="#94a3b8" stroke-width="1" opacity="0.6">
+          <line x1="-15" y1="5" x2="-10" y2="5"/>
+          <line x1="-15" y1="10" x2="-8" y2="10"/>
+          <line x1="-15" y1="15" x2="-12" y2="15"/>
+        </g>
+      </g>
+      
+      <!-- Arrow showing money flow -->
+      <g opacity="0.7" stroke="#fbbf24" stroke-width="3">
+        <defs>
+          <marker id="moneyArrow" markerWidth="10" markerHeight="7" 
+                  refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24" />
+          </marker>
+        </defs>
+        <line x1="25" y1="-5" x2="40" y2="-10" marker-end="url(#moneyArrow)"/>
+      </g>
+      
+      <!-- Devastated investors -->
+      <g transform="translate(-50, 25)" opacity="0.7">
+        <text x="0" y="0" text-anchor="middle" font-size="12" fill="#ef4444">😱</text>
+        <text x="15" y="8" text-anchor="middle" font-size="12" fill="#ef4444">😭</text>
+        <text x="-15" y="8" text-anchor="middle" font-size="12" fill="#ef4444">💸</text>
+      </g>
+    </g>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="20" y="270" width="260" height="85" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Description Text -->
+  <text x="30" y="290" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#f1f5f9">Description:</text>
+  <text x="30" y="315" font-family="Arial, sans-serif" font-size="12" fill="#cbd5e1">Destroy one of your DeFi. Gain 8 ETH.</text>
+  
+  <!-- Stats Section -->
+  <rect x="20" y="370" width="260" height="35" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="30" y="390" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#f1f5f9">Effect: Destroy Own DeFi + Gain 8 ETH</text>
+  
+  <!-- Gradients -->
+  <defs>
+    <radialGradient id="actionGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#dc2626;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7f1d1d;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+</svg>

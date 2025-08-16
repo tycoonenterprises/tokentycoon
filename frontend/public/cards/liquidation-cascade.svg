@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- Action Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#actionGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#dc2626" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#dc2626" stroke="#ef4444" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">5</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="32" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#e2e8f0">Liquidation</text>
+  <text x="65" y="48" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#e2e8f0">Cascade</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="70" height="20" rx="10" fill="#b91c1c" stroke="#991b1b" stroke-width="1"/>
+  <text x="235" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">Action</text>
+  
+  <!-- Rarity (Legendary) -->
+  <polygon points="275,15 285,25 275,35 265,25" fill="#fbbf24" stroke="#f59e0b" stroke-width="1"/>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Liquidation Cascade Art -->
+  <g transform="translate(150, 165)">
+    <!-- Cascade of liquidations -->
+    <g opacity="0.9">
+      <!-- Large wallets getting liquidated -->
+      <g opacity="0.8">
+        <!-- Wallet 1 (4+ ETH) -->
+        <rect x="-70" y="-25" width="35" height="20" rx="5" fill="#3b82f6" stroke="#2563eb" stroke-width="2"/>
+        <text x="-52" y="-12" text-anchor="middle" font-size="8" font-weight="bold" fill="white">WALLET</text>
+        <text x="-52" y="-2" text-anchor="middle" font-size="8" fill="white">5 ETH</text>
+        
+        <!-- Wallet 2 (4+ ETH) -->
+        <rect x="-25" y="-35" width="35" height="20" rx="5" fill="#3b82f6" stroke="#2563eb" stroke-width="2"/>
+        <text x="-7" y="-22" text-anchor="middle" font-size="8" font-weight="bold" fill="white">WALLET</text>
+        <text x="-7" y="-12" text-anchor="middle" font-size="8" fill="white">4 ETH</text>
+        
+        <!-- Wallet 3 (4+ ETH) -->
+        <rect x="35" y="-25" width="35" height="20" rx="5" fill="#3b82f6" stroke="#2563eb" stroke-width="2"/>
+        <text x="52" y="-12" text-anchor="middle" font-size="8" font-weight="bold" fill="white">WALLET</text>
+        <text x="52" y="-2" text-anchor="middle" font-size="8" fill="white">6 ETH</text>
+      </g>
+      
+      <!-- Liquidation waves/arrows -->
+      <g opacity="0.9" stroke="#dc2626" stroke-width="4">
+        <defs>
+          <marker id="liquidationArrow" markerWidth="10" markerHeight="7" 
+                  refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626" />
+          </marker>
+        </defs>
+        
+        <!-- Wave 1 -->
+        <line x1="-52" y1="5" x2="-52" y2="20" marker-end="url(#liquidationArrow)"/>
+        <!-- Wave 2 -->
+        <line x1="-7" y1="-5" x2="-7" y2="20" marker-end="url(#liquidationArrow)"/>
+        <!-- Wave 3 -->
+        <line x1="52" y1="5" x2="52" y2="20" marker-end="url(#liquidationArrow)"/>
+      </g>
+      
+      <!-- Destruction/explosion effects -->
+      <g opacity="0.8">
+        <!-- Explosions -->
+        <text x="-52" y="35" font-size="16" fill="#dc2626">💥</text>
+        <text x="-7" y="35" font-size="16" fill="#dc2626">💥</text>
+        <text x="52" y="35" font-size="16" fill="#dc2626">💥</text>
+        
+        <!-- Debris/money lost -->
+        <g fill="#fbbf24" opacity="0.7">
+          <text x="-65" y="15" font-size="8" transform="rotate(-30)">Ξ</text>
+          <text x="-40" y="10" font-size="8" transform="rotate(20)">Ξ</text>
+          <text x="-15" y="15" font-size="8" transform="rotate(-15)">Ξ</text>
+          <text x="20" y="12" font-size="8" transform="rotate(25)">Ξ</text>
+          <text x="45" y="15" font-size="8" transform="rotate(-20)">Ξ</text>
+          <text x="70" y="10" font-size="8" transform="rotate(30)">Ξ</text>
+        </g>
+      </g>
+      
+      <!-- Cascade indicator -->
+      <g transform="translate(0, -50)" opacity="0.8">
+        <rect x="-30" y="-8" width="60" height="16" rx="8" fill="#1f2937" stroke="#374151" stroke-width="1"/>
+        <text x="0" y="2" text-anchor="middle" font-size="8" font-weight="bold" fill="#dc2626">CASCADE</text>
+      </g>
+      
+      <!-- Market crash indicators -->
+      <g opacity="0.7">
+        <text x="-85" y="-40" font-size="12" fill="#dc2626">📉</text>
+        <text x="75" y="-40" font-size="12" fill="#dc2626">📉</text>
+        
+        <!-- Panic selling -->
+        <text x="-80" y="50" font-size="8" fill="#ef4444" font-weight="bold">PANIC</text>
+        <text x="50" y="50" font-size="8" fill="#ef4444" font-weight="bold">SELL</text>
+      </g>
+      
+      <!-- Contagion spread lines -->
+      <g opacity="0.6" stroke="#ef4444" stroke-width="2" stroke-dasharray="3,2">
+        <line x1="-35" y1="-15" x2="-10" y2="-25"/>
+        <line x1="10" y1="-25" x2="35" y2="-15"/>
+        <path d="M-70,-15 Q-40,-40 -10,-25 Q20,-10 50,-15" fill="none"/>
+      </g>
+    </g>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="20" y="270" width="260" height="85" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Description Text -->
+  <text x="30" y="290" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#f1f5f9">Description:</text>
+  <text x="30" y="315" font-family="Arial, sans-serif" font-size="12" fill="#cbd5e1">Destroy all opponent wallets with 4+ ETH.</text>
+  
+  <!-- Stats Section -->
+  <rect x="20" y="370" width="260" height="35" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="30" y="390" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#f1f5f9">Effect: Destroy All (ETH ≥ 4)</text>
+  
+  <!-- Gradients -->
+  <defs>
+    <radialGradient id="actionGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#dc2626;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7f1d1d;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+</svg>

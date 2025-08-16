@@ -5,6 +5,7 @@ import { PlayerStats } from './PlayerStats'
 import { DragDropGameBoard } from './DragDropGameBoard'
 import { Web3Actions } from './Web3Actions'
 import { DeckBuilder } from './DeckBuilder'
+import { CardsPage } from './CardsPage'
 import { ContractDebugPanel } from '@/components/debug/ContractDebugPanel'
 import { PrivyDebugInfo } from '@/components/debug/PrivyDebugInfo'
 
@@ -22,6 +23,7 @@ export function Game() {
   
   const [showWeb3Panel, setShowWeb3Panel] = useState(false)
   const [showDeckBuilder, setShowDeckBuilder] = useState(false)
+  const [showCardsPage, setShowCardsPage] = useState(false)
   const [customDeck, setCustomDeck] = useState<Card[] | null>(null)
 
   const handleStartGame = () => {
@@ -62,6 +64,13 @@ export function Game() {
           </div>
           
           <div className="flex items-center gap-3">
+            <button
+              onClick={() => setShowCardsPage(true)}
+              className="btn-secondary text-sm"
+            >
+              🃏 Cards
+            </button>
+            
             <button
               onClick={() => setShowWeb3Panel(!showWeb3Panel)}
               className="btn-secondary text-sm"
@@ -207,6 +216,11 @@ export function Game() {
           onDeckReady={handleDeckReady}
           onClose={() => setShowDeckBuilder(false)}
         />
+      )}
+
+      {/* Cards Page Modal */}
+      {showCardsPage && (
+        <CardsPage onClose={() => setShowCardsPage(false)} />
       )}
 
       {/* Debug Panels */}

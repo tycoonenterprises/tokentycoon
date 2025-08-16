@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- Chain Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#chainGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#3b82f6" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#3b82f6" stroke="#60a5fa" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">2</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="47" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Arbitrum</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="70" height="20" rx="10" fill="#0ea5e9" stroke="#0284c7" stroke-width="1"/>
+  <text x="235" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">CHAIN</text>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Arbitrum Art -->
+  <g transform="translate(150, 165)">
+    <!-- Optimistic rollup visualization -->
+    <circle cx="-40" cy="-20" r="15" fill="#3b82f6" opacity="0.8"/>
+    <circle cx="0" cy="-30" r="20" fill="#60a5fa" opacity="0.6"/>
+    <circle cx="40" cy="-20" r="15" fill="#3b82f6" opacity="0.8"/>
+    
+    <!-- Data flow lines -->
+    <path d="M-25,-20 L-20,-30 L20,-30 L25,-20" stroke="#60a5fa" stroke-width="2" fill="none"/>
+    <path d="M-20,-10 L0,0 L20,-10" stroke="#3b82f6" stroke-width="2" fill="none"/>
+    
+    <!-- Network nodes -->
+    <circle cx="-30" cy="10" r="4" fill="#60a5fa"/>
+    <circle cx="0" cy="20" r="4" fill="#60a5fa"/>
+    <circle cx="30" cy="10" r="4" fill="#60a5fa"/>
+    <line x1="-26" y1="12" x2="-4" y2="18" stroke="#3b82f6" stroke-width="1"/>
+    <line x1="4" y1="18" x2="26" y2="12" stroke="#3b82f6" stroke-width="1"/>
+    
+    <!-- L2 Badge -->
+    <rect x="25" y="-45" width="30" height="15" rx="7" fill="#0ea5e9"/>
+    <text x="40" y="-33" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">L2</text>
+  </g>
+  
+  <!-- Chain Motif Overlay -->
+  <g opacity="0.3">
+    <!-- Blockchain chain links -->
+    <rect x="20" y="80" width="12" height="8" rx="2" fill="#3b82f6"/>
+    <rect x="32" y="85" width="12" height="8" rx="2" fill="#3b82f6"/>
+    <rect x="44" y="80" width="12" height="8" rx="2" fill="#3b82f6"/>
+    
+    <!-- L2 indicator -->
+    <text x="250" y="95" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#60a5fa">L2</text>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="80" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="14" fill="#e2e8f0">Generates 1 ETH per turn.</text>
+  
+  <!-- Income/Yield Indicator -->
+  <g transform="translate(220, 275)">
+    <rect width="50" height="25" rx="5" fill="#059669" stroke="#10b981" stroke-width="1"/>
+    <text x="25" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">+1Ξ</text>
+  </g>
+  
+  <!-- ETH Icon Placeholder -->
+  <circle cx="25" cy="365" r="12" fill="#3b82f6" stroke="#60a5fa" stroke-width="2"/>
+  <text x="25" y="371" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">Ξ</text>
+  
+  <!-- Rarity Indicator (Common - cost 1-2) -->
+  <g transform="translate(250, 355)">
+    <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#6b7280" stroke="#9ca3af" stroke-width="1"/>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="chainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

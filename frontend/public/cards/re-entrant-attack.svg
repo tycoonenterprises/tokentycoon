@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- Action Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#actionGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#dc2626" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#dc2626" stroke="#ef4444" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">3</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="40" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#e2e8f0">Re-entrant</text>
+  <text x="65" y="55" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#e2e8f0">Attack</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="70" height="20" rx="10" fill="#dc2626" stroke="#b91c1c" stroke-width="1"/>
+  <text x="235" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">ACTION</text>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Re-entrant Attack Art -->
+  <g transform="translate(150, 165)">
+    <!-- Target DeFi protocol -->
+    <rect x="-25" y="-15" width="50" height="30" rx="5" fill="#10b981" stroke="#059669" stroke-width="2"/>
+    <text x="0" y="2" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">DeFi</text>
+    
+    <!-- Re-entrant loop arrows -->
+    <g opacity="0.8">
+      <!-- Initial call -->
+      <path d="M-50,0 L-30,0" stroke="#ef4444" stroke-width="3" marker-end="url(#attackArrow)"/>
+      <text x="-60" y="-5" font-family="Arial, sans-serif" font-size="8" fill="#ef4444">1. CALL</text>
+      
+      <!-- Recursive callback -->
+      <path d="M-25,15 Q-10,35 10,35 Q25,35 25,20 Q25,5 15,0" stroke="#dc2626" stroke-width="3" fill="none" marker-end="url(#attackArrow)"/>
+      <text x="-5" y="45" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#dc2626">2. CALLBACK</text>
+      
+      <!-- Another recursive call -->
+      <path d="M25,10 Q45,25 45,0 Q45,-25 25,-15" stroke="#b91c1c" stroke-width="2" fill="none" marker-end="url(#attackArrow)"/>
+      <text x="55" y="0" font-family="Arial, sans-serif" font-size="8" fill="#b91c1c">3. RECURSE</text>
+      
+      <!-- Drain effect -->
+      <path d="M25,-5 Q35,-10 45,-5" stroke="#fbbf24" stroke-width="2" fill="none"/>
+      <path d="M25,0 Q35,-5 45,0" stroke="#fbbf24" stroke-width="2" fill="none"/>
+      <path d="M25,5 Q35,0 45,5" stroke="#fbbf24" stroke-width="2" fill="none"/>
+    </g>
+    
+    <!-- Exploit code visualization -->
+    <g transform="translate(-60, -40)" opacity="0.7">
+      <rect width="120" height="15" rx="2" fill="#7c2d12" stroke="#dc2626" stroke-width="1"/>
+      <text x="60" y="10" text-anchor="middle" font-family="monospace" font-size="8" fill="#fca5a5">function exploit() { ... }</text>
+    </g>
+    
+    <!-- Vulnerability indicator -->
+    <g transform="translate(0, -35)">
+      <path d="M0,8 L4,0 L8,8 L6,10 L2,10 Z" fill="#ef4444" stroke="#dc2626" stroke-width="1"/>
+      <text x="4" y="7" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="white">!</text>
+    </g>
+    
+    <!-- Protocol destruction -->
+    <g transform="translate(0, 50)">
+      <text x="0" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#dc2626">Protocol Destroyed</text>
+    </g>
+  </g>
+  
+  <!-- Action Motif Overlay -->
+  <g opacity="0.4">
+    <!-- Fragmented chains -->
+    <rect x="20" y="85" width="8" height="6" rx="1" fill="#dc2626"/>
+    <rect x="32" y="90" width="8" height="6" rx="1" fill="#dc2626" transform="rotate(15 36 93)"/>
+    <rect x="44" y="88" width="8" height="6" rx="1" fill="#dc2626" transform="rotate(-10 48 91)"/>
+    
+    <!-- Warning triangle -->
+    <path d="M245 85 L255 100 L235 100 Z" fill="#f59e0b" stroke="#f97316" stroke-width="1"/>
+    <text x="245" y="96" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#0f172a">!</text>
+    
+    <!-- Flash effect -->
+    <path d="M260 90 L270 95 L265 105 L275 110 L265 115 L270 125 L260 120 L265 110 L260 105 Z" fill="#fbbf24"/>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="100" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="14" fill="#e2e8f0">Destroy target DeFi protocol.</text>
+  
+  <!-- One-Time Use Indicator -->
+  <g transform="translate(15, 370)">
+    <rect width="120" height="25" rx="5" fill="#7c2d12" stroke="#dc2626" stroke-width="1"/>
+    <text x="60" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#fca5a5">ONE TIME USE</text>
+  </g>
+  
+  <!-- Effect Strength -->
+  <g transform="translate(200, 370)">
+    <rect width="70" height="25" rx="5" fill="#dc2626" stroke="#ef4444" stroke-width="1"/>
+    <text x="35" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">DESTROY</text>
+  </g>
+  
+  <!-- Rarity Indicator (Uncommon - cost 3) -->
+  <g transform="translate(250, 330)">
+    <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="attackArrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+    </marker>
+    
+    <linearGradient id="actionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#dc2626;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#b91c1c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.6" />
+    </linearGradient>
+  </defs>
+</svg>

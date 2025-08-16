@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="420" viewBox="0 0 300 420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background -->
+  <rect width="300" height="420" rx="15" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+  
+  <!-- Action Card Type Background -->
+  <rect x="10" y="10" width="280" height="400" rx="12" fill="url(#actionGradient)" opacity="0.1"/>
+  
+  <!-- Header Section -->
+  <rect x="15" y="15" width="270" height="50" rx="8" fill="#1e293b" stroke="#dc2626" stroke-width="1"/>
+  
+  <!-- Cost Circle -->
+  <circle cx="35" cy="40" r="15" fill="#dc2626" stroke="#ef4444" stroke-width="2"/>
+  <text x="35" y="47" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">3</text>
+  
+  <!-- Card Name -->
+  <text x="65" y="47" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#e2e8f0">Fork</text>
+  
+  <!-- Type Label -->
+  <rect x="200" y="25" width="70" height="20" rx="10" fill="#dc2626" stroke="#b91c1c" stroke-width="1"/>
+  <text x="235" y="38" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">ACTION</text>
+  
+  <!-- Art Area -->
+  <rect x="15" y="75" width="270" height="180" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  
+  <!-- Fork Art -->
+  <g transform="translate(150, 165)">
+    <!-- Main protocol being forked -->
+    <rect x="-20" y="-35" width="40" height="25" rx="3" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2"/>
+    <text x="0" y="-20" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="white">DeFi</text>
+    
+    <!-- Fork split -->
+    <path d="M0,-10 L0,10" stroke="#f59e0b" stroke-width="3"/>
+    <path d="M0,10 L-25,25" stroke="#f59e0b" stroke-width="3"/>
+    <path d="M0,10 L25,25" stroke="#f59e0b" stroke-width="3"/>
+    
+    <!-- Original copy (left) -->
+    <rect x="-45" y="25" width="30" height="20" rx="3" fill="#3b82f6" stroke="#1d4ed8" stroke-width="2" opacity="0.7"/>
+    <text x="-30" y="37" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">ORIG</text>
+    
+    <!-- New copy (right) -->
+    <rect x="15" y="25" width="30" height="20" rx="3" fill="#10b981" stroke="#059669" stroke-width="2"/>
+    <text x="30" y="37" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">COPY</text>
+    
+    <!-- Copy indicator arrows -->
+    <g opacity="0.7">
+      <path d="M-5,-15 Q-15,-5 -25,15" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+      <path d="M5,-15 Q15,-5 25,15" stroke="#22c55e" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+    </g>
+    
+    <!-- Duplication symbols -->
+    <g transform="translate(-50, -15)" opacity="0.6">
+      <text x="0" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#10b981">≡</text>
+    </g>
+    
+    <g transform="translate(50, -15)" opacity="0.6">
+      <text x="0" y="0" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#10b981">≡</text>
+    </g>
+    
+    <!-- Action description -->
+    <text x="0" y="60" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#22c55e">Copy Target DeFi</text>
+  </g>
+  
+  <!-- Action Motif Overlay -->
+  <g opacity="0.4">
+    <!-- Fragmented chains -->
+    <rect x="20" y="85" width="8" height="6" rx="1" fill="#dc2626"/>
+    <rect x="32" y="90" width="8" height="6" rx="1" fill="#dc2626" transform="rotate(15 36 93)"/>
+    <rect x="44" y="88" width="8" height="6" rx="1" fill="#dc2626" transform="rotate(-10 48 91)"/>
+    
+    <!-- Warning triangle -->
+    <path d="M245 85 L255 100 L235 100 Z" fill="#f59e0b" stroke="#f97316" stroke-width="1"/>
+    <text x="245" y="96" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#0f172a">!</text>
+    
+    <!-- Flash effect -->
+    <path d="M260 90 L270 95 L265 105 L275 110 L265 115 L270 125 L260 120 L265 110 L260 105 Z" fill="#fbbf24"/>
+  </g>
+  
+  <!-- Description Box -->
+  <rect x="15" y="265" width="270" height="100" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="25" y="285" font-family="Arial, sans-serif" font-size="14" fill="#e2e8f0">Copy target DeFi protocol you control.</text>
+  
+  <!-- One-Time Use Indicator -->
+  <g transform="translate(15, 370)">
+    <rect width="120" height="25" rx="5" fill="#7c2d12" stroke="#dc2626" stroke-width="1"/>
+    <text x="60" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#fca5a5">ONE TIME USE</text>
+  </g>
+  
+  <!-- Effect Strength -->
+  <g transform="translate(200, 370)">
+    <rect width="70" height="25" rx="5" fill="#10b981" stroke="#059669" stroke-width="1"/>
+    <text x="35" y="17" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="white">COPY</text>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e"/>
+    </marker>
+    
+    <!-- Rarity Indicator (Uncommon - cost 3) -->
+    <g transform="translate(250, 330)">
+      <polygon points="0,10 5,0 10,10 7.5,15 2.5,15" fill="#22c55e" stroke="#16a34a" stroke-width="1"/>
+    </g>
+    
+    <linearGradient id="actionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#dc2626;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#b91c1c;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.6" />
+    </linearGradient>
+  </defs>
+</svg>
