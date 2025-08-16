@@ -5,7 +5,6 @@ export function PlayerStats() {
     players, 
     currentTurn, 
     turnNumber,
-    currentPhase, 
     activePlayer,
     viewingPlayer,
     isDemoMode,
@@ -15,9 +14,6 @@ export function PlayerStats() {
 
   const { player1, player2 } = players
 
-  const formatPhase = (phase: string) => {
-    return phase.charAt(0).toUpperCase() + phase.slice(1)
-  }
 
   return (
     <div className="bg-eth-dark border-b border-gray-700 p-4">
@@ -26,8 +22,6 @@ export function PlayerStats() {
         <div className="text-center mb-4">
           <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
             <span>Turn {turnNumber}</span>
-            <span>•</span>
-            <span>{formatPhase(currentPhase)} Phase</span>
             <span>•</span>
             <span className={`font-medium ${isGameStarted ? 'text-eth-success' : 'text-yellow-500'}`}>
               {isGameStarted ? 'Game Started' : isDemoMode ? 'Demo Mode' : 'Practice Mode'}

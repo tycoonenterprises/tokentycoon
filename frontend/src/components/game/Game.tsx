@@ -23,10 +23,8 @@ export function Game() {
     startGame,
     startDemoMode,
     switchViewingPlayer,
-    nextPhase, 
     resetGame, 
     isGameActive, 
-    currentPhase, 
     activePlayer,
     isDemoMode,
     winner,
@@ -224,8 +222,15 @@ export function Game() {
     startDemoMode(user?.id || 'player1', 'player2')
   }
 
-  const handleNextPhase = () => {
-    nextPhase()
+  const handleEndTurn = () => {
+    // End turn is now handled directly by the contract
+    // The contract automatically handles draw and upkeep for the next player
+    // For demo mode, we need to call the game store's endTurn function
+    if (isDemoMode) {
+      useGameStore.getState().endTurn(false) // Don't use contract in demo mode for now
+    } else {
+      useGameStore.getState().endTurn(true) // Use contract in real games
+    }
   }
 
   const handleLogout = () => {
@@ -297,11 +302,11 @@ export function Game() {
                   </button>
                 )}
                 <button
-                  onClick={handleNextPhase}
+                  onClick={handleEndTurn}
                   className="btn-primary text-sm"
                   disabled={!isDemoMode && activePlayer !== 'player1'}
                 >
-                  Next Phase
+                  End Turn
                 </button>
                 <button
                   onClick={resetGame}
@@ -407,11 +412,11 @@ export function Game() {
         )}
       </div>
 
-      {/* Phase Indicator */}
+      {/* Turn Indicator */}
       {isGameActive && !winner && (
         <div className="fixed bottom-4 left-4 bg-eth-dark border border-gray-700 rounded-lg px-4 py-2">
           <div className="text-sm text-white">
-            <div className="font-bold">{currentPhase.toUpperCase()} PHASE</div>
+            <div className="font-bold">TURN {gameId ? 'ACTIVE' : 'DEMO'}</div>
             <div className="text-gray-400 text-xs">
               {isDemoMode 
                 ? `Player ${activePlayer === 'player1' ? '1' : '2'}'s turn`

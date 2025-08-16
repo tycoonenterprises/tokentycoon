@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
+import React, { createContext, useContext, useState, useCallback } from 'react'
+import type { ReactNode } from 'react'
 import type { Card } from '@/stores/gameStore'
 import type { PlayabilityResult } from '@/lib/utils/cardPlayability'
 import type { DropValidation, DropZone } from '@/lib/utils/dropZoneValidation'
@@ -38,7 +39,6 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
   const [playability, setPlayability] = useState<PlayabilityResult | null>(null)
   
   const {
-    currentPhase,
     activePlayer,
     players,
     isGameActive,
@@ -56,7 +56,7 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     // Calculate playability when drag starts
     const cardPlayability = canPlayCard(
       card,
-      currentPhase,
+      'main', // Always allow playing cards now - no phases
       playerState.eth,
       activePlayer,
       currentPlayer,
@@ -67,7 +67,7 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     
     setDraggedCard(card)
     setPlayability(cardPlayability)
-  }, [currentPhase, playerState.gas, activePlayer, currentPlayer, isGameActive])
+  }, [playerState.eth, activePlayer, currentPlayer, isGameActive])
 
   const endDrag = useCallback(() => {
     console.log('Ending drag')
@@ -100,7 +100,7 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
   const getCardPlayabilityClass = useCallback((card: Card): string => {
     const cardPlayability = canPlayCard(
       card,
-      currentPhase,
+      'main', // Always allow playing cards now - no phases
       playerState.eth,
       activePlayer,
       currentPlayer,
@@ -124,19 +124,19 @@ export const DragProvider: React.FC<DragProviderProps> = ({ children }) => {
     }
     
     return 'card-not-playable'
-  }, [currentPhase, playerState.gas, activePlayer, currentPlayer, isGameActive])
+  }, [playerState.eth, activePlayer, currentPlayer, isGameActive])
 
   const isCardPlayable = useCallback((card: Card): boolean => {
     const cardPlayability = canPlayCard(
       card,
-      currentPhase,
+      'main', // Always allow playing cards now - no phases
       playerState.eth,
       activePlayer,
       currentPlayer,
       isGameActive
     )
     return cardPlayability.canPlay
-  }, [currentPhase, playerState.gas, activePlayer, currentPlayer, isGameActive])
+  }, [playerState.eth, activePlayer, currentPlayer, isGameActive])
 
   const value: DragContextType = {
     draggedCard,

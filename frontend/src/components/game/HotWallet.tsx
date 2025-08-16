@@ -5,14 +5,14 @@ interface HotWalletProps {
 }
 
 export function HotWallet({ playerId }: HotWalletProps) {
-  const { players, viewingPlayer, currentPhase, activePlayer } = useGameStore()
+  const { players, viewingPlayer, activePlayer } = useGameStore()
   
   const player = players[playerId as keyof typeof players]
   const isCurrentPlayer = viewingPlayer === playerId
   const balance = player?.eth || 0
   
-  // Show earnings animation during upkeep phase
-  const isUpkeepPhase = currentPhase === 'upkeep' && activePlayer === playerId
+  // Show earnings animation during turn start
+  const isActiveTurn = activePlayer === playerId
   const baseEarnings = 1 // Base 1 ETH per turn
   
   // Calculate yield from board cards (DeFi cards with staked ETH)
@@ -33,7 +33,7 @@ export function HotWallet({ playerId }: HotWalletProps) {
           <span className="text-lg">🔥</span>
           <h3 className="text-sm font-bold text-white">Hot Wallet</h3>
         </div>
-        {isUpkeepPhase && (
+        {isActiveTurn && (
           <div className="bg-green-500 text-black text-xs px-2 py-1 rounded-full font-bold animate-pulse">
             +{totalEarnings}
           </div>
@@ -43,7 +43,7 @@ export function HotWallet({ playerId }: HotWalletProps) {
       {/* Balance Display */}
       <div className="mb-3">
         <div className={`text-2xl font-bold mb-1 transition-all duration-500 ${
-          isUpkeepPhase ? 'text-green-400 animate-pulse' : 'text-eth-secondary'
+          isActiveTurn ? 'text-green-400' : 'text-eth-secondary'
         }`}>
           {balance.toFixed(1)} ETH
         </div>
@@ -89,10 +89,10 @@ export function HotWallet({ playerId }: HotWalletProps) {
         )}
       </div>
 
-      {/* Phase-specific messages */}
-      {isCurrentPlayer && isUpkeepPhase && (
-        <div className="mt-2 text-xs text-center text-green-400 animate-pulse">
-          💰 Receiving income...
+      {/* Turn-specific messages */}
+      {isCurrentPlayer && isActiveTurn && (
+        <div className="mt-2 text-xs text-center text-green-400">
+          💰 Your turn - income received!
         </div>
       )}
     </div>

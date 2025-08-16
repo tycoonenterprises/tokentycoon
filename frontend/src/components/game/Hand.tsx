@@ -132,10 +132,10 @@ interface HandProps {
 }
 
 export function Hand({ playerId }: HandProps) {
-  const { players, playCard, activePlayer, currentPhase } = useGameStore()
+  const { players, playCard, activePlayer } = useGameStore()
   const player = players[playerId as keyof typeof players]
   
-  const canPlayCards = activePlayer === playerId && currentPhase === 'main'
+  const canPlayCards = activePlayer === playerId // Always allow playing cards during your turn
 
   const handlePlayCard = (cardId: string) => {
     if (canPlayCards) {
@@ -183,7 +183,7 @@ export function Hand({ playerId }: HandProps) {
         
         {canPlayCards && (
           <div className="mt-3 text-xs text-gray-400">
-            💡 Click cards to play them. Gas available: {player.gas}
+            💡 Click cards to play them. ETH available: {player.eth}
           </div>
         )}
       </div>

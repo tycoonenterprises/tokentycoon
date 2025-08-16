@@ -168,11 +168,10 @@ interface DraggableCardProps {
 interface ExtendedDraggableCardProps extends DraggableCardProps {
   playerETH: number
   isActivePlayer: boolean
-  currentPhase: string
   gameId: number | null
 }
 
-function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, currentPhase, gameId }: ExtendedDraggableCardProps) {
+function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, gameId }: ExtendedDraggableCardProps) {
   const {
     attributes,
     listeners,
@@ -194,7 +193,7 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
 
   // Determine the specific reason why a card cannot be played
   const canAfford = playerETH >= card.cost
-  const inMainPhase = currentPhase === 'main'
+  const inMainPhase = true // Always allow playing cards now
   
   const getCardState = () => {
     if (source === 'board') return 'playable' // Board cards are just displayed
@@ -448,7 +447,6 @@ export function DragDropGameBoard() {
     activePlayer, 
     viewingPlayer,
     isDemoMode,
-    currentPhase,
     playCard,
     playCardByIndex,
     moveCard,
@@ -464,7 +462,7 @@ export function DragDropGameBoard() {
   const currentViewingPlayer = viewingPlayer
   
   // Simplified: in demo mode, always allow the viewing player to play cards if it's their turn and main phase
-  const canPlayCards = activePlayer === viewingPlayer && currentPhase === 'main'
+  const canPlayCards = activePlayer === viewingPlayer // Always allow playing cards during your turn
   
   
   // Determine which player's perspective we're showing
@@ -538,7 +536,6 @@ export function DragDropGameBoard() {
         playerETH: playerHand.eth,
         activePlayer,
         currentViewingPlayer,
-        currentPhase,
         canDrag
       })
       return canDrag
@@ -629,7 +626,6 @@ export function DragDropGameBoard() {
                     canDrag={canDragCard(card, 'board', currentViewingPlayer)}
                     playerETH={playerHand.eth}
                     isActivePlayer={activePlayer === currentViewingPlayer}
-                    currentPhase={currentPhase}
                     gameId={gameId}
                   />
                 ))}
@@ -649,12 +645,10 @@ export function DragDropGameBoard() {
                         <span className="text-eth-success">⚡ Drag cards to board to play</span>
                         <span className="text-gray-400 ml-4">💰 {playerHand.eth} ETH available</span>
                       </>
-                    ) : currentPhase === 'draw' ? (
-                      <span className="text-yellow-400">🃏 Click deck to draw first</span>
                     ) : activePlayer !== currentViewingPlayer ? (
                       <span className="text-gray-400">⏳ Opponent's turn</span>
                     ) : (
-                      <span className="text-gray-400">⏸ Wrong phase</span>
+                      <span className="text-gray-400">⏸ Not your turn</span>
                     )}
                   </div>
                 </div>
@@ -673,7 +667,6 @@ export function DragDropGameBoard() {
                         canDrag={canDragCard(card, 'hand', currentViewingPlayer)}
                         playerETH={playerHand.eth}
                         isActivePlayer={activePlayer === currentViewingPlayer}
-                        currentPhase={currentPhase}
                         gameId={gameId}
                       />
                     ))}

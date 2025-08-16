@@ -8,7 +8,7 @@ interface DeckProps {
 }
 
 export function Deck({ playerId, isActive, canDraw }: DeckProps) {
-  const { players, drawCard, currentPhase, viewingPlayer, isDemoMode } = useGameStore()
+  const { players, drawCard, viewingPlayer, isDemoMode } = useGameStore()
   const [isDrawing, setIsDrawing] = useState(false)
   
   const player = players[playerId as keyof typeof players]
@@ -100,7 +100,7 @@ export function Deck({ playerId, isActive, canDraw }: DeckProps) {
           </div>
         )}
         
-        {!canDraw && isActive && currentPhase !== 'draw' && (
+        {!canDraw && isActive && (
           <div className="text-xs text-gray-400">
             Turn in progress
           </div>

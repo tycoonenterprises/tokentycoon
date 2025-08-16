@@ -1,5 +1,7 @@
 import type { Card } from '@/stores/gameStore'
-import type { GamePhase } from '@/stores/gameStore'
+
+// Phase type for backwards compatibility - phases are now handled by smart contract
+type GamePhase = 'main'
 
 export interface PlayabilityResult {
   canPlay: boolean
@@ -49,12 +51,8 @@ export const canPlayCard = (
     eth = 'insufficient'
   }
 
-  // Check phase requirements
-  const phaseResult = canPlayCardInPhase(card, currentPhase)
-  if (!phaseResult.canPlay) {
-    reasons.push(...phaseResult.reasons)
-    phase = 'wrong-phase'
-  }
+  // Phase requirements are now simplified - always allow during your turn
+  // (phases are handled automatically by the smart contract)
 
   const canPlay = reasons.length === 0
   
@@ -74,43 +72,15 @@ export const canPlayCardInPhase = (
   card: Card,
   currentPhase: GamePhase
 ): { canPlay: boolean; reasons: string[] } => {
-  const reasons: string[] = []
-
-  switch (currentPhase) {
-    case 'draw':
-      // No manual card playing during draw phase (automatic)
-      reasons.push('Cannot play cards during Draw phase')
-      return { canPlay: false, reasons }
-
-    case 'upkeep':
-      // No manual card playing during upkeep phase (automatic abilities trigger)
-      reasons.push('Cannot play cards during Upkeep phase')
-      return { canPlay: false, reasons }
-
-    case 'main':
-      // All card types can be played during main phase
-      return { canPlay: true, reasons: [] }
-
-    default:
-      reasons.push('Unknown game phase')
-      return { canPlay: false, reasons }
-  }
+  // Phases removed - always allow playing cards during your turn
+  return { canPlay: true, reasons: [] }
 }
 
 /**
  * Gets user-friendly phase restriction message
  */
 export const getPhaseRestrictionMessage = (currentPhase: GamePhase): string => {
-  switch (currentPhase) {
-    case 'draw':
-      return 'Draw Phase: Cards are drawn automatically'
-    case 'upkeep':
-      return 'Upkeep Phase: Abilities trigger automatically, gain ETH'
-    case 'main':
-      return 'Main Phase: Play any cards you can afford'
-    default:
-      return 'Unknown phase'
-  }
+  return 'Your Turn: Play any cards you can afford'
 }
 
 /**

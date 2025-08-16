@@ -9,25 +9,19 @@ export function DeckElement({ playerId, position }: DeckElementProps) {
   const { 
     players, 
     activePlayer, 
-    currentPhase, 
     viewingPlayer,
     isDemoMode,
-    drawCard,
-    nextPhase 
+    drawCard 
   } = useGameStore()
   
   const player = players[playerId as keyof typeof players]
   const isCurrentPlayer = viewingPlayer === playerId
-  const canDraw = activePlayer === playerId && currentPhase === 'draw' && (isDemoMode || playerId === 'player1')
+  const canDraw = false // Manual drawing disabled - automatic on turn start
   const deckSize = player?.deck?.length || 0
   
   const handleDeckClick = () => {
-    if (canDraw && deckSize > 0) {
-      // In contract mode, drawing happens automatically when the turn starts
-      // So clicking the deck should advance to next phase (which triggers drawing in contract)
-      console.log('Advancing phase - drawing will happen automatically via contract')
-      nextPhase()
-    }
+    // Drawing is now automatic at turn start - no manual drawing
+    console.log('Deck click - drawing happens automatically at turn start')
   }
 
   const positionClasses = position === 'lower-left' 
