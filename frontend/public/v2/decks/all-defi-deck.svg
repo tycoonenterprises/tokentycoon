@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="375" height="525" viewBox="0 0 375 525" xmlns="http://www.w3.org/2000/svg">
+  <!-- All DeFi - Literal Deck Design -->
+  <defs>
+    <linearGradient id="deckBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2D1100;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3D2200;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2D1100;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="deckFrame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF6B00;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="deckGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feFlood flood-color="#FFA500" flood-opacity="0.9"/>
+      <feComposite in2="coloredBlur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect x="0" y="0" width="375" height="525" rx="15" ry="15" fill="url(#deckBg)"/>
+  
+  <!-- Frame -->
+  <rect x="12" y="12" width="351" height="501" rx="10" ry="10" fill="none" stroke="url(#deckFrame)" stroke-width="4" filter="url(#deckGlow)"/>
+  
+  <!-- Header -->
+  <rect x="25" y="25" width="325" height="60" rx="10" ry="10" fill="#000000" opacity="0.95"/>
+  <rect x="25" y="25" width="325" height="60" rx="10" ry="10" fill="none" stroke="url(#deckFrame)" stroke-width="3"/>
+  
+  <!-- Main artwork frame -->
+  <rect x="25" y="100" width="325" height="280" rx="12" ry="12" fill="#000814" stroke="url(#deckFrame)" stroke-width="3"/>
+  
+  <!-- REAL LITERAL DECK ARTWORK -->
+  
+  <!-- ALL DEFI DECK - PROTOCOL FOCUSED -->
+  <g transform="translate(187.5, 200)" opacity="0.95">
+    <!-- Central DeFi hub -->
+    <g transform="translate(0, -20)">
+      <!-- Main DeFi circle -->
+      <circle cx="0" cy="0" r="35" fill="rgba(255, 165, 0, 0.4)" stroke="#FFA500" stroke-width="4"/>
+      <text x="0" y="5" font-family="Arial, sans-serif" font-size="14" 
+            fill="#FFA500" text-anchor="middle" font-weight="bold">DeFi</text>
+      
+      <!-- Protocol connections -->
+      <g opacity="0.9">
+        <!-- Arbitrum L2 -->
+        <g transform="translate(-50, -30)">
+          <rect x="0" y="0" width="30" height="20" rx="5" ry="5" fill="#96BEDC"/>
+          <text x="15" y="13" font-family="Arial, sans-serif" font-size="8" fill="#FFFFFF" text-anchor="middle">ARB</text>
+        </g>
+        
+        <!-- AAVE lending -->
+        <g transform="translate(20, -40)">
+          <rect x="0" y="0" width="30" height="20" rx="5" ry="5" fill="#B856C4"/>
+          <path d="M15,5 Q10,8 10,12 Q10,16 15,15 Q20,16 20,12 Q20,8 15,5" fill="#FFFFFF"/>
+          <text x="15" y="13" font-family="Arial, sans-serif" font-size="7" fill="#FFFFFF" text-anchor="middle">AAVE</text>
+        </g>
+        
+        <!-- Diamond Hands EOA -->
+        <g transform="translate(40, 10)">
+          <rect x="0" y="0" width="25" height="25" rx="3" ry="3" fill="#FF0080"/>
+          <polygon points="12.5,8 15,11 12.5,14 10,11" fill="#FFFFFF"/>
+          <text x="12.5" y="20" font-family="Arial, sans-serif" font-size="6" fill="#FFFFFF" text-anchor="middle">💎</text>
+        </g>
+        
+        <!-- Research -->
+        <g transform="translate(-45, 25)">
+          <rect x="0" y="0" width="25" height="20" rx="3" ry="3" fill="#8B00FF"/>
+          <rect x="5" y="5" width="15" height="10" rx="1" ry="1" fill="#FFFFFF"/>
+          <text x="12.5" y="15" font-family="Arial, sans-serif" font-size="6" fill="#FFFFFF" text-anchor="middle">DUNE</text>
+        </g>
+        
+        <!-- Connection lines -->
+        <g stroke="#FFA500" stroke-width="2" opacity="0.6">
+          <line x1="-35" y1="-20" x2="-20" y2="-10"/>
+          <line x1="35" y1="-30" x2="20" y2="-15"/>
+          <line x1="50" y1="20" x2="25" y2="10"/>
+          <line x1="-30" y1="35" x2="-15" y2="20"/>
+        </g>
+      </g>
+    </g>
+    
+    <!-- DeFi ecosystem benefits -->
+    <g transform="translate(0, 60)" opacity="0.9">
+      <rect x="-70" y="0" width="140" height="25" rx="12" ry="12" 
+            fill="rgba(255, 165, 0, 0.3)" stroke="#FFA500" stroke-width="2"/>
+      <text x="0" y="16" font-family="Arial, sans-serif" font-size="10" 
+            fill="#FFA500" text-anchor="middle" font-weight="bold">DECENTRALIZED FINANCE</text>
+    </g>
+    
+    <!-- Yield indicators -->
+    <g transform="translate(0, 100)" opacity="0.8">
+      <g fill="#32CD32" opacity="0.9">
+        <text x="-50" y="0" font-family="Arial, sans-serif" font-size="8" text-anchor="middle">HIGH YIELD</text>
+        <text x="0" y="0" font-family="Arial, sans-serif" font-size="8" text-anchor="middle">LENDING</text>
+        <text x="50" y="0" font-family="Arial, sans-serif" font-size="8" text-anchor="middle">STAKING</text>
+      </g>
+      
+      <!-- Card composition -->
+      <text x="0" y="20" font-family="Arial, sans-serif" font-size="8" fill="#FFFFFF" text-anchor="middle">15 Arbitrum + 15 AAVE + 5 Diamond Hands + 5 Research</text>
+    </g>
+  </g>
+  
+  <!-- Description area -->
+  <rect x="25" y="395" width="325" height="80" rx="12" ry="12" fill="#000000" opacity="0.95"/>
+  <rect x="25" y="395" width="325" height="80" rx="12" ry="12" fill="none" stroke="url(#deckFrame)" stroke-width="2"/>
+  
+  <!-- Text elements -->
+  <text x="187.5" y="55" font-family="Orbitron, Arial, sans-serif" font-size="24" font-weight="900" 
+        fill="#FFFFFF" filter="url(#deckGlow)" text-anchor="middle" text-transform="uppercase">All DeFi</text>
+  
+  <text x="187.5" y="75" font-family="Arial, sans-serif" font-size="14" fill="#FFA500" text-anchor="middle">DECK</text>
+  
+  <!-- Description -->
+  <text x="40" y="420" font-family="Arial, sans-serif" font-size="12" fill="#FFFFFF" font-weight="600">
+    <tspan x="40" dy="0">A balanced deck for beginners</tspan>
+  </text>
+  
+  <!-- Card count -->
+  <text x="187.5" y="495" font-family="Orbitron, Arial, sans-serif" font-size="16" font-weight="900" 
+        fill="#FFA500" text-anchor="middle">40 CARDS</text>
+</svg>

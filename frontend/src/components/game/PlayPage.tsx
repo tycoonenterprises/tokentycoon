@@ -4,6 +4,7 @@ import { useGameEngine } from '@/lib/hooks/useGameEngine';
 import { useDeckRegistry } from '@/lib/hooks/useDeckRegistry';
 import { X, Plus, Users, Clock, Loader2 } from 'lucide-react';
 import { GameLobby } from './GameLobby';
+import { DeckImage } from '@/components/ui/DeckImage';
 
 interface PlayPageProps {
   onClose?: () => void;
@@ -272,6 +273,15 @@ export const PlayPage: React.FC<PlayPageProps> = ({
                             : 'bg-gray-800 border-gray-700 hover:border-gray-600'
                         }`}
                       >
+                        {/* Deck Image */}
+                        <div className="mb-3">
+                          <DeckImage 
+                            deckName={deck.name}
+                            className="w-full h-20 rounded object-cover"
+                            fallbackIcon="🃏"
+                          />
+                        </div>
+                        
                         <div className="font-semibold text-white">{deck.name}</div>
                         <div className="text-sm text-gray-400 mt-1">{deck.description}</div>
                       </div>
@@ -318,8 +328,17 @@ export const PlayPage: React.FC<PlayPageProps> = ({
                             : 'bg-gray-800 border-gray-700 hover:border-gray-600'
                         }`}
                       >
-                        <div className="font-semibold text-white">{deck.name}</div>
-                        <div className="text-sm text-gray-400 mt-1">{deck.description}</div>
+                        {/* Deck Image */}
+                        <div className="mb-2">
+                          <DeckImage 
+                            deckName={deck.name}
+                            className="w-full h-16 rounded object-cover"
+                            fallbackIcon="🃏"
+                          />
+                        </div>
+                        
+                        <div className="font-semibold text-white text-sm">{deck.name}</div>
+                        <div className="text-xs text-gray-400 mt-1">{deck.description}</div>
                       </div>
                     ))}
                   </div>

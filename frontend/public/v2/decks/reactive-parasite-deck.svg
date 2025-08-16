@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="375" height="525" viewBox="0 0 375 525" xmlns="http://www.w3.org/2000/svg">
+  <!-- Reactive Parasite - Literal Deck Design -->
+  <defs>
+    <linearGradient id="deckBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#220033;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#330044;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#220033;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="deckFrame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8A2BE2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#4B0082;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="deckGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feFlood flood-color="#8A2BE2" flood-opacity="0.9"/>
+      <feComposite in2="coloredBlur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect x="0" y="0" width="375" height="525" rx="15" ry="15" fill="url(#deckBg)"/>
+  
+  <!-- Frame -->
+  <rect x="12" y="12" width="351" height="501" rx="10" ry="10" fill="none" stroke="url(#deckFrame)" stroke-width="4" filter="url(#deckGlow)"/>
+  
+  <!-- Header -->
+  <rect x="25" y="25" width="325" height="60" rx="10" ry="10" fill="#000000" opacity="0.95"/>
+  <rect x="25" y="25" width="325" height="60" rx="10" ry="10" fill="none" stroke="url(#deckFrame)" stroke-width="3"/>
+  
+  <!-- Main artwork frame -->
+  <rect x="25" y="100" width="325" height="280" rx="12" ry="12" fill="#000814" stroke="url(#deckFrame)" stroke-width="3"/>
+  
+  <!-- REAL LITERAL DECK ARTWORK -->
+  
+  <!-- REACTIVE PARASITE DECK - FEEDING OFF OPPONENTS -->
+  <g transform="translate(187.5, 200)" opacity="0.95">
+    <!-- Central parasitic organism -->
+    <g transform="translate(0, -20)">
+      <!-- Main parasite body -->
+      <ellipse cx="0" cy="0" rx="25" ry="15" fill="#4B0082" stroke="#8A2BE2" stroke-width="2"/>
+      <ellipse cx="0" cy="0" rx="18" ry="10" fill="#663399"/>
+      
+      <!-- Parasitic tendrils -->
+      <g stroke="#8A2BE2" stroke-width="2" fill="none" opacity="0.8">
+        <path d="M-25,0 Q-35,-10 -45,-5 Q-50,5 -40,10"/>
+        <path d="M25,0 Q35,10 45,5 Q50,-5 40,-10"/>
+        <path d="M0,-15 Q-10,-25 -5,-35 Q5,-40 10,-30"/>
+        <path d="M0,15 Q10,25 5,35 Q-5,40 -10,30"/>
+      </g>
+      
+      <!-- Parasitic suckers at tendril ends -->
+      <g fill="#FF69B4" opacity="0.9">
+        <circle cx="-40" cy="10" r="3"/>
+        <circle cx="40" cy="-10" r="3"/>
+        <circle cx="10" cy="-30" r="3"/>
+        <circle cx="-10" cy="30" r="3"/>
+      </g>
+      
+      <!-- Central eye/sensor -->
+      <circle cx="0" cy="0" r="8" fill="#FF0000"/>
+      <circle cx="0" cy="0" r="5" fill="#FFFFFF"/>
+      <circle cx="0" cy="0" r="3" fill="#000000"/>
+      
+      <!-- MEV/extraction symbols -->
+      <g transform="translate(-45, -20)" opacity="0.9">
+        <rect x="0" y="0" width="20" height="15" rx="2" ry="2" fill="#00FF00"/>
+        <text x="10" y="10" font-family="Arial, sans-serif" font-size="7" fill="#000000" text-anchor="middle" font-weight="bold">MEV</text>
+        <text x="10" y="-8" font-family="Arial, sans-serif" font-size="5" fill="#00FF00" text-anchor="middle">EXTRACT</text>
+      </g>
+      
+      <!-- Front-running bot -->
+      <g transform="translate(30, -25)" opacity="0.9">
+        <rect x="0" y="0" width="18" height="12" rx="2" ry="2" fill="#FF4500"/>
+        <rect x="2" y="2" width="14" height="8" rx="1" ry="1" fill="#000000"/>
+        <text x="9" y="9" font-family="Arial, sans-serif" font-size="5" fill="#FF4500" text-anchor="middle">BOT</text>
+        <text x="9" y="-6" font-family="Arial, sans-serif" font-size="5" fill="#FF4500" text-anchor="middle">FRONT</text>
+      </g>
+      
+      <!-- Sandwich attack -->
+      <g transform="translate(35, 20)" opacity="0.9">
+        <rect x="0" y="0" width="16" height="20" rx="2" ry="2" fill="#8B4513"/>
+        <rect x="2" y="2" width="12" height="5" fill="#FFD700"/>
+        <rect x="2" y="7.5" width="12" height="5" fill="#FF0000"/>
+        <rect x="2" y="13" width="12" height="5" fill="#FFD700"/>
+        <text x="8" y="-6" font-family="Arial, sans-serif" font-size="5" fill="#8B4513" text-anchor="middle">SANDWICH</text>
+      </g>
+      
+      <!-- Phishing hook -->
+      <g transform="translate(-40, 25)" opacity="0.9">
+        <path d="M0,0 Q10,-10 15,0 Q15,10 5,15" stroke="#FF0000" stroke-width="2" fill="none"/>
+        <circle cx="5" cy="15" r="2" fill="#FF0000"/>
+        <text x="7.5" y="-8" font-family="Arial, sans-serif" font-size="5" fill="#FF0000" text-anchor="middle">PHISH</text>
+      </g>
+    </g>
+    
+    <!-- Parasitic strategy description -->
+    <g transform="translate(0, 60)" opacity="0.9">
+      <rect x="-80" y="0" width="160" height="25" rx="12" ry="12" 
+            fill="rgba(75, 0, 130, 0.4)" stroke="#4B0082" stroke-width="2"/>
+      <text x="0" y="16" font-family="Arial, sans-serif" font-size="10" 
+            fill="#8A2BE2" text-anchor="middle" font-weight="bold">REACTIVE PARASITE</text>
+    </g>
+    
+    <!-- Parasitic mechanics -->
+    <g transform="translate(0, 100)" opacity="0.8">
+      <g fill="#8A2BE2" opacity="0.9">
+        <text x="-60" y="0" font-family="Arial, sans-serif" font-size="8" text-anchor="middle">STEAL</text>
+        <text x="0" y="0" font-family="Arial, sans-serif" font-size="8" text-anchor="middle">EXTRACT</text>
+        <text x="60" y="0" font-family="Arial, sans-serif" font-size="8" text-anchor="middle">PROFIT</text>
+      </g>
+      
+      <!-- Strategy info -->
+      <text x="0" y="20" font-family="Arial, sans-serif" font-size="8" fill="#FFFFFF" text-anchor="middle">40 Cards - Opponent Dependent</text>
+      <text x="0" y="32" font-family="Arial, sans-serif" font-size="8" fill="#8A2BE2" text-anchor="middle" font-weight="bold">🦠 Feeds on Enemy Actions 🦠</text>
+    </g>
+  </g>
+  
+  <!-- Description area -->
+  <rect x="25" y="395" width="325" height="80" rx="12" ry="12" fill="#000000" opacity="0.95"/>
+  <rect x="25" y="395" width="325" height="80" rx="12" ry="12" fill="none" stroke="url(#deckFrame)" stroke-width="2"/>
+  
+  <!-- Text elements -->
+  <text x="187.5" y="55" font-family="Orbitron, Arial, sans-serif" font-size="24" font-weight="900" 
+        fill="#FFFFFF" filter="url(#deckGlow)" text-anchor="middle" text-transform="uppercase">Reactive Parasite</text>
+  
+  <text x="187.5" y="75" font-family="Arial, sans-serif" font-size="14" fill="#8A2BE2" text-anchor="middle">DECK</text>
+  
+  <!-- Description -->
+  <text x="40" y="420" font-family="Arial, sans-serif" font-size="12" fill="#FFFFFF" font-weight="600">
+    <tspan x="40" dy="0">A cunning strategy that feeds off opponent actions</tspan>
+    <tspan x="40" dy="16">through triggers, steals, and reactive effects.</tspan>
+    <tspan x="40" dy="16">Profit from every move your opponent makes.</tspan>
+  </text>
+  
+  <!-- Card count -->
+  <text x="187.5" y="495" font-family="Orbitron, Arial, sans-serif" font-size="16" font-weight="900" 
+        fill="#8A2BE2" text-anchor="middle">40 CARDS</text>
+</svg>

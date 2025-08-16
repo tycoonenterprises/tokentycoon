@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="375" height="525" viewBox="0 0 375 525" xmlns="http://www.w3.org/2000/svg">
+  <!-- Sharding - Literal Chain Card -->
+  <defs>
+    
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2D1100;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3D1A3D;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2D1100;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="frameGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00D9FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00B8E6;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="cardGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+      <feFlood flood-color="#00D9FF" flood-opacity="0.9"/>
+      <feComposite in2="coloredBlur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect x="0" y="0" width="375" height="525" rx="15" ry="15" fill="url(#cardBg)"/>
+  
+  <!-- Frame -->
+  <rect x="12" y="12" width="351" height="501" rx="10" ry="10" fill="none" stroke="url(#frameGrad)" stroke-width="4" filter="url(#cardGlow)"/>
+  
+  <!-- Header -->
+  <rect x="25" y="25" width="250" height="50" rx="10" ry="10" fill="#000000" opacity="0.95"/>
+  <rect x="25" y="25" width="250" height="50" rx="10" ry="10" fill="none" stroke="url(#frameGrad)" stroke-width="3"/>
+  
+  <!-- Cost -->
+  <rect x="285" y="25" width="65" height="50" rx="10" ry="10" fill="#000000" opacity="0.95" stroke="url(#frameGrad)" stroke-width="3" filter="url(#cardGlow)"/>
+  
+  <!-- Type indicator -->
+  <rect x="25" y="85" width="100" height="35" rx="8" ry="8" fill="#000000" opacity="0.9"/>
+  <rect x="25" y="85" width="100" height="35" rx="8" ry="8" fill="none" stroke="#00D9FF" stroke-width="2"/>
+  
+  <!-- Main artwork frame -->
+  <rect x="25" y="130" width="325" height="200" rx="12" ry="12" fill="#000814" stroke="url(#frameGrad)" stroke-width="3"/>
+  
+  <!-- REAL LITERAL ARTWORK -->
+  
+  <!-- BLOCKCHAIN INFRASTRUCTURE -->
+  <g transform="translate(187.5, 230)" opacity="0.9">
+    <!-- Chain blocks -->
+    <g fill="#00D9FF" stroke="#FFFFFF" stroke-width="2">
+      <rect x="-45" y="-10" width="25" height="20" rx="3" ry="3"/>
+      <rect x="-10" y="-10" width="25" height="20" rx="3" ry="3"/>
+      <rect x="25" y="-10" width="25" height="20" rx="3" ry="3"/>
+    </g>
+    <!-- Chain links -->
+    <g stroke="#00D9FF" stroke-width="3">
+      <line x1="-20" y1="0" x2="-10" y2="0"/>
+      <line x1="15" y1="0" x2="25" y2="0"/>
+    </g>
+    <text x="0" y="30" font-family="Arial, sans-serif" font-size="12" fill="#00D9FF" text-anchor="middle" font-weight="bold">SHARDING</text>
+  </g>
+  
+  <!-- Rules text area -->
+  <rect x="25" y="345" width="325" height="105" rx="12" ry="12" fill="#000000" opacity="0.95"/>
+  <rect x="25" y="345" width="325" height="105" rx="12" ry="12" fill="none" stroke="url(#frameGrad)" stroke-width="2" opacity="0.9"/>
+  
+  <!-- Stats area -->
+  <rect x="25" y="470" width="100" height="50" rx="12" ry="12" fill="#000000" opacity="0.95"/>
+  <rect x="25" y="470" width="100" height="50" rx="12" ry="12" fill="none" stroke="#00FF7F" stroke-width="3"/>
+  
+  <rect x="250" y="470" width="100" height="50" rx="12" ry="12" fill="#000000" opacity="0.95"/>
+  <rect x="250" y="470" width="100" height="50" rx="12" ry="12" fill="none" stroke="#00D9FF" stroke-width="3"/>
+  
+  <!-- Text elements -->
+  <text x="40" y="55" font-family="Orbitron, Arial, sans-serif" font-size="22" font-weight="900" 
+        fill="#FFFFFF" filter="url(#cardGlow)" text-transform="uppercase">Sharding</text>
+  
+  <text x="317.5" y="57" font-family="Orbitron, Arial, sans-serif" font-size="18" font-weight="900" 
+        fill="#FFFFFF" text-anchor="middle">5</text>
+  
+  <text x="75" y="108" font-family="Orbitron, Arial, sans-serif" font-size="14" font-weight="700" 
+        fill="#00D9FF" text-anchor="middle">Chain</text>
+  
+  <!-- Description -->
+  <text x="40" y="375" font-family="Arial, sans-serif" font-size="13" fill="#FFFFFF" font-weight="600">
+    <tspan x="40" dy="0">Your Chains generate +1 ETH per turn.</tspan>
+  </text>
+  
+  <!-- Stats -->
+  <text x="75" y="485" font-family="Orbitron, Arial, sans-serif" font-size="10" font-weight="700" 
+        fill="#00FF7F" text-anchor="middle">EFFECT</text>
+  <text x="75" y="505" font-family="Orbitron, Arial, sans-serif" font-size="18" font-weight="900" 
+        fill="#00FF7F" text-anchor="middle">⚡</text>
+  
+  <text x="300" y="485" font-family="Orbitron, Arial, sans-serif" font-size="10" font-weight="700" 
+        fill="#00D9FF" text-anchor="middle">TYPE</text>
+  <text x="300" y="505" font-family="Orbitron, Arial, sans-serif" font-size="18" font-weight="900" 
+        fill="#00D9FF" text-anchor="middle">🔗</text>
+</svg>

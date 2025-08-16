@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="375" height="525" viewBox="0 0 375 525" xmlns="http://www.w3.org/2000/svg">
+  <!-- Time Bomb Casino - Literal Deck Design -->
+  <defs>
+    <linearGradient id="deckBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#332200;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#441100;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#332200;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="deckFrame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF0000;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="deckGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feFlood flood-color="#FFD700" flood-opacity="0.9"/>
+      <feComposite in2="coloredBlur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect x="0" y="0" width="375" height="525" rx="15" ry="15" fill="url(#deckBg)"/>
+  
+  <!-- Frame -->
+  <rect x="12" y="12" width="351" height="501" rx="10" ry="10" fill="none" stroke="url(#deckFrame)" stroke-width="4" filter="url(#deckGlow)"/>
+  
+  <!-- Header -->
+  <rect x="25" y="25" width="325" height="60" rx="10" ry="10" fill="#000000" opacity="0.95"/>
+  <rect x="25" y="25" width="325" height="60" rx="10" ry="10" fill="none" stroke="url(#deckFrame)" stroke-width="3"/>
+  
+  <!-- Main artwork frame -->
+  <rect x="25" y="100" width="325" height="280" rx="12" ry="12" fill="#000814" stroke="url(#deckFrame)" stroke-width="3"/>
+  
+  <!-- REAL LITERAL DECK ARTWORK -->
+  
+  <!-- TIME BOMB CASINO DECK - HIGH STAKES GAMBLING -->
+  <g transform="translate(187.5, 200)" opacity="0.95">
+    <!-- Central casino/bomb theme -->
+    <g transform="translate(0, -20)">
+      <!-- Ticking time bomb -->
+      <g transform="translate(-30, -10)">
+        <circle cx="0" cy="0" r="20" fill="#333333" stroke="#FF0000" stroke-width="2"/>
+        <circle cx="-5" cy="-5" r="3" fill="#666666"/>
+        <path d="M15,-15 Q20,-20 25,-15 Q25,-5 20,0" stroke="#8B4513" stroke-width="2" fill="none"/>
+        
+        <!-- Sparks -->
+        <g fill="#FFD700" opacity="0.8">
+          <circle cx="22" cy="-18" r="1"/>
+          <circle cx="25" cy="-12" r="1.5"/>
+          <circle cx="20" cy="-8" r="1"/>
+        </g>
+        
+        <!-- Timer display -->
+        <rect x="-8" y="-3" width="16" height="6" rx="2" ry="2" fill="#FF0000"/>
+        <text x="0" y="2" font-family="monospace" font-size="6" fill="#FFFFFF" text-anchor="middle">00:03</text>
+        <text x="0" y="25" font-family="Arial, sans-serif" font-size="6" fill="#FF0000" text-anchor="middle">BOMB</text>
+      </g>
+      
+      <!-- Casino elements -->
+      <g transform="translate(25, -15)">
+        <!-- Slot machine -->
+        <rect x="0" y="0" width="25" height="30" rx="3" ry="3" fill="#FFD700" stroke="#000000" stroke-width="2"/>
+        <rect x="3" y="3" width="19" height="15" rx="1" ry="1" fill="#000000"/>
+        
+        <!-- Slot symbols -->
+        <text x="7" y="13" font-family="Arial, sans-serif" font-size="8" fill="#FFD700" text-anchor="middle">💰</text>
+        <text x="12.5" y="13" font-family="Arial, sans-serif" font-size="8" fill="#FFD700" text-anchor="middle">💰</text>
+        <text x="18" y="13" font-family="Arial, sans-serif" font-size="8" fill="#FFD700" text-anchor="middle">💰</text>
+        
+        <!-- Lever -->
+        <rect x="22" y="20" width="3" height="8" fill="#C0C0C0"/>
+        <circle cx="23.5" cy="19" r="2" fill="#FF0000"/>
+        
+        <text x="12.5" y="40" font-family="Arial, sans-serif" font-size="6" fill="#FFD700" text-anchor="middle">JACKPOT</text>
+      </g>
+      
+      <!-- Chaos cards floating -->
+      <g opacity="0.9">
+        <!-- Flash Loan card -->
+        <g transform="translate(-50, 20) rotate(-15)">
+          <rect x="0" y="0" width="18" height="25" rx="2" ry="2" fill="#FFFF00"/>
+          <polygon points="9,3 12,8 6,8" fill="#FFFFFF"/>
+          <text x="9" y="18" font-family="Arial, sans-serif" font-size="5" fill="#000000" text-anchor="middle">FLASH</text>
+        </g>
+        
+        <!-- Ponzinomics -->
+        <g transform="translate(45, 10) rotate(20)">
+          <rect x="0" y="0" width="18" height="25" rx="2" ry="2" fill="#FF69B4"/>
+          <polygon points="9,5 14,15 4,15" fill="#FFFFFF"/>
+          <text x="9" y="20" font-family="Arial, sans-serif" font-size="5" fill="#FFFFFF" text-anchor="middle">PONZI</text>
+        </g>
+        
+        <!-- Ragequit -->
+        <g transform="translate(10, 35) rotate(-10)">
+          <rect x="0" y="0" width="15" height="20" rx="1" ry="1" fill="#FF0000"/>
+          <text x="7.5" y="12" font-family="Arial, sans-serif" font-size="6" fill="#FFFFFF" text-anchor="middle">RAGE</text>
+        </g>
+      </g>
+    </g>
+    
+    <!-- Casino theme -->
+    <g transform="translate(0, 60)" opacity="0.9">
+      <rect x="-80" y="0" width="160" height="25" rx="12" ry="12" 
+            fill="rgba(255, 215, 0, 0.4)" stroke="#FFD700" stroke-width="2"/>
+      <text x="0" y="16" font-family="Arial, sans-serif" font-size="10" 
+            fill="#FFD700" text-anchor="middle" font-weight="bold">HIGH STAKES CASINO</text>
+    </g>
+    
+    <!-- Gambling warnings -->
+    <g transform="translate(0, 100)" opacity="0.8">
+      <g fill="#FF0000" opacity="0.9">
+        <text x="-50" y="0" font-family="Arial, sans-serif" font-size="8" text-anchor="middle">VOLATILE</text>
+        <text x="0" y="0" font-family="Arial, sans-serif" font-size="8" text-anchor="middle">EXPLOSIVE</text>
+        <text x="50" y="0" font-family="Arial, sans-serif" font-size="8" text-anchor="middle">CHAOTIC</text>
+      </g>
+      
+      <!-- Risk disclaimer -->
+      <text x="0" y="20" font-family="Arial, sans-serif" font-size="8" fill="#FFFFFF" text-anchor="middle">40 Cards - Play With Fire</text>
+      <text x="0" y="32" font-family="Arial, sans-serif" font-size="8" fill="#FFD700" text-anchor="middle" font-weight="bold">⚠️ Gambler's Paradise ⚠️</text>
+    </g>
+  </g>
+  
+  <!-- Description area -->
+  <rect x="25" y="395" width="325" height="80" rx="12" ry="12" fill="#000000" opacity="0.95"/>
+  <rect x="25" y="395" width="325" height="80" rx="12" ry="12" fill="none" stroke="url(#deckFrame)" stroke-width="2"/>
+  
+  <!-- Text elements -->
+  <text x="187.5" y="55" font-family="Orbitron, Arial, sans-serif" font-size="24" font-weight="900" 
+        fill="#FFFFFF" filter="url(#deckGlow)" text-anchor="middle" text-transform="uppercase">Time Bomb Casino</text>
+  
+  <text x="187.5" y="75" font-family="Arial, sans-serif" font-size="14" fill="#FFD700" text-anchor="middle">DECK</text>
+  
+  <!-- Description -->
+  <text x="40" y="420" font-family="Arial, sans-serif" font-size="12" fill="#FFFFFF" font-weight="600">
+    <tspan x="40" dy="0">A high-risk, high-reward strategy based on delayed</tspan>
+    <tspan x="40" dy="16">effects, temporary gains, and explosive timing.</tspan>
+    <tspan x="40" dy="16">Play with fire and profit from chaos.</tspan>
+  </text>
+  
+  <!-- Card count -->
+  <text x="187.5" y="495" font-family="Orbitron, Arial, sans-serif" font-size="16" font-weight="900" 
+        fill="#FFD700" text-anchor="middle">40 CARDS</text>
+</svg>

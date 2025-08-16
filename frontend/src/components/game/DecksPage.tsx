@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { CardImage } from '@/components/ui/CardImage'
+import { DeckImage } from '@/components/ui/DeckImage'
 
 // Type definitions to match the JSON structure
 interface DeckCardEntry {
@@ -154,6 +155,15 @@ export function DecksPage({ onClose }: DecksPageProps) {
                     onClick={() => setSelectedDeck(deck)}
                     className="bg-gray-800 border border-gray-600 rounded-lg p-6 cursor-pointer hover:border-eth-primary transition-colors"
                   >
+                    {/* Deck Image */}
+                    <div className="mb-4">
+                      <DeckImage 
+                        deckName={deck.name}
+                        className="w-full h-32 rounded object-cover"
+                        fallbackIcon="🃏"
+                      />
+                    </div>
+                    
                     <h3 className="text-xl font-bold text-white mb-2">{deck.name}</h3>
                     <p className="text-gray-400 text-sm mb-4">{deck.description}</p>
                     

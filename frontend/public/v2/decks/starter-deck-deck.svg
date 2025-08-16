@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="375" height="525" viewBox="0 0 375 525" xmlns="http://www.w3.org/2000/svg">
+  <!-- Starter Deck - Literal Deck Design -->
+  <defs>
+    <linearGradient id="deckBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#001122;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#113322;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#001122;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="deckFrame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#32CD32;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00FF7F;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="deckGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feFlood flood-color="#32CD32" flood-opacity="0.9"/>
+      <feComposite in2="coloredBlur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect x="0" y="0" width="375" height="525" rx="15" ry="15" fill="url(#deckBg)"/>
+  
+  <!-- Frame -->
+  <rect x="12" y="12" width="351" height="501" rx="10" ry="10" fill="none" stroke="url(#deckFrame)" stroke-width="4" filter="url(#deckGlow)"/>
+  
+  <!-- Header -->
+  <rect x="25" y="25" width="325" height="60" rx="10" ry="10" fill="#000000" opacity="0.95"/>
+  <rect x="25" y="25" width="325" height="60" rx="10" ry="10" fill="none" stroke="url(#deckFrame)" stroke-width="3"/>
+  
+  <!-- Main artwork frame -->
+  <rect x="25" y="100" width="325" height="280" rx="12" ry="12" fill="#000814" stroke="url(#deckFrame)" stroke-width="3"/>
+  
+  <!-- REAL LITERAL DECK ARTWORK -->
+  
+  <!-- STARTER DECK - BEGINNER FRIENDLY -->
+  <g transform="translate(187.5, 200)" opacity="0.95">
+    <!-- Open book/manual -->
+    <g transform="translate(0, -20)">
+      <rect x="-40" y="-25" width="80" height="50" rx="5" ry="5" fill="#8B4513" stroke="#FFFFFF" stroke-width="2"/>
+      <rect x="-38" y="-23" width="76" height="46" rx="3" ry="3" fill="#F5F5DC"/>
+      
+      <!-- Pages -->
+      <line x1="0" y1="-20" x2="0" y2="20" stroke="#8B4513" stroke-width="2"/>
+      <g stroke="#333333" stroke-width="1" opacity="0.7">
+        <line x1="-30" y1="-15" x2="30" y2="-15"/>
+        <line x1="-30" y1="-10" x2="25" y2="-10"/>
+        <line x1="-30" y1="-5" x2="30" y2="-5"/>
+        <line x1="-30" y1="0" x2="20" y2="0"/>
+        <line x1="-30" y1="5" x2="30" y2="5"/>
+        <line x1="-30" y1="10" x2="25" y2="10"/>
+      </g>
+      
+      <!-- Title on book -->
+      <text x="0" y="-30" font-family="Arial, sans-serif" font-size="10" 
+            fill="#32CD32" text-anchor="middle" font-weight="bold">CRYPTO 101</text>
+    </g>
+    
+    <!-- Key deck cards floating around -->
+    <g opacity="0.9">
+      <!-- Polygon card -->
+      <g transform="translate(-50, 10)">
+        <rect x="0" y="0" width="25" height="35" rx="3" ry="3" fill="#8247E5" stroke="#FFFFFF" stroke-width="1"/>
+        <polygon points="12.5,8 18,12 18,18 12.5,22 7,18 7,12" fill="#FFFFFF"/>
+        <text x="12.5" y="30" font-family="Arial, sans-serif" font-size="6" fill="#FFFFFF" text-anchor="middle">POLY</text>
+      </g>
+      
+      <!-- Uniswap card -->
+      <g transform="translate(25, 15)">
+        <rect x="0" y="0" width="25" height="35" rx="3" ry="3" fill="#FF1AAB" stroke="#FFFFFF" stroke-width="1"/>
+        <path d="M12.5,8 Q8,12 12.5,16 Q17,12 12.5,8" fill="#FFFFFF"/>
+        <text x="12.5" y="30" font-family="Arial, sans-serif" font-size="6" fill="#FFFFFF" text-anchor="middle">UNI</text>
+      </g>
+      
+      <!-- Validator Node -->
+      <g transform="translate(-20, 50)">
+        <rect x="0" y="0" width="20" height="28" rx="2" ry="2" fill="#00D9FF" stroke="#FFFFFF" stroke-width="1"/>
+        <circle cx="10" cy="14" r="6" fill="#FFFFFF"/>
+        <text x="10" y="25" font-family="Arial, sans-serif" font-size="5" fill="#FFFFFF" text-anchor="middle">VAL</text>
+      </g>
+    </g>
+    
+    <!-- Beginner-friendly elements -->
+    <g transform="translate(0, 80)" opacity="0.8">
+      <rect x="-60" y="0" width="120" height="20" rx="10" ry="10" 
+            fill="rgba(50, 205, 50, 0.3)" stroke="#32CD32" stroke-width="2"/>
+      <text x="0" y="13" font-family="Arial, sans-serif" font-size="10" 
+            fill="#32CD32" text-anchor="middle" font-weight="bold">EASY TO LEARN</text>
+    </g>
+    
+    <!-- Card count breakdown -->
+    <g transform="translate(0, 110)" opacity="0.8">
+      <text x="0" y="0" font-family="Arial, sans-serif" font-size="8" fill="#FFFFFF" text-anchor="middle">15 Polygon + 15 Uniswap + 5 Validators + 5 Research</text>
+      <text x="0" y="12" font-family="Arial, sans-serif" font-size="8" fill="#32CD32" text-anchor="middle" font-weight="bold">40 Cards Total</text>
+    </g>
+  </g>
+  
+  <!-- Description area -->
+  <rect x="25" y="395" width="325" height="80" rx="12" ry="12" fill="#000000" opacity="0.95"/>
+  <rect x="25" y="395" width="325" height="80" rx="12" ry="12" fill="none" stroke="url(#deckFrame)" stroke-width="2"/>
+  
+  <!-- Text elements -->
+  <text x="187.5" y="55" font-family="Orbitron, Arial, sans-serif" font-size="24" font-weight="900" 
+        fill="#FFFFFF" filter="url(#deckGlow)" text-anchor="middle" text-transform="uppercase">Starter Deck</text>
+  
+  <text x="187.5" y="75" font-family="Arial, sans-serif" font-size="14" fill="#32CD32" text-anchor="middle">DECK</text>
+  
+  <!-- Description -->
+  <text x="40" y="420" font-family="Arial, sans-serif" font-size="12" fill="#FFFFFF" font-weight="600">
+    <tspan x="40" dy="0">Simple test deck</tspan>
+  </text>
+  
+  <!-- Card count -->
+  <text x="187.5" y="495" font-family="Orbitron, Arial, sans-serif" font-size="16" font-weight="900" 
+        fill="#32CD32" text-anchor="middle">40 CARDS</text>
+</svg>

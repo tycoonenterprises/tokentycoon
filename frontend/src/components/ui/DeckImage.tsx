@@ -1,30 +1,29 @@
 import React from 'react'
-import type { Card } from '@/stores/gameStore'
 
-interface CardImageProps {
-  card: Card
+interface DeckImageProps {
+  deckName: string
   className?: string
   fallbackIcon?: string
 }
 
-function getCardImagePath(cardName: string): string {
-  // Convert card name to filename format (lowercase, replace spaces with hyphens, add -literal suffix)
-  const filename = cardName
+function getDeckImagePath(deckName: string): string {
+  // Convert deck name to filename format (lowercase, replace spaces with hyphens, add -deck suffix)
+  const filename = deckName
     .toLowerCase()
     .replace(/\s+/g, '-')
     .replace(/[^\w-]/g, '') // Remove special characters except hyphens
   
-  return `/v2/cards/${filename}-literal.svg`
+  return `/v2/decks/${filename}-deck.svg`
 }
 
-export function CardImage({ card, className = '', fallbackIcon = '🃏' }: CardImageProps) {
+export function DeckImage({ deckName, className = '', fallbackIcon = '🃏' }: DeckImageProps) {
   const [imageError, setImageError] = React.useState(false)
-  const imagePath = getCardImagePath(card.name)
+  const imagePath = getDeckImagePath(deckName)
 
-  // Reset error state when card changes
+  // Reset error state when deck changes
   React.useEffect(() => {
     setImageError(false)
-  }, [card.name])
+  }, [deckName])
 
   if (imageError) {
     // Fallback to icon display
@@ -38,7 +37,7 @@ export function CardImage({ card, className = '', fallbackIcon = '🃏' }: CardI
   return (
     <img
       src={imagePath}
-      alt={card.name}
+      alt={deckName}
       className={`object-cover ${className}`}
       onError={() => setImageError(true)}
       loading="lazy"

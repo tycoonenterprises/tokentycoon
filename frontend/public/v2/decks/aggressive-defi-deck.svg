@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="375" height="525" viewBox="0 0 375 525" xmlns="http://www.w3.org/2000/svg">
+  <!-- Aggressive DeFi - Literal Deck Design -->
+  <defs>
+    <linearGradient id="deckBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#330A00;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#441100;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#330A00;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="deckFrame" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B00;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF4500;stop-opacity:1" />
+    </linearGradient>
+    
+    <filter id="deckGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feFlood flood-color="#FF6B00" flood-opacity="0.9"/>
+      <feComposite in2="coloredBlur" operator="in"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect x="0" y="0" width="375" height="525" rx="15" ry="15" fill="url(#deckBg)"/>
+  
+  <!-- Frame -->
+  <rect x="12" y="12" width="351" height="501" rx="10" ry="10" fill="none" stroke="url(#deckFrame)" stroke-width="4" filter="url(#deckGlow)"/>
+  
+  <!-- Header -->
+  <rect x="25" y="25" width="325" height="60" rx="10" ry="10" fill="#000000" opacity="0.95"/>
+  <rect x="25" y="25" width="325" height="60" rx="10" ry="10" fill="none" stroke="url(#deckFrame)" stroke-width="3"/>
+  
+  <!-- Main artwork frame -->
+  <rect x="25" y="100" width="325" height="280" rx="12" ry="12" fill="#000814" stroke="url(#deckFrame)" stroke-width="3"/>
+  
+  <!-- REAL LITERAL DECK ARTWORK -->
+  
+  <!-- AGGRESSIVE DEFI DECK - HIGH RISK HIGH REWARD -->
+  <g transform="translate(187.5, 200)" opacity="0.95">
+    <!-- Explosive yield center -->
+    <g transform="translate(0, -20)">
+      <!-- Central explosion/burst -->
+      <g opacity="0.9">
+        <circle cx="0" cy="0" r="25" fill="#FF6B00" opacity="0.8"/>
+        <circle cx="0" cy="0" r="18" fill="#FFD700" opacity="0.9"/>
+        <circle cx="0" cy="0" r="10" fill="#FFFFFF"/>
+        
+        <!-- Explosive rays -->
+        <g stroke="#FF6B00" stroke-width="3" opacity="0.7">
+          <line x1="0" y1="0" x2="0" y2="-35"/>
+          <line x1="0" y1="0" x2="25" y2="-25"/>
+          <line x1="0" y1="0" x2="35" y2="0"/>
+          <line x1="0" y1="0" x2="25" y2="25"/>
+          <line x1="0" y1="0" x2="0" y2="35"/>
+          <line x1="0" y1="0" x2="-25" y2="25"/>
+          <line x1="0" y1="0" x2="-35" y2="0"/>
+          <line x1="0" y1="0" x2="-25" y2="-25"/>
+        </g>
+      </g>
+      
+      <!-- High-yield protocols -->
+      <g opacity="0.9">
+        <!-- Yield Farm -->
+        <g transform="translate(-45, -25)">
+          <rect x="0" y="0" width="25" height="18" rx="3" ry="3" fill="#32CD32"/>
+          <rect x="3" y="3" width="19" height="12" rx="1" ry="1" fill="#228B22"/>
+          <text x="12.5" y="12" font-family="Arial, sans-serif" font-size="7" fill="#FFFFFF" text-anchor="middle">FARM</text>
+          <text x="12.5" y="25" font-family="Arial, sans-serif" font-size="6" fill="#32CD32" text-anchor="middle">500% APY</text>
+        </g>
+        
+        <!-- Jupiter DEX -->
+        <g transform="translate(20, -30)">
+          <rect x="0" y="0" width="25" height="18" rx="3" ry="3" fill="#FF8C00"/>
+          <circle cx="12.5" cy="9" r="6" fill="#FFFFFF"/>
+          <text x="12.5" y="13" font-family="Arial, sans-serif" font-size="6" fill="#FF8C00" text-anchor="middle">JUP</text>
+        </g>
+        
+        <!-- Memecoin Launch -->
+        <g transform="translate(30, 15)">
+          <rect x="0" y="0" width="20" height="25" rx="2" ry="2" fill="#FFD700"/>
+          <polygon points="10,3 12,8 8,8" fill="#FF4500"/>
+          <rect x="7" y="8" width="6" height="12" fill="#FF4500"/>
+          <text x="10" y="30" font-family="Arial, sans-serif" font-size="6" fill="#FFD700" text-anchor="middle">MOON</text>
+        </g>
+        
+        <!-- Flash Loan -->
+        <g transform="translate(-40, 20)">
+          <rect x="0" y="0" width="22" height="15" rx="2" ry="2" fill="#FFFF00"/>
+          <polygon points="5,3 17,3 15,12 3,12" fill="#FFFFFF"/>
+          <text x="11" y="20" font-family="Arial, sans-serif" font-size="6" fill="#FFFF00" text-anchor="middle">FLASH</text>
+        </g>
+      </g>
+    </g>
+    
+    <!-- Risk/reward indicator -->
+    <g transform="translate(0, 60)" opacity="0.9">
+      <rect x="-70" y="0" width="140" height="25" rx="12" ry="12" 
+            fill="rgba(255, 107, 0, 0.4)" stroke="#FF6B00" stroke-width="2"/>
+      <text x="0" y="16" font-family="Arial, sans-serif" font-size="10" 
+            fill="#FF6B00" text-anchor="middle" font-weight="bold">MAXIMUM YIELD</text>
+    </g>
+    
+    <!-- Warning and stats -->
+    <g transform="translate(0, 100)" opacity="0.8">
+      <!-- Warning -->
+      <g transform="translate(0, -5)">
+        <polygon points="0,0 6,10 -6,10" fill="#FF0000"/>
+        <text x="0" y="8" font-family="Arial, sans-serif" font-size="6" fill="#FFFFFF" text-anchor="middle" font-weight="bold">!</text>
+        <text x="15" y="8" font-family="Arial, sans-serif" font-size="8" fill="#FF0000" text-anchor="start">HIGH RISK</text>
+      </g>
+      
+      <!-- Card composition -->
+      <text x="0" y="20" font-family="Arial, sans-serif" font-size="8" fill="#FFFFFF" text-anchor="middle">40 Cards - Explosive Combos</text>
+      <text x="0" y="32" font-family="Arial, sans-serif" font-size="8" fill="#FF6B00" text-anchor="middle" font-weight="bold">All-in Strategy</text>
+    </g>
+  </g>
+  
+  <!-- Description area -->
+  <rect x="25" y="395" width="325" height="80" rx="12" ry="12" fill="#000000" opacity="0.95"/>
+  <rect x="25" y="395" width="325" height="80" rx="12" ry="12" fill="none" stroke="url(#deckFrame)" stroke-width="2"/>
+  
+  <!-- Text elements -->
+  <text x="187.5" y="55" font-family="Orbitron, Arial, sans-serif" font-size="24" font-weight="900" 
+        fill="#FFFFFF" filter="url(#deckGlow)" text-anchor="middle" text-transform="uppercase">Aggressive DeFi</text>
+  
+  <text x="187.5" y="75" font-family="Arial, sans-serif" font-size="14" fill="#FF6B00" text-anchor="middle">DECK</text>
+  
+  <!-- Description -->
+  <text x="40" y="420" font-family="Arial, sans-serif" font-size="12" fill="#FFFFFF" font-weight="600">
+    <tspan x="40" dy="0">A fast-paced strategy focused on explosive ETH</tspan>
+    <tspan x="40" dy="16">generation through high-yield DeFi protocols and</tspan>
+    <tspan x="40" dy="16">risky but rewarding plays.</tspan>
+  </text>
+  
+  <!-- Card count -->
+  <text x="187.5" y="495" font-family="Orbitron, Arial, sans-serif" font-size="16" font-weight="900" 
+        fill="#FF6B00" text-anchor="middle">40 CARDS</text>
+</svg>
