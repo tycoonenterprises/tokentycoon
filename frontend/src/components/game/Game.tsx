@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { usePrivy } from '@privy-io/react-auth'
 import { useGameStore, type Card } from '@/stores/gameStore'
 import { PlayerStats } from './PlayerStats'
@@ -9,9 +9,11 @@ import { CardsPage } from './CardsPage'
 import { PlayPage } from './PlayPage'
 import { ContractDebugPanel } from '@/components/debug/ContractDebugPanel'
 import { PrivyDebugInfo } from '@/components/debug/PrivyDebugInfo'
+import { useSearchParams } from 'react-router-dom'
 
 export function Game() {
   const { logout, user } = usePrivy()
+  const [searchParams] = useSearchParams()
   const { 
     startGame,
     startDemoMode,
@@ -31,6 +33,17 @@ export function Game() {
   const [showPlayPage, setShowPlayPage] = useState(false)
   const [currentGameId, setCurrentGameId] = useState<number | null>(null)
   const [customDeck, setCustomDeck] = useState<Card[] | null>(null)
+  
+  // Check URL parameters on mount to restore PlayPage state
+  useEffect(() => {
+    const viewParam = searchParams.get('view')
+    const gameIdParam = searchParams.get('gameId')
+    
+    // If there's a view parameter or gameId, show the PlayPage
+    if (viewParam || gameIdParam) {
+      setShowPlayPage(true)
+    }
+  }, []) // Only run on mount
 
   const handleStartGame = () => {
     startGame(user?.id || 'player1', 'player2')

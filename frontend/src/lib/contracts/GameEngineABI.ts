@@ -70,6 +70,32 @@ export const GameEngineABI = [
   },
   {
     "type": "function",
+    "name": "nextGameId",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "nextCardInstanceId",
+    "inputs": [],
+    "outputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
     "name": "cardInstances",
     "inputs": [
       {
@@ -133,6 +159,159 @@ export const GameEngineABI = [
     ],
     "outputs": [],
     "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "games",
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "gameId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "player1",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "player2",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "name": "player1DeckId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "player2DeckId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "player1State",
+        "type": "tuple",
+        "internalType": "struct GameEngine.PlayerState",
+        "components": [
+          {
+            "name": "player",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "deckId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "deck",
+            "type": "uint256[]",
+            "internalType": "uint256[]"
+          },
+          {
+            "name": "hand",
+            "type": "uint256[]",
+            "internalType": "uint256[]"
+          },
+          {
+            "name": "battlefield",
+            "type": "uint256[]",
+            "internalType": "uint256[]"
+          },
+          {
+            "name": "deckIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "eth",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "name": "player2State",
+        "type": "tuple",
+        "internalType": "struct GameEngine.PlayerState",
+        "components": [
+          {
+            "name": "player",
+            "type": "address",
+            "internalType": "address"
+          },
+          {
+            "name": "deckId",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "deck",
+            "type": "uint256[]",
+            "internalType": "uint256[]"
+          },
+          {
+            "name": "hand",
+            "type": "uint256[]",
+            "internalType": "uint256[]"
+          },
+          {
+            "name": "battlefield",
+            "type": "uint256[]",
+            "internalType": "uint256[]"
+          },
+          {
+            "name": "deckIndex",
+            "type": "uint256",
+            "internalType": "uint256"
+          },
+          {
+            "name": "eth",
+            "type": "uint256",
+            "internalType": "uint256"
+          }
+        ]
+      },
+      {
+        "name": "isStarted",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "isFinished",
+        "type": "bool",
+        "internalType": "bool"
+      },
+      {
+        "name": "currentTurn",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "turnNumber",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "createdAt",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "startedAt",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "stateMutability": "view"
   },
   {
     "type": "function",

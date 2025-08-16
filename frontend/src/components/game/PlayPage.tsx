@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useAccount } from 'wagmi';
 import { usePrivy, useWallets } from '@privy-io/react-auth';
 import { useGameEngine } from '@/lib/hooks/useGameEngine';
 import { useDeckRegistry } from '@/lib/hooks/useDeckRegistry';
 import { X, Plus, Users, Clock, Loader2 } from 'lucide-react';
 import { GameLobby } from './GameLobby';
+import { useSearchParams } from 'react-router-dom';
 
 interface PlayPageProps {
   onClose: () => void;
@@ -21,9 +21,12 @@ interface GameInfo {
 }
 
 export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
-  const { address } = useAccount();
   const { user } = usePrivy();
   const { wallets } = useWallets();
+  // Get the Privy embedded wallet address
+  const privyWallet = wallets.find(w => w.walletClientType === 'privy');
+  const address = privyWallet?.address;
+  const [searchParams, setSearchParams] = useSearchParams();
   const { 
     createGame, 
     joinGame, 
@@ -43,6 +46,60 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
   const [loadingGames, setLoadingGames] = useState(false);
   const [gameState, setGameState] = useState<any>(null);
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
+
+  // Update URL when view or game ID changes
+  useEffect(() => {
+    const params = new URLSearchParams();
+    
+    if (view !== 'menu') {
+      params.set('view', view);
+    }
+    
+    if (currentGameId !== null) {
+      params.set('gameId', currentGameId.toString());
+    }
+    
+    setSearchParams(params);
+  }, [view, currentGameId, setSearchParams]);
+
+  // Load state from URL on mount
+  useEffect(() => {
+    const loadFromUrl = async () => {
+      const viewParam = searchParams.get('view');
+      const gameIdParam = searchParams.get('gameId');
+      
+      // Set view from URL
+      if (viewParam && ['create', 'join', 'lobby'].includes(viewParam)) {
+        setView(viewParam as any);
+      }
+      
+      // Load game state if gameId is in URL
+      if (gameIdParam) {
+        const gameId = parseInt(gameIdParam);
+        if (!isNaN(gameId)) {
+          setCurrentGameId(gameId);
+          
+          // If view is lobby or we have a game ID, fetch the game state
+          if (viewParam === 'lobby' || gameIdParam) {
+            try {
+              const state = await getGameState(gameId);
+              console.log('Loaded game state from URL:', state);
+              setGameState(state);
+              
+              // Force lobby view if we have a game ID
+              if (state) {
+                setView('lobby');
+              }
+            } catch (error) {
+              console.error('Error loading game state from URL:', error);
+            }
+          }
+        }
+      }
+    };
+    
+    loadFromUrl();
+  }, []); // Only run on mount
 
   // Format decks for display (deck IDs start at 0)
   const availableDecks = React.useMemo(() => {
@@ -74,31 +131,33 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
       // Poll every 2 seconds for game state updates
       const interval = setInterval(async () => {
         const state = await getGameState(currentGameId);
+        console.log('Polling - Updated game state:', state);
         setGameState(state);
         
-        // Check if game has started
-        if (state?.status === 'started') {
+        // Check if game has actually started (not just ready)
+        if (state?.isStarted === true) {
           clearInterval(interval);
+          // Clear URL params and start the game
+          setSearchParams(new URLSearchParams());
           onGameStart(currentGameId);
         }
       }, 2000);
-      
-      setPollingInterval(interval);
       
       // Initial fetch
       getGameState(currentGameId).then(setGameState);
       
       return () => {
-        if (interval) clearInterval(interval);
+        clearInterval(interval);
       };
     }
-  }, [view, currentGameId, getGameState, onGameStart]);
+  }, [view, currentGameId]); // Remove unstable dependencies
 
   const loadAvailableGames = async () => {
     setLoadingGames(true);
     try {
       // Get games from the blockchain
       const games = await getActiveGames(30);
+      console.log('Loaded games from blockchain:', games);
       setAvailableGames(games || []);
     } catch (error) {
       console.error('Error loading games:', error);
@@ -110,9 +169,17 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
 
   const handleCreateGame = async () => {
     try {
+      console.log('Creating game with deck:', selectedDeckId);
+      console.log('Current wallet address:', address);
       const gameId = await createGame(selectedDeckId);
-      if (gameId) {
+      console.log('Created game with ID:', gameId);
+      
+      if (gameId !== undefined && gameId !== null) {
         setCurrentGameId(gameId);
+        // Fetch the initial game state after creating
+        const initialState = await getGameState(gameId);
+        console.log('Initial game state after creation:', initialState);
+        setGameState(initialState);
         setView('lobby');
       }
     } catch (error) {
@@ -123,8 +190,16 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
 
   const handleJoinGame = async (gameId: number) => {
     try {
+      console.log('Joining game:', gameId, 'with deck:', selectedDeckId);
+      console.log('Current wallet address:', address);
       await joinGame(gameId, selectedDeckId);
       setCurrentGameId(gameId);
+      // Wait a bit for the transaction to be mined
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Fetch the updated game state after joining
+      const updatedState = await getGameState(gameId);
+      console.log('Game state after joining:', updatedState);
+      setGameState(updatedState);
       setView('lobby');
     } catch (error) {
       console.error('Error joining game:', error);
@@ -151,6 +226,12 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
     return `${minutes} minutes ago`;
   };
 
+  const handleClose = () => {
+    // Clear URL parameters when closing
+    setSearchParams(new URLSearchParams());
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl bg-gray-900 rounded-lg">
@@ -164,7 +245,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
               {view === 'lobby' && '⏳ Game Lobby'}
             </h2>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
             >
               <X className="w-6 h-6 text-gray-400" />
@@ -288,6 +369,31 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
 
           {view === 'join' && (
             <div className="space-y-6">
+              {/* Deck Selection - Always show at the top */}
+              <div>
+                <h4 className="text-lg font-semibold text-white mb-3">Select Your Deck</h4>
+                {availableDecks.length === 0 ? (
+                  <div className="text-gray-400 text-sm">Loading decks...</div>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    {availableDecks.map(deck => (
+                      <div
+                        key={deck.id}
+                        onClick={() => setSelectedDeckId(deck.id)}
+                        className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                          selectedDeckId === deck.id
+                            ? 'bg-cyan-900/30 border-cyan-500'
+                            : 'bg-gray-800 border-gray-700 hover:border-gray-600'
+                        }`}
+                      >
+                        <div className="font-semibold text-white">{deck.name}</div>
+                        <div className="text-sm text-gray-400 mt-1">{deck.description}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-white">Available Games</h3>
@@ -331,7 +437,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
                           </div>
                           <button
                             onClick={() => handleJoinGame(game.gameId)}
-                            disabled={isJoiningGame}
+                            disabled={isJoiningGame || availableDecks.length === 0}
                             className="btn-primary text-sm px-4 py-2"
                           >
                             {isJoiningGame ? (
@@ -343,24 +449,6 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
                         </div>
                       </div>
                     ))}
-                  </div>
-                )}
-
-                {/* Deck Selection for Joining */}
-                {availableGames.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-semibold text-white mb-2">Your Deck</h4>
-                    <select
-                      value={selectedDeckId}
-                      onChange={(e) => setSelectedDeckId(Number(e.target.value))}
-                      className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white"
-                    >
-                      {availableDecks.map(deck => (
-                        <option key={deck.id} value={deck.id}>
-                          {deck.name}
-                        </option>
-                      ))}
-                    </select>
                   </div>
                 )}
               </div>
@@ -387,7 +475,12 @@ export const PlayPage: React.FC<PlayPageProps> = ({ onClose, onGameStart }) => {
                 setView('menu');
                 setCurrentGameId(null);
               }}
-              isHost={gameState?.creator === address}
+              isHost={
+                address && gameState && (
+                  address.toLowerCase() === gameState?.player1?.toLowerCase() || 
+                  address.toLowerCase() === gameState?.creator?.toLowerCase()
+                )
+              }
               isStartingGame={isStartingGame}
             />
           )}

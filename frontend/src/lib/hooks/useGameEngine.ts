@@ -119,42 +119,63 @@ export const useGameEngine = () => {
     try {
       // Get the total number of games
       const { readContract } = await import('wagmi/actions')
-      const gameCount = await readContract(wagmiConfig, {
+      const nextGameId = await readContract(wagmiConfig, {
         address: CONTRACT_ADDRESSES.GAME_ENGINE,
         abi: GameEngineABI,
-        functionName: 'gameCounter',
+        functionName: 'nextGameId',
         args: [],
       })
       
-      if (!gameCount || Number(gameCount) === 0) return []
+      console.log('Next game ID from contract:', nextGameId)
+      
+      if (!nextGameId || Number(nextGameId) === 0) {
+        console.log('No games exist yet')
+        return []
+      }
       
       // Fetch recent games (fetch last 10 games or all if less than 10)
-      const gamesToFetch = Math.min(Number(gameCount), 10)
+      const totalGames = Number(nextGameId)
+      const gamesToFetch = Math.min(totalGames, 10)
       const games = []
       
-      for (let i = Number(gameCount); i > Number(gameCount) - gamesToFetch && i > 0; i--) {
-        const gameData = await readContract(wagmiConfig, {
-          address: CONTRACT_ADDRESSES.GAME_ENGINE,
-          abi: GameEngineABI,
-          functionName: 'games',
-          args: [BigInt(i)],
-        })
-        
-        if (gameData && gameData.gameState === 0) { // Only show waiting games
-          games.push({
-            gameId: i,
-            creator: gameData.player1,
-            player2: gameData.player2 || '0x0000000000000000000000000000000000000000',
-            status: 'waiting' as const,
-            createdAt: Date.now() - (Number(gameCount) - i) * 60000, // Estimate time
-            deckIds: { 
-              player1: Number(gameData.player1DeckId || 0), 
-              player2: 0 
-            }
+      console.log(`Fetching ${gamesToFetch} games, total games: ${totalGames}`)
+      
+      // Games are 0-indexed, so if nextGameId is 3, we have games 0, 1, 2
+      for (let i = totalGames - 1; i >= Math.max(0, totalGames - gamesToFetch); i--) {
+        try {
+          const gameData = await readContract(wagmiConfig, {
+            address: CONTRACT_ADDRESSES.GAME_ENGINE,
+            abi: GameEngineABI,
+            functionName: 'games',
+            args: [BigInt(i)],
           })
+          
+          console.log(`Game ${i} data:`, gameData)
+          
+          // Only show games that are waiting for players (not started and no player2)
+          const hasPlayer2 = gameData.player2 && gameData.player2 !== '0x0000000000000000000000000000000000000000'
+          if (gameData && !gameData.isStarted && !hasPlayer2) {
+            console.log(`Game ${i} is available for joining`)
+            games.push({
+              gameId: i,
+              creator: gameData.player1,
+              player2: gameData.player2 || '0x0000000000000000000000000000000000000000',
+              status: 'waiting' as const,
+              createdAt: Date.now() - (totalGames - 1 - i) * 60000, // Estimate time
+              deckIds: { 
+                player1: Number(gameData.player1DeckId || 0), 
+                player2: Number(gameData.player2DeckId || 0) 
+              }
+            })
+          } else {
+            console.log(`Game ${i} is not available: isStarted=${gameData.isStarted}, hasPlayer2=${hasPlayer2}`)
+          }
+        } catch (err) {
+          console.warn(`Error fetching game ${i}:`, err)
         }
       }
       
+      console.log('Returning games:', games)
       return games
     } catch (error) {
       console.error('Error fetching active games:', error)
@@ -174,17 +195,64 @@ export const useGameEngine = () => {
         args: [BigInt(gameId)],
       })
       
-      if (!gameData) return null
+      console.log('===== RAW GAME DATA FROM CONTRACT =====')
+      console.log('Game ID:', gameId)
+      console.log('Raw game data:', gameData)
+      console.log('Type of game data:', typeof gameData)
+      console.log('Is array?:', Array.isArray(gameData))
+      
+      if (!gameData) {
+        console.log('No game data returned!')
+        return null
+      }
+      
+      // The games mapping returns a tuple, which viem converts to an object
+      // Let's see what properties are actually available
+      console.log('Game data keys:', Object.keys(gameData))
+      console.log('Game data entries:', Object.entries(gameData))
+      
+      // Try accessing by index first (arrays in Solidity return as indexed)
+      const gameId_ = gameData[0]
+      const player1 = gameData[1]
+      const player2 = gameData[2]
+      const player1DeckId = gameData[3]
+      const player2DeckId = gameData[4]
+      const player1State = gameData[5]
+      const player2State = gameData[6]
+      const isStarted = gameData[7]
+      const isFinished = gameData[8]
+      const currentTurn = gameData[9]
+      const turnNumber = gameData[10]
+      const createdAt = gameData[11]
+      const startedAt = gameData[12]
+      
+      console.log('Parsed values:')
+      console.log('  Game ID:', gameId_)
+      console.log('  Player1:', player1)
+      console.log('  Player2:', player2)
+      console.log('  Is Started:', isStarted)
+      console.log('  Player1 Deck ID:', player1DeckId)
+      console.log('  Player2 Deck ID:', player2DeckId)
+      console.log('=======================================')
       
       // Parse the game data from contract
+      // Status: 'waiting' if no player2, 'ready' if player2 joined but not started, 'started' if isStarted is true
+      const hasPlayer2 = player2 && player2 !== '0x0000000000000000000000000000000000000000'
+      const status = isStarted ? 'started' : (hasPlayer2 ? 'ready' : 'waiting')
+      
       return {
         gameId,
-        creator: gameData.player1 || '0x0000000000000000000000000000000000000000',
-        player2: gameData.player2 || '0x0000000000000000000000000000000000000000',
-        status: gameData.gameState === 0 ? 'waiting' : gameData.gameState === 1 ? 'ready' : 'started',
+        player1: player1,
+        creator: player1, // Keep for backwards compat
+        player2: player2,
+        status,
+        isStarted: isStarted,
+        isFinished: isFinished,
+        currentTurn: currentTurn ? Number(currentTurn) : undefined,
+        turnNumber: turnNumber ? Number(turnNumber) : undefined,
         deckIds: { 
-          player1: Number(gameData.player1DeckId || 0), 
-          player2: Number(gameData.player2DeckId || 0) 
+          player1: player1DeckId ? Number(player1DeckId) : undefined, 
+          player2: player2DeckId ? Number(player2DeckId) : undefined
         }
       }
     } catch (error) {

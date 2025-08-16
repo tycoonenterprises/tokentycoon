@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAccount } from 'wagmi';
+import { useWallets } from '@privy-io/react-auth';
 import { Users, Crown, Clock, Loader2, Check } from 'lucide-react';
 
 interface GameLobbyProps {
@@ -21,7 +21,25 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
   isHost,
   isStartingGame
 }) => {
-  const { address } = useAccount();
+  const { wallets } = useWallets();
+  // Get the Privy embedded wallet address
+  const privyWallet = wallets.find(w => w.walletClientType === 'privy');
+  const address = privyWallet?.address;
+  
+  // Debug logging
+  console.log('===== GAME LOBBY DEBUG =====');
+  console.log('Game ID:', gameId);
+  console.log('All wallets:', wallets);
+  console.log('Privy wallet:', privyWallet);
+  console.log('Current wallet address (Privy):', address);
+  console.log('Is Host prop:', isHost);
+  console.log('Game State:', gameState);
+  console.log('Player 1 (Host):', gameState?.player1 || gameState?.creator);
+  console.log('Player 2:', gameState?.player2);
+  console.log('Address comparison P1:', address?.toLowerCase(), '===', (gameState?.player1 || gameState?.creator)?.toLowerCase());
+  console.log('Address match P1?:', address?.toLowerCase() === (gameState?.player1 || gameState?.creator)?.toLowerCase());
+  console.log('Address match P2?:', address?.toLowerCase() === gameState?.player2?.toLowerCase());
+  console.log('============================');
 
   const getDeckName = (deckId: number) => {
     const deck = availableDecks.find(d => d.id === deckId);
@@ -33,6 +51,21 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
       return 'Waiting for player...';
     }
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  };
+
+  const getPlayerName = (playerNumber: number, addr: string) => {
+    if (!addr || addr === '0x0000000000000000000000000000000000000000') {
+      return 'Empty Slot';
+    }
+    // Show "You (Player X)" if it's the current player, otherwise "Player X"
+    if (addr.toLowerCase() === address?.toLowerCase()) {
+      return `You (Player ${playerNumber})`;
+    }
+    return `Player ${playerNumber}`;
+  };
+  
+  const isCurrentPlayer = (addr: string) => {
+    return addr && address && addr.toLowerCase() === address?.toLowerCase();
   };
 
   const isReady = gameState?.player2 && gameState.player2 !== '0x0000000000000000000000000000000000000000';
@@ -62,7 +95,11 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
         <h4 className="text-lg font-semibold text-white">Players</h4>
         
         {/* Player 1 (Host) */}
-        <div className="bg-gray-800 rounded-lg p-4 border-2 border-gray-700">
+        <div className={`rounded-lg p-4 border-2 transition-all ${
+          isCurrentPlayer(gameState?.player1 || gameState?.creator || '')
+            ? 'bg-cyan-900/30 border-cyan-500 shadow-lg shadow-cyan-500/20'
+            : 'bg-gray-800 border-gray-700'
+        }`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-cyan-600/20 rounded-full">
@@ -71,28 +108,32 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-semibold text-white">
-                    {gameState?.creator === address ? 'You' : 'Player 1'}
+                    {getPlayerName(1, gameState?.player1 || gameState?.creator || '')}
                   </span>
                   <Crown className="w-4 h-4 text-yellow-400" />
                   <span className="text-xs text-gray-500">(Host)</span>
                 </div>
                 <div className="text-sm text-gray-400">
-                  {formatAddress(gameState?.creator || '')}
+                  {formatAddress(gameState?.player1 || gameState?.creator || '')}
                 </div>
               </div>
             </div>
             <div className="text-right">
               <div className="text-sm text-gray-400">Deck</div>
               <div className="text-white font-medium">
-                {getDeckName(gameState?.deckIds?.player1 || 1)}
+                {getDeckName(gameState?.deckIds?.player1 || 0)}
               </div>
             </div>
           </div>
         </div>
 
         {/* Player 2 */}
-        <div className={`rounded-lg p-4 border-2 ${
-          isReady ? 'bg-gray-800 border-gray-700' : 'bg-gray-900 border-gray-800 border-dashed'
+        <div className={`rounded-lg p-4 border-2 transition-all ${
+          !isReady 
+            ? 'bg-gray-900 border-gray-800 border-dashed'
+            : isCurrentPlayer(gameState?.player2 || '')
+              ? 'bg-purple-900/30 border-purple-500 shadow-lg shadow-purple-500/20'
+              : 'bg-gray-800 border-gray-700'
         }`}>
           {isReady ? (
             <div className="flex items-center justify-between">
@@ -103,7 +144,7 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-semibold text-white">
-                      {gameState?.player2 === address ? 'You' : 'Player 2'}
+                      {getPlayerName(2, gameState?.player2 || '')}
                     </span>
                   </div>
                   <div className="text-sm text-gray-400">
@@ -114,7 +155,7 @@ export const GameLobby: React.FC<GameLobbyProps> = ({
               <div className="text-right">
                 <div className="text-sm text-gray-400">Deck</div>
                 <div className="text-white font-medium">
-                  {getDeckName(gameState?.deckIds?.player2 || 1)}
+                  {getDeckName(gameState?.deckIds?.player2 || 0)}
                 </div>
               </div>
             </div>
