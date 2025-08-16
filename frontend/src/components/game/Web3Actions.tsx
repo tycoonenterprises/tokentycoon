@@ -59,8 +59,8 @@ export function Web3Actions() {
     
     try {
       const message = `Welcome to Ethereum TCG!\n\nTimestamp: ${new Date().toISOString()}\nUser: ${user.id}`
-      const signature = await signMessage(message)
-      setSignedMessage(signature)
+      const signResult = await signMessage({ message })
+      setSignedMessage(signResult.signature)
     } catch (err: any) {
       setError(`Message signing failed: ${err.message}`)
     } finally {
@@ -80,7 +80,7 @@ export function Web3Actions() {
         to: address,
         value: '1000000000000000', // 0.001 ETH in wei
       })
-      setTxHash(txResponse)
+      setTxHash(txResponse.hash)
     } catch (err: any) {
       setError(`Transaction failed: ${err.message}`)
     } finally {

@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useAccount } from 'wagmi'
-import { mockContract, ContractCard } from '@/lib/contracts/mockContract'
-import { Card } from '@/stores/gameStore'
+import { mockContract, type ContractCard } from '@/lib/contracts/mockContract'
+import type { Card } from '@/stores/gameStore'
 
 export interface NFTCardData extends ContractCard {
   isOwned: boolean

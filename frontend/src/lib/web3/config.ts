@@ -25,7 +25,7 @@ export const config = createConfig({
 export const privyConfig = {
   appId: import.meta.env.VITE_PRIVY_APP_ID || 'local-dev-app-id',
   config: {
-    loginMethods: ['email', 'wallet', 'discord', 'farcaster'],
+    loginMethods: ['email' as const, 'wallet' as const],
     appearance: {
       theme: 'dark' as const,
       accentColor: '#627eea' as `#${string}`,

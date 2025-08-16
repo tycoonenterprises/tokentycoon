@@ -1,8 +1,8 @@
+import React, { useState } from 'react'
 import { DndContext, DragOverlay, closestCenter, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { useState } from 'react'
 import { useGameStore, type Card } from '@/stores/gameStore'
 
 interface DraggableCardProps {
