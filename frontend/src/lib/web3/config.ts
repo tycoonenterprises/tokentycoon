@@ -34,6 +34,7 @@ export const privyConfig = {
     embeddedWallets: {
       createOnLogin: 'users-without-wallets' as const,
     },
+    supportedChains: [localChain],
     defaultChain: localChain,
   },
 }
