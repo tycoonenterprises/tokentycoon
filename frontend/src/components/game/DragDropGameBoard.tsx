@@ -968,6 +968,64 @@ export function DragDropGameBoard() {
 
       {/* Game UI Elements - Outside DndContext to avoid interference */}
       
+      {/* Opponent's wallet displays (upper right) - read-only */}
+      <div className="fixed top-4 right-4 z-10 flex flex-col gap-3">
+        {/* Opponent Hot Wallet */}
+        <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 w-48 opacity-75">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🔥</span>
+              <h3 className="text-sm font-bold text-white">Opponent Hot Wallet</h3>
+            </div>
+          </div>
+          <div className="mb-3">
+            <div className="text-2xl font-bold text-eth-secondary mb-1">
+              {Number(opponentBoard.eth || 0).toFixed(1)} ETH
+            </div>
+            <div className="text-xs text-gray-400">
+              Available funds
+            </div>
+          </div>
+        </div>
+
+        {/* Opponent Cold Storage */}
+        <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 w-48 opacity-75">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">🏦</span>
+              <h3 className="text-sm font-bold text-white">Opponent Cold Storage</h3>
+            </div>
+            {Number(opponentBoard.coldStorage || 0) >= 20 && (
+              <div className="bg-yellow-500 text-black text-xs px-2 py-1 rounded-full font-bold">
+                WIN!
+              </div>
+            )}
+          </div>
+          <div className="mb-3">
+            <div className="text-2xl font-bold text-eth-primary mb-1">
+              {Number(opponentBoard.coldStorage || 0).toFixed(1)} ETH
+            </div>
+            <div className="text-xs text-gray-400">
+              Saved funds
+            </div>
+          </div>
+          {/* Win Progress */}
+          <div className="mb-3">
+            <div className="flex justify-between text-xs text-gray-400 mb-1">
+              <span>Win Progress</span>
+              <span>{Number(opponentBoard.coldStorage || 0)}/20 ETH</span>
+            </div>
+            <div className="w-full bg-gray-700 rounded-full h-2">
+              <div 
+                className={`h-2 rounded-full transition-all duration-500 ${
+                  Number(opponentBoard.coldStorage || 0) >= 20 ? 'bg-yellow-500' : 'bg-eth-primary'
+                }`}
+                style={{ width: `${Math.min((Number(opponentBoard.coldStorage || 0) / 20) * 100, 100)}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Player's wallet controls (lower left) */}
       <div className="fixed bottom-4 left-4 z-10 flex flex-col gap-3">

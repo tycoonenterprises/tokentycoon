@@ -438,8 +438,6 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
         </div>
       </header>
 
-      {/* Game Status */}
-      <PlayerStats />
 
       {/* Game Content */}
       <div className="flex-1 flex">
