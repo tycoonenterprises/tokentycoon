@@ -42,7 +42,7 @@ export function PrivyDebugInfo() {
   )
 
   return (
-    <div className={`fixed bottom-0 left-0 z-40 bg-gray-900 border border-gray-700 shadow-xl transition-all duration-300 ${
+    <div className={`fixed bottom-0 right-48 z-40 bg-gray-900 border border-gray-700 shadow-xl transition-all duration-300 ${
       isOpen ? 'w-96 max-w-[90vw] rounded-t-lg' : 'w-20 h-8 rounded-tr-lg'
     }`}>
       <button

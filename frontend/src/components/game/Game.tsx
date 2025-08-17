@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { usePrivy, useWallets } from '@privy-io/react-auth'
+import { useENSName, formatWalletDisplay } from '@/lib/hooks/useENSName'
 import { useGameStore, type Card } from '@/stores/gameStore'
 import { PlayerStats } from './PlayerStats'
 import { DragDropGameBoard } from './DragDropGameBoard'
@@ -26,6 +27,11 @@ interface GameProps {
 export function Game({ isRouted = false, routedGameId }: GameProps) {
   const { logout, user } = usePrivy()
   const { wallets, ready: walletsReady } = useWallets()
+  
+  // Get user's wallet address for ENS resolution
+  const privyWallet = wallets.find(w => w.walletClientType === 'privy')
+  const userAddress = privyWallet?.address
+  const { ensName } = useENSName(userAddress)
   const { 
     startGame,
     resetGame, 
@@ -375,7 +381,7 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
       <div className="fixed top-4 right-4 z-50">
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-300 bg-black/50 rounded px-2 py-1">
-            {user?.email?.address || user?.wallet?.address?.slice(0, 8)}...
+            {user?.email?.address || formatWalletDisplay(userAddress, ensName)}
           </span>
           
           {!isGameActive ? (
