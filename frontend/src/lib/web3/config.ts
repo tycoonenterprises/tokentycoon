@@ -50,8 +50,8 @@ export const privyConfig = {
     embeddedWallets: {
       createOnLogin: 'all-users' as const,
       requireUserPasswordOnCreate: false,
-      noPromptOnSignature: false,
-      showWalletUIs: true,
+      noPromptOnSignature: true, // Auto-approve message signatures
+      showWalletUIs: false, // Hide wallet UI for seamless experience
     },
     externalWallets: {
       metamask: true,

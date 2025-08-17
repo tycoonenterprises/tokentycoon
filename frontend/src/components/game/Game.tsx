@@ -16,6 +16,8 @@ import { watchContractEvent } from 'wagmi/actions'
 import { wagmiConfig } from '@/lib/web3/wagmiConfig'
 import { CONTRACT_ADDRESSES } from '@/lib/web3/config'
 import { GameEngineABI } from '@/lib/contracts/GameEngineABI'
+import { SessionStatus } from '@/components/SessionStatus'
+import { AutoApprovalSetup } from '@/components/AutoApprovalSetup'
 
 interface GameProps {
   isRouted?: boolean;
@@ -634,6 +636,12 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
           onResetGame={resetGame}
         />
       )}
+      
+      {/* Session Status - Show when user is authenticated */}
+      <SessionStatus />
+      
+      {/* Auto Approval Setup Instructions */}
+      <AutoApprovalSetup />
     </div>
   )
 }

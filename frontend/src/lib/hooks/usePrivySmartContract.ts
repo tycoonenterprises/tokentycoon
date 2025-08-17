@@ -82,6 +82,7 @@ export function usePrivySmartContract() {
   const writeContract = async (config: WriteContractArgs) => {
     setIsPending(true)
     try {
+      // Get the Privy embedded wallet (with auto-approval enabled)
       const wallet = await getPrivyWallet()
       if (!wallet) {
         throw new Error('No wallet available. Please create a wallet in the Privy debug panel.')
@@ -143,7 +144,28 @@ export function usePrivySmartContract() {
         throw new Error('Insufficient funds for transaction. Please fund your wallet and try again.')
       }
 
-      // Create and send the transaction with gas parameters
+      // For Privy embedded wallets, use sendTransaction with UI disabled
+      if (wallet.walletClientType === 'privy' && wallet.sendTransaction) {
+        console.log('Using Privy embedded wallet with auto-approval...')
+        
+        const txHash = await wallet.sendTransaction(
+          {
+            to: config.address,
+            data,
+            value: 0n,
+          },
+          {
+            uiOptions: { 
+              showWalletUIs: false // This disables confirmation popups!
+            }
+          }
+        )
+        
+        console.log('Transaction sent successfully (auto-approved):', txHash)
+        return txHash
+      }
+      
+      // Fallback to standard provider method for other wallet types
       const txRequest = {
         from: wallet.address as `0x${string}`,
         to: config.address,
@@ -153,9 +175,8 @@ export function usePrivySmartContract() {
         value: '0x0', // No ETH value for contract calls
       }
 
-      console.log('Sending transaction with Privy wallet:', txRequest)
+      console.log('Sending transaction with standard provider:', txRequest)
       
-      // Send the transaction using the Privy wallet's provider
       const txHash = await provider.request({
         method: 'eth_sendTransaction',
         params: [txRequest],

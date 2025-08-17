@@ -13,7 +13,7 @@
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
-    "@privy-io/react-auth": "^2.21.2",
+    "@privy-io/react-auth": "^2.21.3",
     "@privy-io/wagmi": "^1.0.6",
     "@tanstack/react-query": "^5.85.3",
     "colyseus.js": "^0.15.25",
