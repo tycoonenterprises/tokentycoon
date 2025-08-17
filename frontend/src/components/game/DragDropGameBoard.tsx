@@ -607,6 +607,16 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
   const isViewingPlayer1 = userAddress?.toLowerCase() === player1.id?.toLowerCase()
   const currentViewingPlayer = isViewingPlayer1 ? 'player1' : 'player2'
   
+  console.log('🎯 PLAYER TARGETING DEBUG:', {
+    userAddress: userAddress?.toLowerCase(),
+    player1Id: player1.id?.toLowerCase(), 
+    player2Id: player2.id?.toLowerCase(),
+    isViewingPlayer1,
+    currentViewingPlayer,
+    activePlayer: activePlayer?.toLowerCase(),
+    expectedBoard: `${currentViewingPlayer}-board`
+  })
+  
   // DISABLED polling to stop request spam
   useEffect(() => {
     console.log('🎮 DragDropGameBoard: gameId is', gameId, 'but polling is DISABLED')
