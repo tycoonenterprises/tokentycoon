@@ -462,59 +462,15 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
         <div 
           className="fixed pointer-events-none z-[99999] transition-opacity duration-200"
           style={{
-            left: hoverPosition.x - 200, // Center the 400px wide card
-            top: hoverPosition.isOpponentCard ? hoverPosition.y + 50 : hoverPosition.y - 550, // Position below opponent cards, above player cards
+            left: hoverPosition.x - 180, // Center the larger card image
+            top: hoverPosition.isOpponentCard ? hoverPosition.y + 20 : hoverPosition.y - 520, // Position below opponent cards, above player cards
           }}
         >
-          <div className="w-96 h-[32rem] card border-eth-primary shadow-2xl shadow-eth-primary/50 brightness-110 animate-in zoom-in-95 duration-200">
-            {/* Hover Card Header */}
-            <div className="p-4 border-b border-gray-600">
-              <div className="flex items-center justify-between mb-1">
-                <div className="text-sm text-gray-400 flex items-center">
-                  <span className="mr-2 text-lg">{getTypeIcon(card.type)}</span>
-                  {card.type.toUpperCase()}
-                </div>
-                {card.cost > 0 && (
-                  <div className="bg-eth-secondary text-white text-sm px-3 py-1.5 rounded-full font-bold">
-                    {card.cost} ETH
-                  </div>
-                )}
-              </div>
-              <h3 className="text-xl font-bold text-white leading-tight">{card.name}</h3>
-            </div>
-
-            {/* Hover Card Image */}
-            <div className="flex-1 p-4">
-              <CardImage 
-                card={card} 
-                className="w-full h-full rounded object-cover"
-                fallbackIcon={getTypeIcon(card.type)}
-              />
-            </div>
-
-            {/* Hover Card Footer */}
-            <div className="p-4 border-t border-gray-600 space-y-2">
-              {card.text && (
-                <p className="text-sm text-gray-200 leading-relaxed">{card.text}</p>
-              )}
-              {card.abilities && (
-                <div className="text-sm">
-                  <span className="text-eth-primary font-medium">{card.abilities}</span>
-                </div>
-              )}
-              <div className="flex justify-between items-center text-sm">
-                {card.type === 'unit' && card.power !== undefined && card.toughness !== undefined && (
-                  <div className="flex gap-2">
-                    <span className="text-eth-danger font-bold">{card.power} ATK</span>
-                    <span className="text-eth-success font-bold">{card.toughness} DEF</span>
-                  </div>
-                )}
-                {card.originalCardId !== undefined && (
-                  <span className="text-gray-500 ml-auto">#{card.originalCardId}</span>
-                )}
-              </div>
-            </div>
-          </div>
+          <CardImage 
+            card={card} 
+            className="w-80 h-[30rem] rounded-lg shadow-2xl shadow-black/50 animate-in zoom-in-95 duration-200"
+            fallbackIcon={getTypeIcon(card.type)}
+          />
         </div>,
         document.body
       )}
