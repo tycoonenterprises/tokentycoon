@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { DndContext, DragOverlay, closestCenter, useDroppable, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
@@ -176,6 +177,9 @@ interface ExtendedDraggableCardProps extends DraggableCardProps {
 }
 
 function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, gameId, onCardClick }: ExtendedDraggableCardProps) {
+  const [isHovered, setIsHovered] = useState(false)
+  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 })
+  const cardRef = useRef<HTMLDivElement>(null)
   const {
     attributes,
     listeners,
@@ -290,23 +294,39 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
   const cardSize = source === 'board' ? 'w-20 h-28' : 'w-28 h-40'
 
   return (
-    <div
-      ref={setNodeRef}
-      style={{
-        ...style,
-        filter: visualState.filter,
-      }}
-      {...attributes}
-      {...(canDrag ? listeners : {})}
-      onClick={(e) => {
-        // Only open modal if not dragging
-        if (!isDragging) {
-          e.stopPropagation()
-          onCardClick(card)
+    <div className="relative"
+      onMouseEnter={(e) => {
+        if (source === 'hand' && !isDragging) {
+          const rect = e.currentTarget.getBoundingClientRect()
+          setHoverPosition({
+            x: rect.left + rect.width / 2,
+            y: rect.top
+          })
+          setIsHovered(true)
         }
       }}
-      className={`${cardSize} flex-shrink-0 card transition-all duration-200 ${getTypeColor(card.type)} ${visualState.className} ${isDragging ? 'z-50' : ''}`}
+      onMouseLeave={() => {
+        if (source === 'hand') {
+          setIsHovered(false)
+        }
+      }}
     >
+      <div
+        ref={setNodeRef}
+        style={{
+          ...style,
+          filter: visualState.filter,
+        }}
+        {...attributes}
+        {...(canDrag ? listeners : {})}
+        onClick={(e) => {
+          if (!isDragging) {
+            e.stopPropagation()
+            onCardClick(card)
+          }
+        }}
+        className={`${cardSize} flex-shrink-0 card transition-all duration-200 ${getTypeColor(card.type)} ${visualState.className} ${isDragging ? 'z-50' : ''}`}
+      >
       {/* Card Header - Only show full header for hand cards */}
       {source === 'hand' && (
         <div className="p-2 border-b border-gray-600">
@@ -411,6 +431,69 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
           gameId={gameId}
         />
       ) : null}
+      </div>
+      
+      {/* Portal-based hover overlay that renders at document root */}
+      {source === 'hand' && isHovered && !isDragging && typeof document !== 'undefined' && createPortal(
+        <div 
+          className="fixed pointer-events-none z-[99999] transition-opacity duration-200"
+          style={{
+            left: hoverPosition.x - 140, // Center the 280px wide card
+            top: hoverPosition.y - 420,  // Position well above the card
+          }}
+        >
+          <div className="w-70 h-96 card border-eth-primary shadow-2xl shadow-eth-primary/50 brightness-110 animate-in zoom-in-95 duration-200">
+            {/* Hover Card Header */}
+            <div className="p-3 border-b border-gray-600">
+              <div className="flex items-center justify-between mb-1">
+                <div className="text-xs text-gray-400 flex items-center">
+                  <span className="mr-1 text-sm">{getTypeIcon(card.type)}</span>
+                  {card.type.toUpperCase()}
+                </div>
+                {card.cost > 0 && (
+                  <div className="bg-eth-secondary text-white text-xs px-2 py-1 rounded-full font-bold">
+                    {card.cost} ETH
+                  </div>
+                )}
+              </div>
+              <h3 className="text-base font-bold text-white leading-tight">{card.name}</h3>
+            </div>
+
+            {/* Hover Card Image */}
+            <div className="flex-1 p-3">
+              <CardImage 
+                card={card} 
+                className="w-full h-full rounded object-cover"
+                fallbackIcon={getTypeIcon(card.type)}
+              />
+            </div>
+
+            {/* Hover Card Footer */}
+            <div className="p-3 border-t border-gray-600 space-y-1">
+              {card.text && (
+                <p className="text-xs text-gray-200 leading-relaxed">{card.text}</p>
+              )}
+              {card.abilities && (
+                <div className="text-xs">
+                  <span className="text-eth-primary font-medium">{card.abilities}</span>
+                </div>
+              )}
+              <div className="flex justify-between items-center text-xs">
+                {card.type === 'unit' && card.power !== undefined && card.toughness !== undefined && (
+                  <div className="flex gap-2">
+                    <span className="text-eth-danger font-bold">{card.power} ATK</span>
+                    <span className="text-eth-success font-bold">{card.toughness} DEF</span>
+                  </div>
+                )}
+                {card.originalCardId !== undefined && (
+                  <span className="text-gray-500 ml-auto">#{card.originalCardId}</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   )
 }
@@ -830,7 +913,7 @@ export function DragDropGameBoard() {
                   </div>
                 </div>
                 
-                <div className="flex gap-2 overflow-x-auto pb-2 min-h-0">
+                <div className="flex gap-2 overflow-x-auto pb-2 pt-20 pb-20 min-h-0">
                   <SortableContext 
                     items={playerHand.hand.map(card => `hand-${card.id}`)}
                     strategy={verticalListSortingStrategy}
@@ -956,11 +1039,6 @@ export function DragDropGameBoard() {
         </button>
       </div>
 
-      {/* Player's wallet controls (lower right) */}
-      <div className="fixed bottom-4 right-4 z-10 flex flex-col gap-3">
-        <HotWallet playerId={currentViewingPlayer} />
-        <ColdStorage playerId={currentViewingPlayer} />
-      </div>
 
       {/* Card Detail Modal */}
       <CardDetailModal
