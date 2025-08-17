@@ -305,8 +305,7 @@ export const useGameEngine = () => {
   }
 
   const depositToColdStorage = async (gameId: number, amount: number) => {
-    try
-      
+    try {
       const args = [BigInt(gameId), BigInt(amount)]
       
       const result = await privyWriteContract({
