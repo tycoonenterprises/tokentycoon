@@ -550,12 +550,19 @@ function DropZone({ id, children, label, isEmpty, canDrop, isOver: isOverProp = 
   )
 }
 
-export function DragDropGameBoard() {
+interface DragDropGameBoardProps {
+  gameId?: number | null
+}
+
+export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps = {}) {
   // Subscribe to specific store values to ensure re-renders
   const players = useGameStore(state => state.players)
   const activePlayer = useGameStore(state => state.activePlayer)
   const playCardByIndex = useGameStore(state => state.playCardByIndex)
-  const gameId = useGameStore(state => state.gameId)
+  const storeGameId = useGameStore(state => state.gameId)
+  
+  // Use prop gameId if provided, otherwise fall back to store
+  const gameId = propGameId !== undefined ? propGameId : storeGameId
   const needsToDraw = useGameStore(state => state.needsToDraw)
   const currentTurn = useGameStore(state => state.currentTurn)
   const updateGameFromContract = useGameStore(state => state.updateGameFromContract)

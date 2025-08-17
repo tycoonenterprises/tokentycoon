@@ -10,7 +10,6 @@ import { DecksPage } from './DecksPage'
 import { PlayPage } from './PlayPage'
 import { ContractDebugPanel } from '@/components/debug/ContractDebugPanel'
 import { PrivyDebugInfo } from '@/components/debug/PrivyDebugInfo'
-import { useSearchParams } from 'react-router-dom'
 import { useGameEngine } from '@/lib/hooks/useGameEngine'
 import { watchContractEvent } from 'wagmi/actions'
 import { wagmiConfig } from '@/lib/web3/wagmiConfig'
@@ -25,7 +24,6 @@ interface GameProps {
 export function Game({ isRouted = false, routedGameId }: GameProps) {
   const { logout, user } = usePrivy()
   const { wallets, ready: walletsReady } = useWallets()
-  const [searchParams] = useSearchParams()
   const { 
     startGame,
     resetGame, 
@@ -36,11 +34,20 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
     winner,
     setContractFunctions,
     setContractGameId,
-    gameId,
+    gameId: storeGameId,
     updateGameFromContract,
     initializeGameFromContract,
     needsToDraw,
   } = useGameStore()
+  
+  // Use routedGameId if this is a routed game, otherwise use store gameId
+  const gameId = isRouted && routedGameId !== undefined ? routedGameId : storeGameId
+  
+  // Use a ref to always have the current game ID in callbacks
+  const gameIdRef = useRef(gameId)
+  useEffect(() => {
+    gameIdRef.current = gameId
+  }, [gameId])
   
   // Get contract functions
   const { endTurn, playCard, stakeETH, getDetailedGameState, getFullGameState, drawToStartTurn } = useGameEngine()
@@ -52,7 +59,6 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
   const [showPlayPage, setShowPlayPage] = useState(false)
   const [currentGameId, setCurrentGameId] = useState<number | null>(null)
   const [customDeck, setCustomDeck] = useState<Card[] | null>(null)
-  const hasLoadedFromUrl = useRef(false)
   
   // Set up contract functions in game store - only once on mount
   useEffect(() => {
@@ -68,9 +74,13 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
 
   // Listen for critical game events - specifically TurnEnded to update UI
   useEffect(() => {
-    if (gameId === null || gameId === undefined) {
+    // Check if we have a valid game ID
+    if (gameIdRef.current === null || gameIdRef.current === undefined) {
+      console.log('No game ID available for polling')
       return
     }
+    
+    console.log(`Setting up polling for game ${gameIdRef.current} (routed: ${isRouted}, routedGameId: ${routedGameId}, storeGameId: ${gameId})`)
     
     // Capture current functions in closure
     const currentGetDetailedGameState = getDetailedGameState
@@ -102,16 +112,18 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
           if (logs.length > 0) {
             const relevantLogs = logs.filter(log => {
               const eventGameId = log.args?.gameId
-              return eventGameId && Number(eventGameId) === gameId
+              // Use current game ID from ref
+              return eventGameId && Number(eventGameId) === gameIdRef.current
             })
             
             if (relevantLogs.length > 0) {
               // Update game state
               const store = useGameStore.getState()
-              const state = await currentGetDetailedGameState(gameId)
+              // Use current game ID from ref
+              const state = await currentGetDetailedGameState(gameIdRef.current)
               if (state) {
                 store.updateGameFromContract(state)
-                await currentGetFullGameState(gameId)
+                await currentGetFullGameState(gameIdRef.current)
               }
             }
           }
@@ -143,7 +155,10 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
     const pollInterval = setInterval(async () => {
       try {
         if (currentGetDetailedGameState) {
-          const state = await currentGetDetailedGameState(gameId)
+          // Always use the current game ID from ref
+          const currentGameId = gameIdRef.current
+          console.log(`Polling game state for game ${currentGameId}`)
+          const state = await currentGetDetailedGameState(currentGameId)
           if (state) {
             const store = useGameStore.getState()
             const oldActivePlayer = store.activePlayer
@@ -153,12 +168,12 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
             const newActivePlayer = store.activePlayer
             if (oldActivePlayer !== newActivePlayer) {
               // Also fetch full game state
-              await currentGetFullGameState(gameId)
+              await currentGetFullGameState(currentGameId)
             }
           }
         }
       } catch (error) {
-        // Silent fail
+        console.error(`Error polling game:`, error)
       }
     }, 2000)
 
@@ -168,7 +183,7 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
       clearInterval(pollInterval)
       clearInterval(eventPollInterval)
     }
-  }, [gameId]) // Only depend on gameId to avoid recreating
+  }, [gameId, isRouted, routedGameId]) // Depend on gameId props to handle route changes
 
   const handleStartWithCustomDeck = () => {
     setShowDeckBuilder(true)
@@ -248,11 +263,8 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
     setShowPlayPage(false) // Close the PlayPage modal
     setContractGameId(gameId)
     
-    // Update URL to keep the gameId
-    const url = new URL(window.location.href)
-    url.searchParams.set('gameId', gameId.toString())
-    url.searchParams.delete('view') // Remove view param since we're in the game now
-    window.history.pushState({}, '', url.toString())
+    // Navigate to the game route using hash routing
+    window.location.hash = `#/game/${gameId}`
     
     // Get the current user's wallet address
     const privyWallet = wallets.find(w => w.walletClientType === 'privy')
@@ -308,65 +320,6 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
       console.error('Missing contract functions:', { getDetailedGameState: !!getDetailedGameState, getFullGameState: !!getFullGameState })
     }
   }, [wallets, getDetailedGameState, getFullGameState, updateGameFromContract, activateOnchainGame, setContractGameId])
-
-  // Single source of truth for URL-based game loading
-  useEffect(() => {
-    const gameIdParam = searchParams.get('gameId')
-    
-    // If there's a gameId in URL, that takes precedence over everything
-    if (gameIdParam) {
-      const urlGameId = parseInt(gameIdParam)
-      
-      // Only load if it's a different game or first load
-      if (!isNaN(urlGameId) && (urlGameId !== gameId || !hasLoadedFromUrl.current)) {
-        hasLoadedFromUrl.current = true
-        console.log('=== LOADING GAME FROM URL ===')
-        console.log('Game ID:', urlGameId)
-        
-        // Never show PlayPage when we have a direct game URL
-        setShowPlayPage(false)
-        setContractGameId(urlGameId)
-        
-        // Load the game state from the blockchain
-        if (getDetailedGameState) {
-          getDetailedGameState(urlGameId).then(async gameStateView => {
-            if (gameStateView) {
-              console.log('Game state loaded:', gameStateView)
-              
-              // Always handle it as an onchain game when we have a gameId in URL
-              if (gameStateView.isStarted) {
-                console.log('Game is started, loading full game')
-                await handleOnchainGameStart(urlGameId)
-              } else {
-                console.log('Game not started yet, showing lobby')
-                // For games that aren't started, show the PlayPage lobby
-                setShowPlayPage(true)
-              }
-            } else {
-              console.error('No game found with ID:', urlGameId)
-              // Reset if game doesn't exist
-              resetGame()
-              hasLoadedFromUrl.current = false
-            }
-          }).catch(error => {
-            console.error('Failed to load game:', error)
-            resetGame()
-            hasLoadedFromUrl.current = false
-          })
-        }
-      }
-    } else {
-      // No gameId in URL - check for other params
-      const viewParam = searchParams.get('view')
-      if (viewParam === 'lobby' || viewParam === 'create' || viewParam === 'join') {
-        setShowPlayPage(true)
-      } else {
-        // No URL params - reset everything
-        hasLoadedFromUrl.current = false
-        // Don't auto-close PlayPage here, let user control it
-      }
-    }
-  }, [searchParams]) // Only depend on URL changes
 
   return (
     <div className="min-h-screen bg-eth-dark flex flex-col">
@@ -518,7 +471,7 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
             </div>
           ) : isGameActive ? (
             // Active Game
-            <DragDropGameBoard />
+            <DragDropGameBoard gameId={gameId} />
           ) : (
             // Fallback - this shouldn't happen
             <div className="flex-1 flex items-center justify-center">
