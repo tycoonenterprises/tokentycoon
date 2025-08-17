@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { DndContext, DragOverlay, closestCenter, useDroppable, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
+import { DndContext, DragOverlay, closestCorners, useDroppable, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -584,14 +584,24 @@ function ChainDropTarget({ chainCard, playerId, canDrop, children }: ChainDropTa
     data: { chainCard, playerId, type: 'chain-target' }
   })
 
+  // Debug logging
+  useEffect(() => {
+    console.log('🔗 ChainDropTarget created:', {
+      dropId,
+      chainCard: chainCard.name,
+      canDrop,
+      disabled: !canDrop
+    })
+  }, [dropId, chainCard.name, canDrop])
+
   return (
     <div 
       ref={setNodeRef}
       className={`relative ${
         canDrop && isOver 
-          ? 'ring-2 ring-purple-400 ring-offset-2 ring-offset-gray-900' 
+          ? 'ring-2 ring-purple-400 ring-offset-2 ring-offset-gray-900 bg-purple-100/10' 
           : canDrop 
-            ? 'ring-1 ring-purple-500/30' 
+            ? 'ring-2 ring-purple-500/50 bg-purple-50/5' 
             : ''
       } transition-all duration-200 rounded`}
     >
@@ -704,6 +714,11 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
     const data = active.data.current
     if (data) {
       setDraggedCard(data.card)
+      console.log('🎯 Started dragging:', {
+        cardName: data.card.name,
+        cardType: data.card.type,
+        activeId: active.id
+      })
     }
   }
 
@@ -712,7 +727,14 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
     setActiveId(null)
     setDraggedCard(null)
 
+    console.log('🎯 Drag ended:', {
+      active: active.id,
+      over: over?.id,
+      overData: over?.data?.current
+    })
+
     if (!over) {
+      console.log('❌ No drop target found')
       return
     }
 
@@ -721,6 +743,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
     const overId = over.id as string
 
     if (!activeData) {
+      console.log('❌ No active data found')
       return
     }
 
@@ -899,7 +922,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
   return (
     <div className="relative">
       <DndContext
-        collisionDetection={closestCenter}
+        collisionDetection={closestCorners}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
@@ -996,37 +1019,47 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
                 isEmpty={playerBoard.board.length === 0}
                 canDrop={canPlayCards}
               >
-                <SortableContext 
-                  items={playerBoard.board.map(card => `board-${card.id}`)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="flex gap-3 flex-wrap">
-                    {playerBoard.board.map((card) => {
+                {/* Separate Chain cards from regular sortable cards to avoid conflicts */}
+                <div className="flex gap-3 flex-wrap">
+                  {/* Chain cards - rendered outside SortableContext as separate drop targets */}
+                  {playerBoard.board
+                    .filter(card => card.type === 'Chain')
+                    .map((card) => {
                       const isDraggingDeFi = draggedCard?.type === 'DeFi'
-                      const isChain = card.type === 'Chain'
-                      const canDropOnChain = canPlayCards && isDraggingDeFi && isChain
+                      const canDropOnChain = canPlayCards && isDraggingDeFi
                       
-                      return isChain ? (
-                        <div key={card.id} className="relative">
-                          <ChainDropTarget
-                            chainCard={card}
+                      return (
+                        <ChainDropTarget
+                          key={`chain-${card.id}`}
+                          chainCard={card}
+                          playerId={currentViewingPlayer}
+                          canDrop={canDropOnChain}
+                        >
+                          <DraggableCard
+                            card={card}
                             playerId={currentViewingPlayer}
-                            canDrop={canDropOnChain}
-                          >
-                            <DraggableCard
-                              card={card}
-                              playerId={currentViewingPlayer}
-                              source="board"
-                              canDrag={canDragCard(card, 'board', currentViewingPlayer)}
-                              playerETH={playerHand.eth}
-                              isActivePlayer={activePlayer?.toLowerCase() === userAddress?.toLowerCase()}
-                              gameId={gameId}
-                              onCardClick={handleCardClick}
-                              currentViewingPlayer={currentViewingPlayer}
-                            />
-                          </ChainDropTarget>
-                        </div>
-                      ) : (
+                            source="board"
+                            canDrag={canDragCard(card, 'board', currentViewingPlayer)}
+                            playerETH={playerHand.eth}
+                            isActivePlayer={activePlayer?.toLowerCase() === userAddress?.toLowerCase()}
+                            gameId={gameId}
+                            onCardClick={handleCardClick}
+                            currentViewingPlayer={currentViewingPlayer}
+                          />
+                        </ChainDropTarget>
+                      )
+                    })}
+                  
+                  {/* Non-Chain cards in SortableContext */}
+                  <SortableContext 
+                    items={playerBoard.board
+                      .filter(card => card.type !== 'Chain')
+                      .map(card => `board-${card.id}`)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    {playerBoard.board
+                      .filter(card => card.type !== 'Chain')
+                      .map((card) => (
                         <DraggableCard
                           key={card.id}
                           card={card}
@@ -1039,10 +1072,9 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
                           onCardClick={handleCardClick}
                           currentViewingPlayer={currentViewingPlayer}
                         />
-                      )
-                    })}
-                  </div>
-                </SortableContext>
+                      ))}
+                  </SortableContext>
+                </div>
               </DropZone>
               
               {/* Legend for drop targets */}
