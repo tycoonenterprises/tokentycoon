@@ -510,6 +510,8 @@ function DropZone({ id, children, label, isEmpty, canDrop, isOver: isOverProp = 
     id,
     disabled: !canDrop
   })
+  
+  console.log(`🎯 DropZone ${id}: canDrop=${canDrop}, disabled=${!canDrop}`)
 
 
   return (
@@ -617,6 +619,14 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
   // Wait for wallets to be ready before checking
   const canPlayCards = walletsReady && Boolean(activePlayer && userAddress && activePlayer.toLowerCase() === userAddress.toLowerCase())
   
+  console.log('🎯 canPlayCards DEBUG:', {
+    walletsReady,
+    activePlayer,
+    userAddress,
+    canPlayCards,
+    isMatch: activePlayer?.toLowerCase() === userAddress?.toLowerCase()
+  })
+  
   // Turn state tracking (debug logging removed)
   
   
@@ -664,14 +674,35 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
     setActiveId(null)
     setDraggedCard(null)
 
-    if (!over) return
+    console.log('🎯 DRAG END DEBUG:', {
+      active: active?.id,
+      over: over?.id,
+      activeData: active?.data?.current
+    })
+
+    if (!over) {
+      console.log('❌ No drop target found')
+      return
+    }
 
     const activeData = active.data.current
     const overId = over.id as string
 
-    if (!activeData) return
+    if (!activeData) {
+      console.log('❌ No active data found')
+      return
+    }
 
     const { card, playerId, source, handIndex } = activeData
+    
+    console.log('🎯 Drag data:', {
+      card: card?.name,
+      playerId,
+      source,
+      handIndex,
+      overId,
+      targetBoard: `${currentViewingPlayer}-board`
+    })
 
     // Handle card play from hand to board
     const targetBoard = `${currentViewingPlayer}-board`
