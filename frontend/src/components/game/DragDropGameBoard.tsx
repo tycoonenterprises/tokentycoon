@@ -865,7 +865,7 @@ export function DragDropGameBoard() {
                   {(opponentBoard.hand || []).map((_, index) => (
                     <div
                       key={`opponent-hand-${index}`}
-                      className="w-24 h-32 flex-shrink-0 card transition-all duration-200 border-red-500/50 transform rotate-180 cursor-not-allowed opacity-75"
+                      className="w-24 h-32 flex-shrink-0 card transition-all duration-200 border-red-500/50 cursor-not-allowed opacity-75"
                     >
                       {/* Card Back using SVG */}
                       <img 
