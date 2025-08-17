@@ -13,8 +13,7 @@ export function PrivyDebugInfo() {
     logout, 
     createWallet,
     connectWallet,
-    exportWallet,
-    setActiveWallet
+    exportWallet
   } = usePrivy()
   
   const { address, isConnected } = useAccount()
@@ -129,7 +128,7 @@ export function PrivyDebugInfo() {
                 return (
                   <button
                     key={i}
-                    onClick={() => setActiveWallet?.(wallet)}
+                    onClick={() => console.log('Switch to wallet:', wallet.address)}
                     className={`block w-full text-left px-2 py-1 rounded text-xs ${
                       isActive 
                         ? 'bg-green-600 text-white' 

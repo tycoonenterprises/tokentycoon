@@ -705,8 +705,8 @@ export const useGameSession = (gameId: number) => {
   const { data: session, refetch: refetchSession } = useReadContract({
     address: CONTRACT_ADDRESSES.GAME_ENGINE,
     abi: GameEngineABI,
-    functionName: 'getGameSession',
-    args: [gameId],
+    functionName: 'getGameState',
+    args: [BigInt(gameId)],
   })
 
   return {
@@ -732,7 +732,7 @@ export const usePlayerHand = (gameId: number, playerAddress?: string) => {
     address: CONTRACT_ADDRESSES.GAME_ENGINE,
     abi: GameEngineABI,
     functionName: 'getPlayerHand',
-    args: player ? [gameId, player] : undefined,
+    args: player ? [BigInt(gameId), player as `0x${string}`] : undefined,
   })
 
   return {

@@ -119,8 +119,6 @@ export interface GameActions {
   
   // Blockchain integration
   updateGameFromContract: (gameView: any) => void // Update from contract GameView
-  updatePlayerHandFromContract: (playerId: string, cardIds: number[]) => void
-  updatePlayerBattlefieldFromContract: (playerId: string, instanceIds: number[]) => void
   
   // Card actions
   playCard: (playerId: string, cardId: string, targetId?: string) => void
@@ -149,7 +147,7 @@ export interface GameActions {
   setContractGameId: (gameId: number) => void
   initializeGameFromContract: (gameView: any) => void
   updatePlayerHandFromContract: (playerId: 'player1' | 'player2', cardIds: number[]) => void
-  updatePlayerBattlefieldFromContract: (playerId: 'player1' | 'player2', instanceIds: number[], cardInstances: any[]) => void
+  updatePlayerBattlefieldFromContract: (playerId: 'player1' | 'player2', instanceIds: number[], cardInstances?: any[]) => void
   setContractFunctions: (functions: {
     endTurn?: (gameId: number) => Promise<any>
     playCard?: (gameId: number, cardIndex: number) => Promise<any>
@@ -553,8 +551,8 @@ export const useGameStore = create<GameState & GameActions>()(
         })
       },
 
-      // Update player hand from contract
-      updatePlayerHandFromContract: (playerId: string, cardIds: number[]) => {
+      // Update player hand from contract (removed duplicate - using the one defined earlier)
+      /*updatePlayerHandFromContract: (playerId: string, cardIds: number[]) => {
         const { players, availableCards } = get()
         const player = players[playerId as keyof typeof players]
         
@@ -642,10 +640,10 @@ export const useGameStore = create<GameState & GameActions>()(
             },
           },
         })
-      },
+      },*/
 
-      // Update player battlefield from contract
-      updatePlayerBattlefieldFromContract: (playerId: string, instanceIds: number[], cardInstances?: any[]) => {
+      // Update player battlefield from contract (removed duplicate - using the one defined earlier)
+      /*updatePlayerBattlefieldFromContract: (playerId: string, instanceIds: number[], cardInstances?: any[]) => {
         const { players, availableCards } = get()
         const player = players[playerId as keyof typeof players]
         
@@ -702,7 +700,7 @@ export const useGameStore = create<GameState & GameActions>()(
             },
           },
         })
-      },
+      },*/
 
       // Card registry actions
       loadCardsFromBlockchain: (contractCards: ContractCard[]) => {

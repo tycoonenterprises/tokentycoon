@@ -40,7 +40,7 @@ export const useDeckRegistry = () => {
       address: CONTRACT_ADDRESSES.DECK_REGISTRY,
       abi: DeckRegistryABI,
       functionName: 'addDeck',
-      args: [name, description, cardNames, cardCounts],
+      args: [name, description, cardNames, cardCounts.map(n => BigInt(n))],
     })
   }
 
@@ -65,7 +65,7 @@ export const useGetDeck = (deckId: number) => {
     address: CONTRACT_ADDRESSES.DECK_REGISTRY,
     abi: DeckRegistryABI,
     functionName: 'getDeck',
-    args: [deckId],
+    args: [BigInt(deckId)],
   })
 
   return {
@@ -93,7 +93,7 @@ export const useExpandDeck = (deckId: number) => {
     address: CONTRACT_ADDRESSES.DECK_REGISTRY,
     abi: DeckRegistryABI,
     functionName: 'expandDeck',
-    args: [deckId],
+    args: [BigInt(deckId)],
   })
 
   return {

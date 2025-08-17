@@ -68,7 +68,7 @@ export function useNFTCards() {
       id: `nft-${nftCard.tokenId}`,
       name: nftCard.name,
       type: nftCard.cardType as Card['type'],
-      cost: { gas: nftCard.cost },
+      cost: nftCard.cost,
       power: nftCard.power || undefined,
       toughness: nftCard.toughness || undefined,
       text: nftCard.text,

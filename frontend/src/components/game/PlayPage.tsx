@@ -108,7 +108,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({
     } catch (error) {
       console.error('Error creating game:', error);
       
-      const errorMessage = error?.message || error?.toString() || ''
+      const errorMessage = (error as any)?.message || (error as any)?.toString() || ''
       const isInsufficientFunds = errorMessage.toLowerCase().includes('insufficient') || 
                                  errorMessage.toLowerCase().includes('funds')
       

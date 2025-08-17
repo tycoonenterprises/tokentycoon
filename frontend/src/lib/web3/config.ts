@@ -56,7 +56,7 @@ export const privyConfig = {
     externalWallets: {
       metamask: true,
       coinbaseWallet: { connectionOptions: 'all' as const },
-      walletConnect: true,
+      walletConnect: { enabled: true },
     },
     supportedChains: [localChain, mainnet, base],
     defaultChain: localChain,

@@ -2,10 +2,16 @@ import { useState } from 'react'
 import { useNFTCards } from '@/lib/hooks/useNFTCards'
 import type { Card } from '@/stores/gameStore'
 import { CardImage } from '@/components/ui/CardImage'
+import type { ContractCard } from '@/lib/contracts/mockContract'
 
 interface DeckBuilderProps {
   onDeckReady: (deck: Card[]) => void
   onClose: () => void
+}
+
+interface NFTCard extends ContractCard {
+  isOwned: boolean
+  canUse: boolean
 }
 
 export function DeckBuilder({ onDeckReady, onClose }: DeckBuilderProps) {
@@ -51,7 +57,7 @@ export function DeckBuilder({ onDeckReady, onClose }: DeckBuilderProps) {
       const selectedNFTs = cards.filter(card => 
         selectedCards.includes(card.tokenId.toString())
       )
-      const deck = selectedNFTs.map(convertNFTToGameCard)
+      const deck = selectedNFTs.map((card: any) => convertNFTToGameCard(card))
       onDeckReady(deck)
     }
   }
@@ -191,7 +197,7 @@ export function DeckBuilder({ onDeckReady, onClose }: DeckBuilderProps) {
                         {/* Card Image */}
                         <div className="flex-1 mb-2">
                           <CardImage 
-                            card={card} 
+                            card={convertNFTToGameCard(card as NFTCard)} 
                             className="w-full h-full rounded"
                             fallbackIcon="🃏"
                           />

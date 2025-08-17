@@ -33,7 +33,7 @@ export function CardLoader() {
       store.setCardLoadError('Using mock cards - CardRegistry not accessible')
       store.setLoadingCards(false)
       hasLoadedRef.current = true
-    } else if (!hasLoadedRef.current && cardCount === 0) {
+    } else if (!hasLoadedRef.current && cardCount !== undefined && cardCount === 0) {
       console.log('CardLoader: CardCount is 0')
       store.setCardLoadError('No cards found in CardRegistry. Please deploy cards to the contract.')
       store.setLoadingCards(false)

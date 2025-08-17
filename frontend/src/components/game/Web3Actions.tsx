@@ -82,7 +82,7 @@ export function Web3Actions() {
       console.log('Wallet accounts:', walletAccounts)
       
       const embeddedWallets = walletAccounts.filter(account => 
-        account.walletClient === 'privy' || account.walletClientType === 'privy'
+        account.walletClientType === 'privy'
       )
       console.log('Embedded wallets:', embeddedWallets)
       

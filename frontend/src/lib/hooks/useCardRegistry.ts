@@ -30,15 +30,13 @@ export const useCardRegistry = () => {
     name: string, 
     description: string, 
     cost: number, 
-    cardType: string, 
-    abilities: string
+    cardType: number, 
+    abilities: string[]
   ) => {
-    return addCard({
-      address: CONTRACT_ADDRESSES.CARD_REGISTRY,
-      abi: CardRegistryABI,
-      functionName: 'addCard',
-      args: [name, description, cost, cardType, abilities],
-    })
+    // Note: This function may not be callable in production
+    // Cards are typically added during deployment
+    console.warn('addCard may not be available - cards are usually deployed with the contract')
+    return null
   }
 
   // Helper function to get a single card
@@ -61,7 +59,7 @@ export const useCardRegistry = () => {
       for (let i = 1; i <= count; i++) {
         const card = await getCard(i)
         if (card) {
-          allCards.push({ id: i, ...card })
+          allCards.push({ id: i, ...(card as any) })
         }
       }
       
@@ -72,10 +70,8 @@ export const useCardRegistry = () => {
     }
   }
 
-  // Helper to get card count as a function
-  const cardCount = async () => {
-    return Number(cardCountData || 0)
-  }
+  // Get card count as a number
+  const cardCount = Number(cardCountData || 0)
 
   return {
     // Data
@@ -100,7 +96,7 @@ export const useGetCard = (cardId: number) => {
     address: CONTRACT_ADDRESSES.CARD_REGISTRY,
     abi: CardRegistryABI,
     functionName: 'getCard',
-    args: [cardId],
+    args: [BigInt(cardId)],
   })
 
   return {

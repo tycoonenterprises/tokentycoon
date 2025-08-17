@@ -21,7 +21,6 @@ const baseSepolia = defineChain({
   },
   rpcUrls: {
     default: { http: ['https://sepolia.base.org'] },
-    public: { http: ['https://sepolia.base.org'] },
   },
 });
 
@@ -40,7 +39,6 @@ const anvil = defineChain({
 
 // Determine which chain to use
 const isBaseSepolia = process.env.NETWORK === 'base_sepolia';
-console.log("Using chain:", isBaseSepolia ? "Base Sepolia" : "Anvil");
 const chain = isBaseSepolia ? baseSepolia : anvil;
 
 // Get CardRegistry address from command line or environment
@@ -72,10 +70,7 @@ const CardTypes = {
 
 async function deployCards() {
   const startTime = Date.now();
-  const isSequential = process.env.DEPLOY_MODE === 'sequential';
-  
-  console.log('🚀 Starting card deployment...');
-  console.log(`Mode: ${isSequential ? 'Sequential (one by one)' : 'Parallel (batch)'}\n`);
+  console.log('🚀 Starting card deployment...\n');
   console.log('Setting up clients...');
   
   // Setup account
@@ -117,30 +112,6 @@ async function deployCards() {
   const totalCards = cardsData.cards.length;
   console.log(`\n📦 Loading ${totalCards} cards from cards.json...\n`);
   
-  // Check existing cards
-  console.log('🔍 Checking which cards already exist...');
-  const existingCards = new Set();
-  let skippedCount = 0;
-  
-  for (const card of cardsData.cards) {
-    try {
-      const existingCard = await publicClient.readContract({
-        address: CARD_REGISTRY_ADDRESS,
-        abi: cardRegistryAbi,
-        functionName: 'getCardByName',
-        args: [card.name],
-      });
-      if (existingCard && existingCard.id > 0) {
-        existingCards.add(card.name);
-        skippedCount++;
-      }
-    } catch (error) {
-      // Card doesn't exist, which is what we want
-    }
-  }
-  
-  console.log(`Found ${skippedCount} cards already deployed\n`);
-  
   // Function to update progress bar
   function updateProgress(current, total, message) {
     const percentage = Math.round((current / total) * 100);
@@ -152,26 +123,15 @@ async function deployCards() {
     process.stdout.write(`\r[${bar}] ${percentage}% (${current}/${total}) - ${message}`);
   }
   
-  if (isSequential) {
-    console.log('📝 Deploying cards one by one (sequential mode)...\n');
-  } else {
-    console.log('⚡ Sending all card transactions rapidly...\n');
-  }
+  console.log('⚡ Sending all card transactions rapidly...\n');
   
   const transactions = [];
   const failedCards = [];
   
-  // Send all transactions without waiting (or sequentially)
+  // Send all transactions without waiting
   for (let i = 0; i < cardsData.cards.length; i++) {
     const card = cardsData.cards[i];
-    
-    // Skip if card already exists
-    if (existingCards.has(card.name)) {
-      updateProgress(i + 1, totalCards, `Skipping (exists): ${card.name}`);
-      continue;
-    }
-    
-    updateProgress(i + 1, totalCards, `${isSequential ? 'Deploying' : 'Sending'}: ${card.name}`);
+    updateProgress(i + 1, totalCards, `Sending: ${card.name}`);
     
     // Prepare abilities data
     const abilityNames = [];
@@ -239,28 +199,8 @@ async function deployCards() {
       
       transactions.push({ hash, card: card.name });
       
-      // In sequential mode, wait for confirmation before continuing
-      if (isSequential) {
-        console.log(`\n⏳ Waiting for confirmation...`);
-        try {
-          const receipt = await publicClient.waitForTransactionReceipt({ 
-            hash,
-            confirmations: 1 
-          });
-          if (receipt.status === 'success') {
-            console.log(`✅ ${card.name} deployed successfully!`);
-          } else {
-            console.log(`❌ ${card.name} transaction failed`);
-            failedCards.push(card.name);
-          }
-        } catch (waitError) {
-          console.error(`❌ Error waiting for ${card.name}:`, waitError.message);
-          failedCards.push(card.name);
-        }
-      }
-      
     } catch (error) {
-      console.error(`\n❌ Failed to send tx for ${card.name}:`, error.message || error);
+      console.error(`\n❌ Failed to send tx for ${card.name}: ${error.message?.substring(0, 100)}`);
       failedCards.push(`${card.name}`);
     }
   }
@@ -269,29 +209,25 @@ async function deployCards() {
   updateProgress(totalCards, totalCards, 'All transactions sent!');
   console.log('\n');
   
-  // Skip waiting if we're in sequential mode (already waited for each one)
-  let successCount = transactions.length - failedCards.length;
-  if (!isSequential && transactions.length > 0) {
-    console.log(`\n⏳ Waiting for ${transactions.length} transactions to be confirmed...\n`);
-    
-    // Now wait for all transactions to be confirmed
-    let confirmedCount = 0;
-    const confirmationPromises = transactions.map(async (tx) => {
-      try {
-        await publicClient.waitForTransactionReceipt({ hash: tx.hash });
-        confirmedCount++;
-        updateProgress(confirmedCount, transactions.length, `Confirmed: ${tx.card}`);
-        return true;
-      } catch (error) {
-        console.error(`\n❌ Failed to confirm ${tx.card}: ${error.message?.substring(0, 100)}`);
-        failedCards.push(`${tx.card} (confirmation failed)`);
-        return false;
-      }
-    });
-    
-    const confirmationResults = await Promise.all(confirmationPromises);
-    successCount = confirmationResults.filter(r => r).length;
-  }
+  console.log(`\n⏳ Waiting for ${transactions.length} transactions to be confirmed...\n`);
+  
+  // Now wait for all transactions to be confirmed
+  let confirmedCount = 0;
+  const confirmationPromises = transactions.map(async (tx) => {
+    try {
+      await publicClient.waitForTransactionReceipt({ hash: tx.hash });
+      confirmedCount++;
+      updateProgress(confirmedCount, transactions.length, `Confirmed: ${tx.card}`);
+      return true;
+    } catch (error) {
+      console.error(`\n❌ Failed to confirm ${tx.card}: ${error.message?.substring(0, 100)}`);
+      failedCards.push(`${tx.card} (confirmation failed)`);
+      return false;
+    }
+  });
+  
+  const confirmationResults = await Promise.all(confirmationPromises);
+  const successCount = confirmationResults.filter(r => r).length;
   
   console.log('\n');
   
@@ -326,15 +262,10 @@ async function deployCards() {
   const endTime = Date.now();
   const totalTime = ((endTime - startTime) / 1000).toFixed(2);
   
-  const deployedCount = transactions.length - failedCards.length;
-  console.log(`\n✅ Deployment Summary:`);
-  console.log(`   Skipped (already exist): ${skippedCount}`);
-  console.log(`   Successfully deployed: ${deployedCount}`);
-  console.log(`   Failed: ${failedCards.length}`);
+  console.log(`\n✅ Successfully deployed ${successCount}/${totalCards} cards in ${totalTime} seconds!`);
   console.log(`   Total cards in registry: ${cardCount}`);
-  console.log(`   Time taken: ${totalTime} seconds`);
-  if (deployedCount > 0) {
-    console.log(`   Average time per card: ${(parseFloat(totalTime) / deployedCount).toFixed(2)}s`);
+  if (successCount > 0) {
+    console.log(`   Average time per card: ${(totalTime / successCount).toFixed(2)}s`);
   }
 }
 

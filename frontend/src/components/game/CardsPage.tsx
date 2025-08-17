@@ -3,6 +3,7 @@ import { X, Search, Filter } from 'lucide-react';
 import { CardImage } from '@/components/ui/CardImage';
 import { useCardRegistry } from '@/lib/hooks/useCardRegistry';
 import type { ContractCard } from '@/lib/types/contracts';
+import type { Card } from '@/stores/gameStore';
 
 interface CardsPageProps {
   onClose?: () => void;
@@ -15,6 +16,19 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose = () => window.loc
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<CardType | 'All'>('All');
   const [selectedCard, setSelectedCard] = useState<ContractCard | null>(null);
+
+  // Helper to convert ContractCard to Card format
+  const convertContractCardToCard = (contractCard: ContractCard): Card => {
+    const cardTypes = ['Chain', 'DeFi', 'EOA', 'Action'] as const;
+    return {
+      id: contractCard.id.toString(),
+      name: contractCard.name,
+      type: cardTypes[contractCard.cardType] || 'unit',
+      cost: contractCard.cost,
+      text: contractCard.description,
+      abilities: contractCard.abilities?.length > 0 ? JSON.stringify(contractCard.abilities) : undefined
+    };
+  };
 
   // Convert contract cards to display format
   const cards = contractCards || [];
@@ -120,7 +134,7 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose = () => window.loc
                       {/* Card Image */}
                       <div className="aspect-[3/4] bg-gray-900 rounded mb-2 overflow-hidden">
                         <CardImage 
-                          card={card} 
+                          card={convertContractCardToCard(card)} 
                           className="w-full h-full"
                           fallbackIcon="🃏"
                         />
@@ -160,7 +174,7 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose = () => window.loc
               <div className="w-64 flex-shrink-0">
                 <div className="aspect-[3/4] bg-gray-800 rounded-lg overflow-hidden">
                   <CardImage 
-                    card={selectedCard} 
+                    card={convertContractCardToCard(selectedCard)} 
                     className="w-full h-full"
                     fallbackIcon="🃏"
                   />

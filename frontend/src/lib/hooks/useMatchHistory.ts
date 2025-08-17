@@ -81,8 +81,10 @@ export function useMatchHistory() {
             
             let result: 'won' | 'lost' | 'in-progress' | 'waiting' = 'waiting'
             if (gameState.isFinished) {
-              if (gameState.winner) {
-                const winnerAddress = gameState.winner.toLowerCase()
+              // Check who won based on cold storage or other win conditions
+              const winner = (gameState as any).winner
+              if (winner) {
+                const winnerAddress = winner.toLowerCase()
                 result = winnerAddress === userAddress ? 'won' : 'lost'
               }
             } else if (gameState.isStarted) {
@@ -93,7 +95,7 @@ export function useMatchHistory() {
               gameId: i,
               player1: gameState.player1,
               player2: gameState.player2,
-              winner: gameState.winner,
+              winner: (gameState as any).winner,
               isFinished: gameState.isFinished,
               isStarted: gameState.isStarted,
               userRole,

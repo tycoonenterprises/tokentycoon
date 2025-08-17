@@ -130,9 +130,9 @@ function GamePage({ gameId }: { gameId: number }) {
         updateGameFromContract(gameState)
         
         // If game is started, activate it and load full state
-        if (gameState && 'isStarted' in gameState && gameState.isStarted) {
-          const player1Address = gameState.player1 as `0x${string}`
-          const player2Address = gameState.player2 as `0x${string}`
+        if (gameState && typeof gameState === 'object' && 'isStarted' in gameState && gameState.isStarted) {
+          const player1Address = (gameState as any).player1 as `0x${string}`
+          const player2Address = (gameState as any).player2 as `0x${string}`
           
           // Activate the game without overwriting contract data
           activateOnchainGame(player1Address, player2Address)

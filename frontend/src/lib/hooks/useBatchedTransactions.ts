@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef } from 'react'
 import { encodeFunctionData, type Hex } from 'viem'
-import { usePrivy, useWallets } from '@privy-io/react-auth'
+import { usePrivy, useWallets, useSendTransaction } from '@privy-io/react-auth'
 import { CONTRACT_ADDRESSES } from '@/lib/web3/config'
 import { GameEngineABI } from '@/lib/contracts/GameEngineABI'
 
@@ -13,9 +13,10 @@ interface QueuedTransaction {
 
 export function useBatchedTransactions() {
   const { wallets } = useWallets()
+  const { sendTransaction } = useSendTransaction()
   const [isPending, setIsPending] = useState(false)
   const [queue, setQueue] = useState<QueuedTransaction[]>([])
-  const batchTimeoutRef = useRef<NodeJS.Timeout>()
+  const batchTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
   
   // Batch configuration
   const BATCH_DELAY = 500 // Wait 500ms to collect transactions
@@ -42,31 +43,26 @@ export function useBatchedTransactions() {
       // If only one transaction, execute normally
       if (batch.length === 1) {
         const tx = batch[0]
-        const provider = await wallet.getEthereumProvider()
         
         const data = encodeFunctionData({
           abi: GameEngineABI,
-          functionName: tx.functionName,
-          args: tx.args,
+          functionName: tx.functionName as any,
+          args: tx.args as any,
         })
         
-        const txHash = await provider.request({
-          method: 'eth_sendTransaction',
-          params: [{
-            from: wallet.address,
-            to: CONTRACT_ADDRESSES.GAME_ENGINE,
-            data,
-          }],
+        const txReceipt = await sendTransaction({
+          to: CONTRACT_ADDRESSES.GAME_ENGINE,
+          data,
+          value: 0n,
         })
         
-        tx.resolve(txHash)
+        tx.resolve(txReceipt.hash)
         console.log(`✅ Single transaction executed: ${tx.functionName}`)
       } else {
         // Multiple transactions - we need to implement multicall in the contract
         // For now, we'll execute them sequentially with one approval dialog
         console.log(`📦 Executing batch of ${batch.length} transactions...`)
         
-        const provider = await wallet.getEthereumProvider()
         const results = []
         
         // Create a promise that will show one approval dialog for all transactions
@@ -78,21 +74,18 @@ export function useBatchedTransactions() {
           try {
             const data = encodeFunctionData({
               abi: GameEngineABI,
-              functionName: tx.functionName,
-              args: tx.args,
+              functionName: tx.functionName as any,
+              args: tx.args as any,
             })
             
-            const txHash = await provider.request({
-              method: 'eth_sendTransaction',
-              params: [{
-                from: wallet.address,
-                to: CONTRACT_ADDRESSES.GAME_ENGINE,
-                data,
-              }],
+            const txReceipt = await sendTransaction({
+              to: CONTRACT_ADDRESSES.GAME_ENGINE,
+              data,
+              value: 0n,
             })
             
-            results.push(txHash)
-            tx.resolve(txHash)
+            results.push(txReceipt.hash)
+            tx.resolve(txReceipt.hash)
           } catch (error) {
             tx.reject(error)
           }

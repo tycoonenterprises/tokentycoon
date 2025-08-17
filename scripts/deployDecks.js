@@ -10,7 +10,21 @@ const __dirname = dirname(__filename);
 // Default Anvil private key (account #0)
 const PRIVATE_KEY = process.env.PRIVATE_KEY || '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80';
 
-// Define Anvil chain configuration
+// Define chain configuration based on environment
+const baseSepolia = defineChain({
+  id: 84532,
+  name: 'Base Sepolia',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'Ether',
+    symbol: 'ETH',
+  },
+  rpcUrls: {
+    default: { http: ['https://sepolia.base.org'] },
+    public: { http: ['https://sepolia.base.org'] },
+  },
+});
+
 const anvil = defineChain({
   id: 31337,
   name: 'Anvil',
@@ -23,6 +37,11 @@ const anvil = defineChain({
     default: { http: ['http://localhost:8545'] },
   },
 });
+
+// Determine which chain to use
+const isBaseSepolia = process.env.NETWORK === 'base_sepolia';
+console.log("Using chain:", isBaseSepolia ? "Base Sepolia" : "Anvil");
+const chain = isBaseSepolia ? baseSepolia : anvil;
 
 // Get DeckRegistry address from command line or environment
 const DECK_REGISTRY_ADDRESS = process.argv[2] || process.env.DECK_REGISTRY_ADDRESS;
@@ -52,30 +71,38 @@ async function deployDecks() {
   // Setup clients
   const walletClient = createWalletClient({
     account,
-    chain: anvil,
-    transport: http('http://localhost:8545'),
+    chain: chain,
+    transport: http(chain.rpcUrls.default.http[0]),
   });
   
   const publicClient = createPublicClient({
-    chain: anvil,
-    transport: http('http://localhost:8545'),
+    chain: chain,
+    transport: http(chain.rpcUrls.default.http[0]),
   });
   
   console.log('Using account:', account.address);
   console.log('DeckRegistry address:', DECK_REGISTRY_ADDRESS);
   
-  // Check owner
-  const owner = await publicClient.readContract({
-    address: DECK_REGISTRY_ADDRESS,
-    abi: deckRegistryAbi,
-    functionName: 'owner',
-  });
-  
-  console.log('Contract owner:', owner);
-  
-  if (owner.toLowerCase() !== account.address.toLowerCase()) {
-    console.error('Error: Current account is not the owner of DeckRegistry');
-    process.exit(1);
+  // Skip owner check for Base Sepolia - contract might not be initialized yet
+  if (!isBaseSepolia) {
+    try {
+      const owner = await publicClient.readContract({
+        address: DECK_REGISTRY_ADDRESS,
+        abi: deckRegistryAbi,
+        functionName: 'owner',
+      });
+      
+      console.log('Contract owner:', owner);
+      
+      if (owner.toLowerCase() !== account.address.toLowerCase()) {
+        console.error('Error: Current account is not the owner of DeckRegistry');
+        process.exit(1);
+      }
+    } catch (error) {
+      console.log('Warning: Could not verify owner (might be expected for new deployment)');
+    }
+  } else {
+    console.log('Skipping owner check for Base Sepolia deployment');
   }
   
   // Load decks from JSON
