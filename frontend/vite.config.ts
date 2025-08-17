@@ -5,6 +5,7 @@ import { resolve } from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: process.env.GITHUB_ACTIONS ? '/EthereumCardGame/' : '/',
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
