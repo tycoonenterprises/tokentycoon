@@ -130,9 +130,9 @@ function GamePage({ gameId }: { gameId: number }) {
         updateGameFromContract(gameState)
         
         // If game is started, activate it and load full state
-        if (gameState.isStarted) {
-          const player1Address = gameState.player1
-          const player2Address = gameState.player2
+        if (gameState && 'isStarted' in gameState && gameState.isStarted) {
+          const player1Address = gameState.player1 as `0x${string}`
+          const player2Address = gameState.player2 as `0x${string}`
           
           // Activate the game without overwriting contract data
           activateOnchainGame(player1Address, player2Address)
@@ -275,10 +275,7 @@ export function AppRouter() {
         
         {/* Active game */}
         <Route path="/game/:gameId" element={
-          <div>
-            {console.log('🎯 Route /game/:gameId matched!')}
-            <GameWrapper />
-          </div>
+          <GameWrapper />
         } />
         
         {/* Cards collection */}
@@ -367,10 +364,10 @@ function GameLobbyWrapper() {
     }
   }
   
-  const isHost = address && (
+  const isHost = !!(address && (
     address.toLowerCase() === gameState?.player1?.toLowerCase() || 
     address.toLowerCase() === gameState?.creator?.toLowerCase()
-  )
+  ))
   
   return (
     <div className="min-h-screen bg-eth-dark flex items-center justify-center">

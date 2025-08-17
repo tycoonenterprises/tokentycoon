@@ -445,8 +445,8 @@ export const useGameEngine = () => {
               status: 'waiting' as const,
               createdAt: Date.now() - (totalGames - 1 - i) * 60000, // Estimate time
               deckIds: { 
-                player1: undefined, // Deck IDs not available in GameView
-                player2: undefined
+                player1: 0, // Deck IDs not available in GameView, default to 0
+                player2: 0
               }
             })
           } else {
@@ -520,8 +520,8 @@ export const useGameEngine = () => {
         player2ColdStorage: gameView.player2ColdStorage ? Number(gameView.player2ColdStorage) : 0,
         // Note: Deck IDs are not in GameView, would need to query games mapping for those
         deckIds: { 
-          player1: undefined, 
-          player2: undefined
+          player1: 0, 
+          player2: 0
         }
       }
     } catch (error) {

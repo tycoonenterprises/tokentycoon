@@ -24,7 +24,7 @@ export const useDeckRegistry = () => {
   const { data: isInitialized } = useReadContract({
     address: CONTRACT_ADDRESSES.DECK_REGISTRY,
     abi: DeckRegistryABI,
-    functionName: 'isInitialized',
+    functionName: 'initialized',
   })
 
   // Write functions

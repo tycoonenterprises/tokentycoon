@@ -20,7 +20,7 @@ export const useCardRegistry = () => {
   const { data: isInitialized } = useReadContract({
     address: CONTRACT_ADDRESSES.CARD_REGISTRY,
     abi: CardRegistryABI,
-    functionName: 'isInitialized',
+    functionName: 'initialized',
   })
 
   // Write functions

@@ -51,6 +51,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({
   const [loadingGames, setLoadingGames] = useState(false);
   const [gameState, setGameState] = useState<any>(null);
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
+  const [isStartingGameLocal, setIsStartingGameLocal] = useState(false);
 
 
   // Format decks for display (deck IDs start at 0)
@@ -141,7 +142,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({
     if (currentGameId === null) return;
     
     try {
-      setIsStartingGame(true);
+      setIsStartingGameLocal(true);
       const result = await startGame(currentGameId);
       console.log('Game started successfully:', result);
       
@@ -150,7 +151,7 @@ export const PlayPage: React.FC<PlayPageProps> = ({
     } catch (error) {
       console.error('Error starting game:', error);
       alert('Failed to start game. Make sure both players have joined.');
-      setIsStartingGame(false);
+      setIsStartingGameLocal(false);
     }
   };
 
