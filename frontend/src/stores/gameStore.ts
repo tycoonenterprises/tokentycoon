@@ -425,7 +425,9 @@ export const useGameStore = create<GameState & GameActions>()(
         const newIsActive = gameView.isStarted && !gameView.isFinished
         
         console.log('📋 GAME STATE UPDATE:', {
-          gameId: convertBigInt(gameView.gameId),
+          rawGameId: gameView.gameId,
+          convertedGameId: convertBigInt(gameView.gameId),
+          previousStoreGameId: previousState.gameId,
           previousIsActive: previousState.isGameActive,
           newIsActive,
           isStarted: gameView.isStarted,
