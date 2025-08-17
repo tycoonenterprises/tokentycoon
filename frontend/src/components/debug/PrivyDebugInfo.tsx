@@ -42,22 +42,27 @@ export function PrivyDebugInfo() {
   )
 
   return (
-    <div className="fixed top-4 left-4 z-50 w-96 max-w-[90vw] bg-gray-900 border border-gray-700 rounded-lg shadow-xl">
+    <div className={`fixed bottom-0 left-0 z-40 bg-gray-900 border border-gray-700 shadow-xl transition-all duration-300 ${
+      isOpen ? 'w-96 max-w-[90vw] rounded-t-lg' : 'w-20 h-8 rounded-tr-lg'
+    }`}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-3 hover:bg-gray-800 transition-colors"
+        className={`w-full flex items-center justify-between hover:bg-gray-800 transition-colors ${
+          isOpen ? 'p-3' : 'p-2'
+        }`}
       >
         <div className="flex items-center gap-2">
-          <Wallet className="w-5 h-5 text-purple-400" />
-          <span className="font-semibold text-white">Privy Debug</span>
-          {isConnected && (
+          <Wallet className={`text-purple-400 ${isOpen ? 'w-5 h-5' : 'w-4 h-4'}`} />
+          {isOpen && <span className="font-semibold text-white">Privy Debug</span>}
+          {isOpen && isConnected && (
             <span className="text-xs text-green-400">Connected</span>
           )}
+          {!isOpen && isConnected && (
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+          )}
         </div>
-        {isOpen ? (
+        {isOpen && (
           <ChevronUp className="w-5 h-5 text-gray-400" />
-        ) : (
-          <ChevronDown className="w-5 h-5 text-gray-400" />
         )}
       </button>
 

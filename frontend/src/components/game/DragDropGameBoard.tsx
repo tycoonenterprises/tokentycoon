@@ -291,7 +291,7 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
   }
 
   const visualState = getCardVisualState()
-  const cardSize = source === 'board' ? 'w-20 h-28' : 'w-28 h-40'
+  const cardSize = source === 'board' ? 'w-32 h-44' : 'w-24 h-32'
 
   return (
     <div className="relative"
@@ -834,7 +834,7 @@ export function DragDropGameBoard() {
                   {(opponentBoard.hand || []).map((_, index) => (
                     <div
                       key={`opponent-hand-${index}`}
-                      className="w-28 h-40 flex-shrink-0 card transition-all duration-200 border-red-500/50 transform rotate-180 cursor-not-allowed opacity-75"
+                      className="w-24 h-32 flex-shrink-0 card transition-all duration-200 border-red-500/50 transform rotate-180 cursor-not-allowed opacity-75"
                     >
                       {/* Card Back Design */}
                       <div className="h-full bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 rounded flex items-center justify-center relative overflow-hidden">
@@ -847,9 +847,9 @@ export function DragDropGameBoard() {
                           ⟐
                         </div>
                         
-                        {/* TCG text */}
+                        {/* Game branding */}
                         <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-gray-500 font-bold transform rotate-180">
-                          TCG
+                          TT
                         </div>
                       </div>
                     </div>
@@ -882,7 +882,7 @@ export function DragDropGameBoard() {
                 {opponentBoard.board.map((card) => (
                   <div
                     key={card.id}
-                    className="w-24 h-32 card border-red-500/50 transform rotate-180 cursor-pointer hover:scale-105 transition-transform"
+                    className="w-32 h-44 card border-red-500/50 transform rotate-180 cursor-pointer hover:scale-105 transition-transform"
                     onClick={(e) => {
                       e.stopPropagation()
                       handleCardClick(card)

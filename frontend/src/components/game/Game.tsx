@@ -374,7 +374,7 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
       <header className="bg-gray-900 border-b border-gray-700 p-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold text-white">Ethereum TCG</h1>
+            <h1 className="text-2xl font-bold text-white">Token Tycoon</h1>
             <span className="text-sm text-gray-400">
               Welcome, {user?.email?.address || user?.wallet?.address?.slice(0, 8)}...
             </span>

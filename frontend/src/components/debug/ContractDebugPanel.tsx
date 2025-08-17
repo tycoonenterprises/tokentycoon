@@ -349,28 +349,36 @@ export const ContractDebugPanel: React.FC<ContractDebugPanelProps> = ({
   };
 
   return (
-    <div className="fixed top-4 right-4 z-50 w-96 max-w-[90vw]">
-      <div className="bg-gray-900 border border-gray-700 rounded-lg shadow-xl">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="w-full flex items-center justify-between p-3 hover:bg-gray-800 transition-colors"
-        >
+    <div className={`fixed bottom-0 right-0 z-40 bg-gray-900 border border-gray-700 shadow-xl transition-all duration-300 ${
+      isOpen ? 'w-96 max-w-[90vw] rounded-t-lg' : 'w-24 h-8 rounded-tl-lg'
+    }`}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-full flex items-center justify-between hover:bg-gray-800 transition-colors ${
+          isOpen ? 'p-3' : 'p-2'
+        }`}
+      >
           <div className="flex items-center gap-2">
-            <Activity className="w-5 h-5 text-cyan-400" />
-            <span className="font-semibold text-white">Contract Debug</span>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-400">({transactions.length} tx)</span>
-              {totalGasUsed > 0n && (
-                <span className="text-xs text-cyan-400 font-mono">
-                  {totalGasUsed.toLocaleString()} gas
-                </span>
-              )}
-            </div>
+            <Activity className={`text-cyan-400 ${isOpen ? 'w-5 h-5' : 'w-4 h-4'}`} />
+            {isOpen && <span className="font-semibold text-white">Contract Debug</span>}
+            {isOpen && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-400">({transactions.length} tx)</span>
+                {totalGasUsed > 0n && (
+                  <span className="text-xs text-cyan-400 font-mono">
+                    {totalGasUsed.toLocaleString()} gas
+                  </span>
+                )}
+              </div>
+            )}
+            {!isOpen && transactions.length > 0 && (
+              <div className="text-xs text-cyan-400 font-mono">
+                {transactions.length}
+              </div>
+            )}
           </div>
-          {isOpen ? (
+          {isOpen && (
             <ChevronUp className="w-5 h-5 text-gray-400" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-gray-400" />
           )}
         </button>
 
@@ -591,7 +599,6 @@ export const ContractDebugPanel: React.FC<ContractDebugPanelProps> = ({
             )}
           </div>
         )}
-      </div>
     </div>
   );
 };

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the plan to integrate the Ethereum TCG frontend with the real smart contracts deployed on localhost:8545. The goal is to replace the mock contract system with real blockchain interactions to demonstrate end-to-end functionality.
+This document outlines the plan to integrate the Token Tycoon frontend with the real smart contracts deployed on localhost:8545. The goal is to replace the mock contract system with real blockchain interactions to demonstrate end-to-end functionality.
 
 ## Current Smart Contract Architecture
 

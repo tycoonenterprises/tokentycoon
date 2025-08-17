@@ -39,10 +39,10 @@ export function AuthGate({ children }: AuthGateProps) {
         <div className="max-w-md w-full mx-4">
           <FadeInUp className="text-center mb-8">
             <h1 className="text-4xl font-bold text-white mb-2">
-              Ethereum TCG
+              Token Tycoon
             </h1>
             <p className="text-gray-400">
-              The next generation trading card game on Ethereum
+              The ultimate blockchain trading card game
             </p>
           </FadeInUp>
           

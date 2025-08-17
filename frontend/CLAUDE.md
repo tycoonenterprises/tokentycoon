@@ -1,8 +1,8 @@
-# Ethereum Trading Card Game - Frontend Application
+# Token Tycoon - Frontend Application
 
 ## 🎮 Project Overview
 
-This is a fully functional React-based frontend application for an Ethereum Trading Card Game (TCG) that integrates blockchain functionality through Privy authentication and Wagmi for Web3 interactions. The application features a complete card-based game interface with on-chain capabilities for NFT cards and blockchain transactions.
+This is a fully functional React-based frontend application for Token Tycoon, a blockchain trading card game that integrates blockchain functionality through Privy authentication and Wagmi for Web3 interactions. The application features a complete card-based game interface with on-chain capabilities for NFT cards and blockchain transactions.
 
 ## ✅ Implementation Status
 

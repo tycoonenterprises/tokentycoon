@@ -127,7 +127,7 @@ export function Web3Actions() {
         throw new Error('No wallets available after creation attempt')
       }
       
-      const message = `Welcome to Ethereum TCG!\n\nTimestamp: ${new Date().toISOString()}\nUser: ${user.id}`
+      const message = `Welcome to Token Tycoon!\n\nTimestamp: ${new Date().toISOString()}\nUser: ${user.id}`
       
       console.log('Attempting to sign message:', message)
       
