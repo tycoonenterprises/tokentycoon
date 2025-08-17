@@ -172,7 +172,7 @@ interface ExtendedDraggableCardProps extends DraggableCardProps {
   playerETH: number
   isActivePlayer: boolean
   gameId: number | null
-  onCardClick: (card: Card) => void
+  onCardClick: (card: Card, source?: 'hand' | 'board', playerId?: string) => void
   handIndex?: number
   currentViewingPlayer?: string
 }
@@ -314,7 +314,8 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
         }}
         {...attributes}
         {...(canDrag ? listeners : {})}
-        className={`${cardSize} flex-shrink-0 card transition-all duration-200 ${getTypeColor(card.type)} ${visualState.className} ${isDragging ? 'z-50' : ''}`}
+        onClick={() => onCardClick && onCardClick(card, source, playerId)}
+        className={`${cardSize} flex-shrink-0 card transition-all duration-200 ${getTypeColor(card.type)} ${visualState.className} ${isDragging ? 'z-50' : ''} cursor-pointer hover:shadow-xl`}
       >
       {/* Card Header - Only show full header for hand cards */}
       {source === 'hand' && (
@@ -609,6 +610,17 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
   const playerBoard = isViewingPlayer1 ? player1 : player2
   const opponentBoard = isViewingPlayer1 ? player2 : player1
 
+  const handleCardClick = (card: Card, source?: 'hand' | 'board', playerId?: string) => {
+    // Add metadata to the card for the modal
+    const cardWithMetadata = {
+      ...card,
+      source,
+      playerId
+    }
+    setSelectedCard(cardWithMetadata)
+    setIsModalOpen(true)
+  }
+
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
     setActiveId(active.id as string)
@@ -722,11 +734,6 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
       return canDrag
     }
     return false // Board cards can't be moved yet
-  }
-
-  const handleCardClick = (card: Card) => {
-    setSelectedCard(card)
-    setIsModalOpen(true)
   }
 
   // Handle draw card to start turn
@@ -1118,6 +1125,9 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
           setIsModalOpen(false)
           setSelectedCard(null)
         }}
+        isOnBattlefield={selectedCard?.source === 'board'}
+        isOwnCard={selectedCard?.playerId === currentViewingPlayer}
+        gameId={gameId}
       />
 
     </div>

@@ -223,6 +223,29 @@ export const GameEngineABI = [
   },
   {
     "type": "function",
+    "name": "stakeETH",
+    "inputs": [
+      {
+        "name": "_gameId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_instanceId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256",
+        "internalType": "uint256"
+      }
+    ],
+    "outputs": [],
+    "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
     "name": "gameIds",
     "inputs": [
       {

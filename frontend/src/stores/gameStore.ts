@@ -16,6 +16,9 @@ export interface Card {
   heldETH?: number // For wallet/EOA cards that can hold ETH
   originalCardId?: number // Original card ID from contract
   handIndex?: number // Index in player's hand for contract calls
+  instanceId?: number // Instance ID for cards on battlefield
+  source?: 'hand' | 'board' // Where the card is located
+  playerId?: string // Which player owns the card
 }
 
 // Convert contract enum to string
@@ -144,6 +147,8 @@ export interface GameActions {
   // Contract integration
   setContractGameId: (gameId: number) => void
   initializeGameFromContract: (gameView: any) => void
+  updatePlayerHandFromContract: (playerId: 'player1' | 'player2', cardIds: number[]) => void
+  updatePlayerBattlefieldFromContract: (playerId: 'player1' | 'player2', instanceIds: number[], cardInstances: any[]) => void
   setContractFunctions: (functions: {
     endTurn?: (gameId: number) => Promise<any>
     playCard?: (gameId: number, cardIndex: number) => Promise<any>
@@ -398,6 +403,75 @@ export const useGameStore = create<GameState & GameActions>()(
           },
         })
       },
+
+      updatePlayerHandFromContract: (playerId: 'player1' | 'player2', cardIds: number[]) => {
+        const { availableCards, players } = get()
+        
+        // Convert card IDs to Card objects
+        const hand = cardIds.map((cardId, index) => {
+          const availableCard = availableCards[cardId] || null
+          if (!availableCard) {
+            console.warn(`Card ID ${cardId} not found in available cards`)
+            return null
+          }
+          
+          return {
+            ...availableCard,
+            id: `${playerId}-hand-${cardId}-${index}`,
+            handIndex: index, // Store index for contract calls
+          }
+        }).filter(Boolean) as Card[]
+        
+        set({
+          players: {
+            ...players,
+            [playerId]: {
+              ...players[playerId],
+              hand,
+            },
+          },
+        })
+      },
+
+      updatePlayerBattlefieldFromContract: (playerId: 'player1' | 'player2', instanceIds: number[], cardInstances: any[]) => {
+        const { availableCards, players } = get()
+        
+        // Convert card instances to Card objects with instance data
+        const board = cardInstances.map((instance, index) => {
+          if (!instance) return null
+          
+          const cardId = Number(instance.cardId)
+          const instanceId = instanceIds[index]
+          const availableCard = availableCards[cardId] || null
+          
+          if (!availableCard) {
+            console.warn(`Card ID ${cardId} not found in available cards`)
+            return null
+          }
+          
+          const stakedAmount = Number(instance.stakedETH || 0)
+          console.log(`💰 Card ${availableCard.name} (instance ${instanceId}) has ${stakedAmount} ETH staked`)
+          
+          return {
+            ...availableCard,
+            id: `${playerId}-board-${instanceId}`,
+            instanceId, // Store instance ID for staking
+            stakedETH: stakedAmount,
+            source: 'board' as const,
+            playerId,
+          }
+        }).filter(Boolean) as Card[]
+        
+        set({
+          players: {
+            ...players,
+            [playerId]: {
+              ...players[playerId],
+              board,
+            },
+          },
+        })
+      },
       
       // Update game state from contract GameView
       // This function receives real ETH balances from the smart contract
@@ -567,11 +641,17 @@ export const useGameStore = create<GameState & GameActions>()(
             }
             
             if (availableCard) {
+              const stakedAmount = Number(instance.stakedETH || 0)
+              console.log(`💰 Card ${availableCard.name} (instance ${instanceId}) has ${stakedAmount} ETH staked`)
+              
               return {
                 ...availableCard,
                 id: `instance-${instanceId}`, // Keep unique instance ID
                 instanceId: instanceId,
-                originalCardId: cardId
+                originalCardId: cardId,
+                stakedETH: stakedAmount,
+                source: 'board' as const,
+                playerId,
               }
             }
           }
