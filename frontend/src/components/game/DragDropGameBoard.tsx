@@ -339,6 +339,13 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
           🔗
         </div>
       )}
+      
+      {/* Chain card indicator */}
+      {card.type === 'Chain' && (
+        <div className="absolute -top-1 -left-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold z-10">
+          ⛓️
+        </div>
+      )}
       {/* Card Header - Only show full header for hand cards */}
       {source === 'hand' && (
         <div className="p-2 border-b border-gray-600">
@@ -611,9 +618,9 @@ function ChainDropTarget({ chainCard, playerId, canDrop, children }: ChainDropTa
       ref={setNodeRef}
       className={`relative ${
         canDrop && isOver 
-          ? 'ring-2 ring-purple-400 ring-offset-2 ring-offset-gray-900 bg-purple-100/10' 
+          ? 'ring-4 ring-purple-400 ring-offset-2 ring-offset-gray-900 bg-purple-100/20 shadow-lg shadow-purple-400/50' 
           : canDrop 
-            ? 'ring-2 ring-purple-500/50 bg-purple-50/5' 
+            ? 'ring-3 ring-purple-500/70 bg-purple-50/10 shadow-md shadow-purple-500/30' 
             : ''
       } transition-all duration-200 rounded`}
     >
@@ -1043,6 +1050,14 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
                     .map((card) => {
                       const isDraggingDeFi = draggedCard?.type === 'DeFi'
                       const canDropOnChain = canPlayCards && isDraggingDeFi
+                      
+                      console.log('🔗 Rendering Chain card:', {
+                        cardName: card.name,
+                        cardType: card.type,
+                        isDraggingDeFi,
+                        canDropOnChain,
+                        canPlayCards
+                      })
                       
                       return (
                         <ChainDropTarget
