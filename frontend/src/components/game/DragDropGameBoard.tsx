@@ -175,9 +175,10 @@ interface ExtendedDraggableCardProps extends DraggableCardProps {
   onCardClick: (card: Card, source?: 'hand' | 'board', playerId?: string) => void
   handIndex?: number
   currentViewingPlayer?: string
+  isDragInProgress?: boolean
 }
 
-function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, gameId, handIndex, onCardClick, currentViewingPlayer }: ExtendedDraggableCardProps) {
+function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, gameId, handIndex, onCardClick, currentViewingPlayer, isDragInProgress = false }: ExtendedDraggableCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0, isOpponentCard: false })
   const cardRef = useRef<HTMLDivElement>(null)
@@ -292,10 +293,17 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
   // Determine if this is an opponent card by checking if playerId doesn't match current viewing player
   const isOpponentCard = playerId !== (currentViewingPlayer || 'player1')
 
+  // Clear hover when any dragging starts (local or global)
+  useEffect(() => {
+    if (isDragging || isDragInProgress) {
+      setIsHovered(false)
+    }
+  }, [isDragging, isDragInProgress])
+
   return (
     <div className="relative"
       onMouseEnter={(e) => {
-        if (!isDragging) {
+        if (!isDragging && !isDragInProgress) {
           const rect = e.currentTarget.getBoundingClientRect()
           setHoverPosition({
             x: rect.left + rect.width / 2,
@@ -306,6 +314,10 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
         }
       }}
       onMouseLeave={() => {
+        setIsHovered(false)
+      }}
+      onMouseDown={() => {
+        // Also clear on mouse down to prepare for potential drag
         setIsHovered(false)
       }}
     >
@@ -439,7 +451,7 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
       </div>
       
       {/* Portal-based hover overlay that renders at document root */}
-      {isHovered && !isDragging && typeof document !== 'undefined' && createPortal(
+      {isHovered && !isDragging && !isDragInProgress && typeof document !== 'undefined' && createPortal(
         <div 
           className="fixed pointer-events-none z-[99999] transition-opacity duration-200"
           style={{
@@ -660,6 +672,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
   const [selectedCard, setSelectedCard] = useState<Card | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [shouldWiggleDrawButton, setShouldWiggleDrawButton] = useState(false)
+  const [isDragInProgress, setIsDragInProgress] = useState(false)
 
   const { player1, player2 } = players
   
@@ -710,6 +723,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event
     setActiveId(active.id as string)
+    setIsDragInProgress(true)
     
     const data = active.data.current
     if (data) {
@@ -726,6 +740,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
     const { active, over } = event
     setActiveId(null)
     setDraggedCard(null)
+    setIsDragInProgress(false)
 
     console.log('🎯 Drag ended:', {
       active: active.id,
@@ -992,6 +1007,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
                       gameId={gameId}
                       onCardClick={handleCardClick}
                       currentViewingPlayer={currentViewingPlayer}
+                      isDragInProgress={isDragInProgress}
                     />
                   </div>
                 ))}
@@ -1045,6 +1061,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
                             gameId={gameId}
                             onCardClick={handleCardClick}
                             currentViewingPlayer={currentViewingPlayer}
+                            isDragInProgress={isDragInProgress}
                           />
                         </ChainDropTarget>
                       )
@@ -1071,6 +1088,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
                           gameId={gameId}
                           onCardClick={handleCardClick}
                           currentViewingPlayer={currentViewingPlayer}
+                          isDragInProgress={isDragInProgress}
                         />
                       ))}
                   </SortableContext>
@@ -1126,6 +1144,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
                         onCardClick={handleCardClick}
                         handIndex={index}
                         currentViewingPlayer={currentViewingPlayer}
+                        isDragInProgress={isDragInProgress}
                       />
                     ))}
                   </SortableContext>
