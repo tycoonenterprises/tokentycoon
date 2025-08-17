@@ -666,37 +666,12 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
           
           setIsPlayingCard(true)
           
-          // IMPORTANT: The contract reorders the hand after playing a card!
-          // It moves the last card to fill the gap of the played card.
-          // We need to update our local state immediately to match this.
-          const currentHand = [...playerHand.hand]
-          
-          // Simulate what the contract will do:
-          // 1. Remove the played card
-          // 2. Move the last card to fill the gap (if not playing the last card)
-          if (cardIndex < currentHand.length - 1) {
-            // Contract moves last card to fill the gap
-            currentHand[cardIndex] = currentHand[currentHand.length - 1]
-          }
-          currentHand.pop() // Remove the last element
-          
-          // Update local state immediately to prevent index mismatch
-          // We need to update the handIndex for each card
-          const updatedHand = currentHand.map((card, index) => ({
-            ...card,
-            handIndex: index
-          }))
-          
-          // Update the store properly
-          useGameStore.setState(state => ({
-            players: {
-              ...state.players,
-              [currentViewingPlayer]: {
-                ...state.players[currentViewingPlayer as keyof typeof state.players],
-                hand: updatedHand
-              }
-            }
-          }))
+          // Don't update local state - let the contract be the source of truth
+          // The contract will handle:
+          // 1. Removing the played card
+          // 2. Processing any immediate abilities (like draw)
+          // 3. Reordering the hand
+          console.log('🎯 Playing card, waiting for contract to update state...')
           
           try {
             if (gameId === null || gameId === undefined) {
@@ -704,8 +679,19 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
               return
             }
             await playCard(gameId, cardIndex)
-            // Fetch updated game state immediately (no delay)
+            console.log('🎴 Card played, waiting for transaction to be fully processed...')
+            
+            // Add a small delay to ensure the transaction is fully processed
+            await new Promise(resolve => setTimeout(resolve, 1000))
+            
+            console.log('🎴 Fetching updated game state...')
             await getFullGameState(gameId)
+            
+            // Fetch again after another short delay to catch any late updates
+            await new Promise(resolve => setTimeout(resolve, 500))
+            console.log('🎴 Fetching game state again to ensure all updates are captured...')
+            await getFullGameState(gameId)
+            console.log('🎴 Game state updated after playing card')
           } catch (error) {
             console.error('Failed to play card:', error)
             // Revert local state on error

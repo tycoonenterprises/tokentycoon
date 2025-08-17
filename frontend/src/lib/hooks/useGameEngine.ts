@@ -593,7 +593,7 @@ export const useGameEngine = () => {
         if (player1Hand && Array.isArray(player1Hand)) {
           // Convert BigInt array to number array
           const cardIds = player1Hand.map(id => Number(id))
-          console.log('📥 Player1 hand from contract:', cardIds)
+          console.log('📥 Player1 hand from contract:', cardIds, '(', cardIds.length, 'cards)')
           useGameStore.getState().updatePlayerHandFromContract('player1', cardIds)
         }
         
@@ -607,7 +607,7 @@ export const useGameEngine = () => {
         if (player2Hand && Array.isArray(player2Hand)) {
           // Convert BigInt array to number array
           const cardIds = player2Hand.map(id => Number(id))
-          console.log('📥 Player2 hand from contract:', cardIds)
+          console.log('📥 Player2 hand from contract:', cardIds, '(', cardIds.length, 'cards)')
           useGameStore.getState().updatePlayerHandFromContract('player2', cardIds)
         }
       } catch (err) {

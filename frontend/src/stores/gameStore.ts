@@ -475,10 +475,10 @@ export const useGameStore = create<GameState & GameActions>()(
           let availableCard = null
           
           // If we have enough cards loaded, use the cardId as direct index
-          // CardRegistry IDs are 1-based, so cardId 1 = index 0
-          if (cardId > 0 && cardId <= availableCards.length) {
-            availableCard = availableCards[cardId - 1]
-            console.log(`🎯 Mapped: Contract cardId ${cardId} -> Array index ${cardId - 1} -> Card: ${availableCard?.name}`)
+          // CardRegistry IDs are 0-based, so cardId 0 = index 0
+          if (cardId >= 0 && cardId < availableCards.length) {
+            availableCard = availableCards[cardId]
+            console.log(`🎯 Mapped: Contract cardId ${cardId} -> Array index ${cardId} -> Card: ${availableCard?.name}`)
           }
           
           // Fallback: try to match by parsing the ID string
@@ -582,8 +582,8 @@ export const useGameStore = create<GameState & GameActions>()(
             
             // Find the card in available cards by its ID
             let availableCard = null
-            if (cardId > 0 && cardId <= availableCards.length) {
-              availableCard = availableCards[cardId - 1]
+            if (cardId >= 0 && cardId < availableCards.length) {
+              availableCard = availableCards[cardId]
               console.log(`✅ Found card for battlefield: ${availableCard?.name}`)
             }
             

@@ -103,12 +103,64 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
         }
         
         if (currentBlock > lastBlockNumber) {
-          const logs = await publicClient.getLogs({
+          // Poll for TurnEnded events
+          const turnEndedLogs = await publicClient.getLogs({
             address: CONTRACT_ADDRESSES.GAME_ENGINE,
             event: parseAbiItem('event TurnEnded(uint256 indexed gameId, address indexed player)'),
             fromBlock: lastBlockNumber + 1n,
             toBlock: currentBlock
           })
+          
+          // Poll for CardDrawn events
+          const cardDrawnLogs = await publicClient.getLogs({
+            address: CONTRACT_ADDRESSES.GAME_ENGINE,
+            event: parseAbiItem('event CardDrawn(uint256 indexed gameId, address indexed player, uint256 cardId)'),
+            fromBlock: lastBlockNumber + 1n,
+            toBlock: currentBlock
+          })
+          
+          if (cardDrawnLogs.length > 0) {
+            let shouldUpdateState = false
+            cardDrawnLogs.forEach(log => {
+              if (Number(log.args?.gameId) === gameIdRef.current) {
+                console.log('🃏 CardDrawn event detected:', {
+                  gameId: log.args?.gameId,
+                  player: log.args?.player,
+                  cardId: log.args?.cardId
+                })
+                shouldUpdateState = true
+              }
+            })
+            
+            // If we detected card draw events for our game, update the state
+            if (shouldUpdateState && gameIdRef.current !== null) {
+              console.log('🔄 Updating game state due to CardDrawn events...')
+              await currentGetFullGameState(gameIdRef.current)
+            }
+          }
+          
+          // Poll for CardPlayed events
+          const cardPlayedLogs = await publicClient.getLogs({
+            address: CONTRACT_ADDRESSES.GAME_ENGINE,
+            event: parseAbiItem('event CardPlayed(uint256 indexed gameId, address indexed player, uint256 cardId, uint256 instanceId)'),
+            fromBlock: lastBlockNumber + 1n,
+            toBlock: currentBlock
+          })
+          
+          if (cardPlayedLogs.length > 0) {
+            cardPlayedLogs.forEach(log => {
+              if (Number(log.args?.gameId) === gameIdRef.current) {
+                console.log('🎴 CardPlayed event detected:', {
+                  gameId: log.args?.gameId,
+                  player: log.args?.player,
+                  cardId: log.args?.cardId,
+                  instanceId: log.args?.instanceId
+                })
+              }
+            })
+          }
+          
+          const logs = turnEndedLogs
           
           if (logs.length > 0) {
             const relevantLogs = logs.filter(log => {
@@ -121,10 +173,12 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
               // Update game state
               const store = useGameStore.getState()
               // Use current game ID from ref
-              const state = await currentGetDetailedGameState(gameIdRef.current)
-              if (state) {
-                store.updateGameFromContract(state)
-                await currentGetFullGameState(gameIdRef.current)
+              if (gameIdRef.current !== null) {
+                const state = await currentGetDetailedGameState(gameIdRef.current)
+                if (state) {
+                  store.updateGameFromContract(state)
+                  await currentGetFullGameState(gameIdRef.current)
+                }
               }
             }
           }
@@ -147,8 +201,41 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
       address: CONTRACT_ADDRESSES.GAME_ENGINE,
       abi: GameEngineABI,
       eventName: 'TurnEnded',
-      onLogs: async (logs) => {
+      onLogs: async () => {
         // Silent success - events are being detected
+      }
+    })
+    
+    // Listen for CardDrawn events
+    const unsubscribeCardDrawn = watchContractEvent(wagmiConfig, {
+      address: CONTRACT_ADDRESSES.GAME_ENGINE,
+      abi: GameEngineABI,
+      eventName: 'CardDrawn',
+      onLogs: async (logs) => {
+        logs.forEach(log => {
+          console.log('🃏 CardDrawn event:', {
+            gameId: log.args?.gameId,
+            player: log.args?.player,
+            cardId: log.args?.cardId
+          })
+        })
+      }
+    })
+    
+    // Listen for CardPlayed events
+    const unsubscribeCardPlayed = watchContractEvent(wagmiConfig, {
+      address: CONTRACT_ADDRESSES.GAME_ENGINE,
+      abi: GameEngineABI,
+      eventName: 'CardPlayed',
+      onLogs: async (logs) => {
+        logs.forEach(log => {
+          console.log('🎴 CardPlayed event:', {
+            gameId: log.args?.gameId,
+            player: log.args?.player,
+            cardId: log.args?.cardId,
+            instanceId: log.args?.instanceId
+          })
+        })
       }
     })
 
@@ -158,18 +245,20 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
         if (currentGetDetailedGameState) {
           // Always use the current game ID from ref
           const currentGameId = gameIdRef.current
-          console.log(`Polling game state for game ${currentGameId}`)
-          const state = await currentGetDetailedGameState(currentGameId)
-          if (state) {
-            const store = useGameStore.getState()
-            const oldActivePlayer = store.activePlayer
-            store.updateGameFromContract(state)
-            
-            // Check if active player changed
-            const newActivePlayer = store.activePlayer
-            if (oldActivePlayer !== newActivePlayer) {
-              // Also fetch full game state
-              await currentGetFullGameState(currentGameId)
+          if (currentGameId !== null) {
+            console.log(`Polling game state for game ${currentGameId}`)
+            const state = await currentGetDetailedGameState(currentGameId)
+            if (state) {
+              const store = useGameStore.getState()
+              const oldActivePlayer = store.activePlayer
+              store.updateGameFromContract(state)
+              
+              // Check if active player changed
+              const newActivePlayer = store.activePlayer
+              if (oldActivePlayer !== newActivePlayer) {
+                // Also fetch full game state
+                await currentGetFullGameState(currentGameId)
+              }
             }
           }
         }
@@ -181,6 +270,8 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
     // Cleanup function
     return () => {
       unsubscribe()
+      unsubscribeCardDrawn()
+      unsubscribeCardPlayed()
       clearInterval(pollInterval)
       clearInterval(eventPollInterval)
     }
