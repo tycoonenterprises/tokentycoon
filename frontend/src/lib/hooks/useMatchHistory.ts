@@ -33,7 +33,8 @@ export function useMatchHistory() {
     setError(null)
     
     try {
-      const { readContract, createPublicClient, http, parseAbiItem } = await import('viem')
+      const { readContract } = await import('wagmi/actions')
+      const { createPublicClient, http, parseAbiItem } = await import('viem')
       const { wagmiConfig } = await import('@/lib/web3/wagmiConfig')
       
       // Create a public client for event fetching

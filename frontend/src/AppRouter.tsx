@@ -43,6 +43,12 @@ function HomePage() {
           >
             🃏 View Cards
           </a>
+          <a
+            href="#/history"
+            className="btn-secondary text-lg px-8 py-3"
+          >
+            🏆 Match History
+          </a>
         </div>
       </div>
     </div>
