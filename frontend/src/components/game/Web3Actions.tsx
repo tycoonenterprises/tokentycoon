@@ -58,20 +58,6 @@ export function Web3Actions() {
 
   const clearError = () => setError('')
 
-  // Debug user state changes
-  useEffect(() => {
-    console.log('=== USER STATE CHANGE ===')
-    console.log('authenticated:', authenticated)
-    console.log('ready:', ready)
-    if (user) {
-      console.log('user.id:', user.id)
-      console.log('user.linkedAccounts:', user.linkedAccounts)
-      console.log('wallet accounts:', user.linkedAccounts?.filter(acc => acc.type === 'wallet'))
-    }
-    console.log('wagmi address:', address)
-    console.log('wagmi isConnected:', isConnected)
-    console.log('=== END USER STATE ===')
-  }, [user, authenticated, ready, address, isConnected])
 
   const handleSignMessage = async () => {
     if (!user || !authenticated || !ready) {

@@ -671,7 +671,6 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
           // 1. Removing the played card
           // 2. Processing any immediate abilities (like draw)
           // 3. Reordering the hand
-          console.log('🎯 Playing card, waiting for contract to update state...')
           
           try {
             if (gameId === null || gameId === undefined) {
@@ -679,19 +678,15 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
               return
             }
             await playCard(gameId, cardIndex)
-            console.log('🎴 Card played, waiting for transaction to be fully processed...')
             
             // Add a small delay to ensure the transaction is fully processed
             await new Promise(resolve => setTimeout(resolve, 1000))
             
-            console.log('🎴 Fetching updated game state...')
             await getFullGameState(gameId)
             
             // Fetch again after another short delay to catch any late updates
             await new Promise(resolve => setTimeout(resolve, 500))
-            console.log('🎴 Fetching game state again to ensure all updates are captured...')
             await getFullGameState(gameId)
-            console.log('🎴 Game state updated after playing card')
           } catch (error) {
             console.error('Failed to play card:', error)
             // Revert local state on error

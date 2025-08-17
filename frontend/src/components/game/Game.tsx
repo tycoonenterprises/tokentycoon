@@ -79,11 +79,9 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
   useEffect(() => {
     // Check if we have a valid game ID
     if (gameIdRef.current === null || gameIdRef.current === undefined) {
-      console.log('No game ID available for polling')
       return
     }
     
-    console.log(`Setting up polling for game ${gameIdRef.current} (routed: ${isRouted}, routedGameId: ${routedGameId}, storeGameId: ${gameId})`)
     
     // Capture current functions in closure
     const currentGetDetailedGameState = getDetailedGameState
@@ -125,18 +123,12 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
             let shouldUpdateState = false
             cardDrawnLogs.forEach(log => {
               if (Number(log.args?.gameId) === gameIdRef.current) {
-                console.log('🃏 CardDrawn event detected:', {
-                  gameId: log.args?.gameId,
-                  player: log.args?.player,
-                  cardId: log.args?.cardId
-                })
                 shouldUpdateState = true
               }
             })
             
             // If we detected card draw events for our game, update the state
             if (shouldUpdateState && gameIdRef.current !== null) {
-              console.log('🔄 Updating game state due to CardDrawn events...')
               await currentGetFullGameState(gameIdRef.current)
             }
           }
@@ -152,12 +144,6 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
           if (cardPlayedLogs.length > 0) {
             cardPlayedLogs.forEach(log => {
               if (Number(log.args?.gameId) === gameIdRef.current) {
-                console.log('🎴 CardPlayed event detected:', {
-                  gameId: log.args?.gameId,
-                  player: log.args?.player,
-                  cardId: log.args?.cardId,
-                  instanceId: log.args?.instanceId
-                })
               }
             })
           }
@@ -214,13 +200,7 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
       abi: GameEngineABI,
       eventName: 'CardDrawn',
       onLogs: async (logs) => {
-        logs.forEach(log => {
-          console.log('🃏 CardDrawn event:', {
-            gameId: log.args?.gameId,
-            player: log.args?.player,
-            cardId: log.args?.cardId
-          })
-        })
+        // Event detected - updates handled by polling
       }
     })
     
@@ -230,14 +210,7 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
       abi: GameEngineABI,
       eventName: 'CardPlayed',
       onLogs: async (logs) => {
-        logs.forEach(log => {
-          console.log('🎴 CardPlayed event:', {
-            gameId: log.args?.gameId,
-            player: log.args?.player,
-            cardId: log.args?.cardId,
-            instanceId: log.args?.instanceId
-          })
-        })
+        // Event detected - updates handled by polling
       }
     })
 
@@ -248,7 +221,6 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
           // Always use the current game ID from ref
           const currentGameId = gameIdRef.current
           if (currentGameId !== null) {
-            console.log(`Polling game state for game ${currentGameId}`)
             const state = await currentGetDetailedGameState(currentGameId)
             if (state) {
               const store = useGameStore.getState()
@@ -291,59 +263,25 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
   }
 
   const handleGetGameState = async () => {
-    console.log('=== CURRENT GAME STATE DEBUG ===')
     const state = useGameStore.getState()
-    console.log('Game Store State:', {
+    console.log('Game State Debug:', {
       gameId: state.gameId,
+      activePlayer: state.activePlayer,
       currentTurn: state.currentTurn,
       turnNumber: state.turnNumber,
-      activePlayer: state.activePlayer,
-      isGameActive: state.isGameActive,
-      isGameStarted: state.isGameStarted,
-      players: {
-        player1: {
-          id: state.players.player1.id,
-          balance: state.players.player1.balance,
-          eth: state.players.player1.eth,
-          coldStorage: state.players.player1.coldStorage,
-          handSize: state.players.player1.hand.length,
-          boardSize: state.players.player1.board.length,
-          deckSize: state.players.player1.deck.length,
-          deckRemaining: state.players.player1.deckRemaining,
-          battlefieldSize: state.players.player1.battlefieldSize,
-          hand: state.players.player1.hand.map(card => ({ id: card.id, name: card.name, cost: card.cost, type: card.type })),
-          board: state.players.player1.board.map(card => ({ id: card.id, name: card.name, cost: card.cost, type: card.type })),
-          deck: state.players.player1.deck.slice(0, 5).map(card => ({ id: card.id, name: card.name, cost: card.cost, type: card.type })) // Show first 5 deck cards
-        },
-        player2: {
-          id: state.players.player2.id,
-          balance: state.players.player2.balance,
-          eth: state.players.player2.eth,
-          coldStorage: state.players.player2.coldStorage,
-          handSize: state.players.player2.hand.length,
-          boardSize: state.players.player2.board.length,
-          deckSize: state.players.player2.deck.length,
-          deckRemaining: state.players.player2.deckRemaining,
-          battlefieldSize: state.players.player2.battlefieldSize,
-          hand: state.players.player2.hand.map(card => ({ id: card.id, name: card.name, cost: card.cost, type: card.type })),
-          board: state.players.player2.board.map(card => ({ id: card.id, name: card.name, cost: card.cost, type: card.type })),
-          deck: state.players.player2.deck.slice(0, 5).map(card => ({ id: card.id, name: card.name, cost: card.cost, type: card.type })) // Show first 5 deck cards
-        }
-      }
+      player1HandSize: state.players.player1.hand.length,
+      player2HandSize: state.players.player2.hand.length
     })
     
     if (gameId && getFullGameState) {
       try {
-        console.log('=== FETCHING COMPREHENSIVE CONTRACT STATE ===')
         await getFullGameState(gameId)
       } catch (error) {
         console.error('Error fetching comprehensive contract state:', error)
       }
     } else {
       console.log('No gameId or getFullGameState function available')
-      console.log('Available functions:', { getDetailedGameState: !!getDetailedGameState, getFullGameState: !!getFullGameState })
     }
-    console.log('=== END GAME STATE DEBUG ===')
   }
 
   const handleLogout = () => {
@@ -352,7 +290,6 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
   }
 
   const handleOnchainGameStart = useCallback(async (gameId: number) => {
-    console.log('handleOnchainGameStart called with gameId:', gameId)
     setCurrentGameId(gameId)
     setShowPlayPage(false) // Close the PlayPage modal
     setContractGameId(gameId)
@@ -363,17 +300,12 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
     // Get the current user's wallet address
     const privyWallet = wallets.find(w => w.walletClientType === 'privy')
     const userAddress = privyWallet?.address
-    console.log('🏁 Game start - Current user address:', userAddress)
-    console.log('🏁 Game start - Available wallets:', wallets.map(w => ({ type: w.walletClientType, address: w.address })))
-    console.log('🏁 Game start - Wallets ready:', walletsReady)
     
     // Load the game state from the blockchain
     if (getDetailedGameState && getFullGameState) {
       try {
         const gameStateView = await getDetailedGameState(gameId)
         if (gameStateView) {
-          console.log('Game state loaded from contract:', gameStateView)
-          console.log('Is game started?', gameStateView.isStarted)
           
           // Update the contract state first
           updateGameFromContract(gameStateView)
@@ -382,17 +314,13 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
           const player1Address = gameStateView.player1
           const player2Address = gameStateView.player2
           
-          console.log('Player 1:', player1Address)
-          console.log('Player 2:', player2Address)
           
           // Use activateOnchainGame instead of startGame to preserve contract data
-          console.log('Activating onchain game without overwriting contract data')
           activateOnchainGame(player1Address, player2Address)
           
           // Set the viewing player based on which player the current user is
           if (userAddress) {
             if (userAddress.toLowerCase() === player1Address.toLowerCase()) {
-              console.log('Current user is player 1')
               // Current user is player1
               // viewingPlayer should already be set to player1
             } else if (userAddress.toLowerCase() === player2Address.toLowerCase()) {
@@ -401,9 +329,7 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
           }
           
           // Load full game state including hands and battlefield
-          console.log('Loading full game state including hands and battlefield...')
           await getFullGameState(gameId)
-          console.log('Full game state loaded')
         } else {
           console.error('No game state returned from contract')
         }

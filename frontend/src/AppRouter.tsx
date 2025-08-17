@@ -53,7 +53,6 @@ function HomePage() {
 
 // Game page wrapper that loads game from ID
 function GamePage({ gameId }: { gameId: number }) {
-  console.log('🏁 GamePage called with gameId:', gameId)
   const { getDetailedGameState, getFullGameState } = useGameEngine()
   
   const { 
@@ -72,7 +71,6 @@ function GamePage({ gameId }: { gameId: number }) {
       try {
         setLoading(true)
         setError(null)
-        console.log('GamePage: Starting to load game:', gameId)
         
         // Set the game ID in store
         setContractGameId(gameId)
@@ -86,7 +84,6 @@ function GamePage({ gameId }: { gameId: number }) {
         }
         
         // First, let's try a simple contract call to test connection
-        console.log('GamePage: Testing contract connection...')
         try {
           const { readContract } = await import('wagmi/actions')
           const { wagmiConfig } = await import('@/lib/web3/wagmiConfig')
@@ -96,7 +93,6 @@ function GamePage({ gameId }: { gameId: number }) {
             functionName: 'nextGameId',
             args: [],
           })
-          console.log('GamePage: Contract connection test successful, nextGameId:', testCall)
         } catch (testError) {
           console.error('GamePage: Contract connection test failed:', testError)
           setError('Cannot connect to smart contract. Please ensure blockchain is running.')
@@ -105,7 +101,6 @@ function GamePage({ gameId }: { gameId: number }) {
         }
         
         // Load game state with timeout
-        console.log('GamePage: Now loading game state for gameId:', gameId)
         
         const timeoutPromise = new Promise((_, reject) => 
           setTimeout(() => reject(new Error('Timeout loading game state')), 5000)
@@ -119,7 +114,6 @@ function GamePage({ gameId }: { gameId: number }) {
           throw err
         })
         
-        console.log('GamePage: Got game state:', gameState)
         
         if (!gameState) {
           console.error('GamePage: No game state returned for gameId:', gameId)
@@ -127,22 +121,18 @@ function GamePage({ gameId }: { gameId: number }) {
           return
         }
         
-        console.log('GamePage: Game state loaded, isStarted:', gameState.isStarted)
         
         // Update store with contract data
         updateGameFromContract(gameState)
-        console.log('GamePage: Updated game from contract')
         
         // If game is started, activate it and load full state
         if (gameState.isStarted) {
           const player1Address = gameState.player1
           const player2Address = gameState.player2
           
-          console.log('GamePage: Game is started, activating with players:', player1Address, player2Address)
           // Activate the game without overwriting contract data
           activateOnchainGame(player1Address, player2Address)
           
-          console.log('GamePage: Loading full game state...')
           // Load full game state including hands
           await getFullGameState(gameId)
           console.log('GamePage: Full game state loaded')
