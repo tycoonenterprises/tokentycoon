@@ -214,8 +214,8 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
     return 'playable'
   }
   
-  // Check if this DeFi card has chain attachment opportunities
-  const hasChainTargets = card.type === 'DeFi' && source === 'hand' && isActivePlayer && canAfford
+  // Check if this DeFi card has chain attachment opportunities  
+  const hasChainTargets = card.type.toLowerCase() === 'defi' && source === 'hand' && isActivePlayer && canAfford
 
   const cardState = getCardState()
   
@@ -341,7 +341,7 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
       )}
       
       {/* Chain card indicator */}
-      {card.type === 'Chain' && (
+      {card.type.toLowerCase() === 'chain' && (
         <div className="absolute -top-1 -left-1 bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold z-10">
           ⛓️
         </div>
@@ -772,7 +772,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
     const { card, playerId, source, handIndex } = activeData
 
     // Handle DeFi card attachment to Chain cards
-    if (source === 'hand' && card.type === 'DeFi' && overId.startsWith('chain-') && overData?.type === 'chain-target') {
+    if (source === 'hand' && card.type.toLowerCase() === 'defi' && overId.startsWith('chain-') && overData?.type === 'chain-target') {
       console.log('🔗 Attempting to attach DeFi card to Chain:', { card: card.name, chain: overData.chainCard.name })
       
       // Check prerequisites for playing to Chain
@@ -1046,9 +1046,9 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
                 <div className="flex gap-3 flex-wrap">
                   {/* Chain cards - rendered outside SortableContext as separate drop targets */}
                   {playerBoard.board
-                    .filter(card => card.type === 'Chain')
+                    .filter(card => card.type.toLowerCase() === 'chain')
                     .map((card) => {
-                      const isDraggingDeFi = draggedCard?.type === 'DeFi'
+                      const isDraggingDeFi = draggedCard?.type.toLowerCase() === 'defi'
                       const canDropOnChain = canPlayCards && isDraggingDeFi
                       
                       console.log('🔗 Rendering Chain card:', {
@@ -1085,12 +1085,12 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
                   {/* Non-Chain cards in SortableContext */}
                   <SortableContext 
                     items={playerBoard.board
-                      .filter(card => card.type !== 'Chain')
+                      .filter(card => card.type.toLowerCase() !== 'chain')
                       .map(card => `board-${card.id}`)}
                     strategy={verticalListSortingStrategy}
                   >
                     {playerBoard.board
-                      .filter(card => card.type !== 'Chain')
+                      .filter(card => card.type.toLowerCase() !== 'chain')
                       .map((card) => (
                         <DraggableCard
                           key={card.id}
