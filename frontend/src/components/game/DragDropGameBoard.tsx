@@ -427,7 +427,7 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
       </div>
       
       {/* Portal-based hover overlay that renders at document root */}
-      {source === 'hand' && isHovered && !isDragging && typeof document !== 'undefined' && createPortal(
+      {isHovered && !isDragging && typeof document !== 'undefined' && createPortal(
         <div 
           className="fixed pointer-events-none z-[99999] transition-opacity duration-200"
           style={{
