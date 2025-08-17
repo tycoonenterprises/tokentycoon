@@ -808,6 +808,56 @@ export function DragDropGameBoard() {
         <div className="flex-1 p-6 bg-gradient-to-b from-gray-800 to-eth-dark">
           <div className="max-w-6xl mx-auto h-full">
             <div className="h-full flex flex-col gap-6">
+            {/* Opponent Hand - Face Down Cards */}
+            <div className="p-4 bg-gray-900 border-b border-gray-700">
+              <div className="max-w-6xl mx-auto">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-white">
+                    Opponent Hand ({opponentBoard.hand?.length || 0})
+                  </h3>
+                  <div className="text-sm text-gray-400">
+                    🙈 Cards hidden
+                  </div>
+                </div>
+                
+                <div className="flex gap-2 justify-center overflow-x-auto pb-2 min-h-0">
+                  {(opponentBoard.hand || []).map((_, index) => (
+                    <div
+                      key={`opponent-hand-${index}`}
+                      className="w-28 h-40 flex-shrink-0 card transition-all duration-200 border-red-500/50 transform rotate-180 cursor-not-allowed opacity-75"
+                    >
+                      {/* Card Back Design */}
+                      <div className="h-full bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 rounded flex items-center justify-center relative overflow-hidden">
+                        {/* Card back pattern */}
+                        <div className="absolute inset-2 border-2 border-gray-600 rounded opacity-50"></div>
+                        <div className="absolute inset-4 border border-gray-500 rounded opacity-30"></div>
+                        
+                        {/* Ethereum logo/symbol */}
+                        <div className="text-4xl text-gray-600 opacity-60 transform rotate-180">
+                          ⟐
+                        </div>
+                        
+                        {/* TCG text */}
+                        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-gray-500 font-bold transform rotate-180">
+                          TCG
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Show placeholder if no cards */}
+                  {(!opponentBoard.hand || opponentBoard.hand.length === 0) && (
+                    <div className="flex-1 flex items-center justify-center text-gray-500 min-h-24">
+                      <div className="text-center">
+                        <div className="text-2xl mb-1">🃏</div>
+                        <div className="text-xs">No cards in hand</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
             {/* Opponent Board - Not droppable for now */}
             <DropZone
               id={`${currentViewingPlayer === 'player1' ? 'player2' : 'player1'}-board`}
