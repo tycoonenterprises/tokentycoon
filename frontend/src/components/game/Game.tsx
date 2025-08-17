@@ -10,6 +10,7 @@ import { DecksPage } from './DecksPage'
 import { PlayPage } from './PlayPage'
 import { ContractDebugPanel } from '@/components/debug/ContractDebugPanel'
 import { PrivyDebugInfo } from '@/components/debug/PrivyDebugInfo'
+import { GameDebugPanel } from '@/components/debug/GameDebugPanel'
 import { useGameEngine } from '@/lib/hooks/useGameEngine'
 import { watchContractEvent } from 'wagmi/actions'
 import { wagmiConfig } from '@/lib/web3/wagmiConfig'
@@ -450,36 +451,7 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
             </div>
           ) : isGameActive ? (
             // Active Game
-            <>
-              <DragDropGameBoard gameId={gameId} />
-              
-              {/* Debug Panel - Bottom */}
-              <div className="fixed bottom-16 right-4 flex gap-2 z-10">
-                <div className="bg-gray-900 border border-gray-700 rounded-lg p-3">
-                  <div className="text-xs text-gray-400 mb-2">Game Debug</div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setShowWeb3Panel(!showWeb3Panel)}
-                      className="btn-secondary text-xs px-3 py-1"
-                    >
-                      {showWeb3Panel ? 'Hide' : 'Show'} Web3 Portal
-                    </button>
-                    <button
-                      onClick={handleGetGameState}
-                      className="btn-secondary text-xs px-3 py-1"
-                    >
-                      Get Game State
-                    </button>
-                    <button
-                      onClick={resetGame}
-                      className="btn-secondary text-xs px-3 py-1"
-                    >
-                      Reset Game
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </>
+            <DragDropGameBoard gameId={gameId} />
           ) : (
             // Fallback - this shouldn't happen
             <div className="flex-1 flex items-center justify-center">
@@ -561,6 +533,16 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
       {/* Debug Panels */}
       <PrivyDebugInfo />
       <ContractDebugPanel />
+      
+      {/* Game Debug Panel - Only show during active games */}
+      {isGameActive && (
+        <GameDebugPanel
+          showWeb3Panel={showWeb3Panel}
+          onToggleWeb3Panel={() => setShowWeb3Panel(!showWeb3Panel)}
+          onGetGameState={handleGetGameState}
+          onResetGame={resetGame}
+        />
+      )}
     </div>
   )
 }
