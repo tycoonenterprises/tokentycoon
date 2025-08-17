@@ -246,7 +246,6 @@ function GamePage({ gameId }: { gameId: number }) {
     )
   }
   
-  console.log('🎮 GamePage rendering Game component with:', { isRouted: true, routedGameId: gameId })
   return <Game isRouted={true} routedGameId={gameId} />
 }
 
