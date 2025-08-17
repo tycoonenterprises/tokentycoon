@@ -316,6 +316,13 @@ export const useGameEngine = () => {
         currentTurn: gameState.currentTurn,
         player1: gameState.player1,
         player2: gameState.player2,
+        player1ETH: gameState.player1ETH?.toString(),
+        player2ETH: gameState.player2ETH?.toString(),
+        player1ColdStorage: gameState.player1ColdStorage?.toString(),
+        player2ColdStorage: gameState.player2ColdStorage?.toString(),
+        winCondition: 20,
+        player1WonByColdStorage: Number(gameState.player1ColdStorage || 0) >= 20,
+        player2WonByColdStorage: Number(gameState.player2ColdStorage || 0) >= 20,
         currentPlayer: gameState.currentTurn === 0n ? gameState.player1 : gameState.player2
       })
       
