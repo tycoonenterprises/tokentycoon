@@ -41,18 +41,6 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
   const totalAvailableETH = hotWalletBalance
   
   const handleTransferToColdStorage = async () => {
-    console.log('🏦 COLD STORAGE TRANSFER ATTEMPT:', {
-      gameId,
-      isGameActive,
-      winner,
-      canTransfer,
-      isCurrentPlayer,
-      activePlayer,
-      userAddress,
-      hotWalletBalance,
-      transferAmount
-    })
-    
     if (!canTransfer || gameId === null || gameId === undefined || isTransferring) {
       console.log('❌ Transfer blocked by UI checks:', {
         canTransfer,

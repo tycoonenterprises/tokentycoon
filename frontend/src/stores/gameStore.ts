@@ -424,17 +424,6 @@ export const useGameStore = create<GameState & GameActions>()(
         const previousState = get()
         const newIsActive = gameView.isStarted && !gameView.isFinished
         
-        console.log('📋 GAME STATE UPDATE:', {
-          rawGameId: gameView.gameId,
-          convertedGameId: convertBigInt(gameView.gameId),
-          previousStoreGameId: previousState.gameId,
-          previousIsActive: previousState.isGameActive,
-          newIsActive,
-          isStarted: gameView.isStarted,
-          isFinished: gameView.isFinished,
-          stateChanged: previousState.isGameActive !== newIsActive
-        })
-        
         set({
           gameId: convertBigInt(gameView.gameId),
           currentTurn: currentTurnNumber,

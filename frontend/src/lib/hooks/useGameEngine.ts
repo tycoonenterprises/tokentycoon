@@ -308,30 +308,8 @@ export const useGameEngine = () => {
     try {
       // Safety check: verify game is active before attempting transaction
       const gameState = await getDetailedGameState(gameId)
-      console.log('🔍 COLD STORAGE SAFETY CHECK:', {
-        gameId,
-        isStarted: gameState.isStarted,
-        isFinished: gameState.isFinished,
-        isActive: gameState.isStarted && !gameState.isFinished,
-        currentTurn: gameState.currentTurn,
-        player1: gameState.player1,
-        player2: gameState.player2,
-        player1ETH: gameState.player1ETH?.toString(),
-        player2ETH: gameState.player2ETH?.toString(),
-        player1ColdStorage: gameState.player1ColdStorage?.toString(),
-        player2ColdStorage: gameState.player2ColdStorage?.toString(),
-        winCondition: 20,
-        player1WonByColdStorage: Number(gameState.player1ColdStorage || 0) >= 20,
-        player2WonByColdStorage: Number(gameState.player2ColdStorage || 0) >= 20,
-        currentPlayer: gameState.currentTurn === 0n ? gameState.player1 : gameState.player2
-      })
-      
       if (!gameState.isStarted || gameState.isFinished) {
-        console.error('❌ SAFETY CHECK FAILED:', {
-          isStarted: gameState.isStarted,
-          isFinished: gameState.isFinished,
-          reason: !gameState.isStarted ? 'Game not started' : 'Game is finished'
-        })
+        console.error('Safety check failed: Game is not active')
         throw new Error('Game is not active - cannot transfer to cold storage')
       }
       
@@ -463,14 +441,6 @@ export const useGameEngine = () => {
         abi: GameEngineABI,
         functionName: 'getGameState',
         args: [BigInt(gameId)],
-      })
-      
-      console.log('🔍 getDetailedGameState result:', {
-        gameId,
-        isStarted: gameStateView.isStarted,
-        isFinished: gameStateView.isFinished,
-        caller: new Error().stack?.split('\n')[1]?.trim() || 'unknown',
-        timestamp: new Date().toISOString()
       })
       
       return gameStateView

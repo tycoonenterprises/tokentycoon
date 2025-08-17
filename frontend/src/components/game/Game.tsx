@@ -164,7 +164,12 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
               if (gameIdRef.current !== null) {
                 const state = await currentGetDetailedGameState(gameIdRef.current)
                 if (state) {
-                  store.updateGameFromContract(state)
+                  // Ensure gameId is included in the state object
+                  const stateWithGameId = {
+                    ...state,
+                    gameId: gameIdRef.current
+                  }
+                  store.updateGameFromContract(stateWithGameId)
                   await currentGetFullGameState(gameIdRef.current)
                 }
               }
@@ -231,7 +236,13 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
               })
               const store = useGameStore.getState()
               const oldActivePlayer = store.activePlayer
-              store.updateGameFromContract(state)
+              
+              // Ensure gameId is included in the state object
+              const stateWithGameId = {
+                ...state,
+                gameId: currentGameId
+              }
+              store.updateGameFromContract(stateWithGameId)
               
               // Check if active player changed
               const newActivePlayer = store.activePlayer
