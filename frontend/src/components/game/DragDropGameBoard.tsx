@@ -575,6 +575,7 @@ export function DragDropGameBoard() {
   const [isDrawing, setIsDrawing] = useState(false)
   const [selectedCard, setSelectedCard] = useState<Card | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [shouldWiggleDrawButton, setShouldWiggleDrawButton] = useState(false)
 
   const { player1, player2 } = players
   
@@ -690,6 +691,15 @@ export function DragDropGameBoard() {
     // Handle card play from hand to board
     const targetBoard = `${currentViewingPlayer}-board`
     if (source === 'hand' && overId === targetBoard && playerId === currentViewingPlayer) {
+      // Check if player needs to draw cards first
+      if (needsToDraw && canPlayCards) {
+        // Trigger wiggle animation on draw button
+        setShouldWiggleDrawButton(true)
+        setTimeout(() => setShouldWiggleDrawButton(false), 1000) // Reset after animation
+        console.log('Player must draw cards first!')
+        return
+      }
+      
       if (canPlayCards && playerHand.eth >= card.cost) {
         // Use the handIndex property if available, otherwise fall back to finding by ID
         let cardIndex = card.handIndex
@@ -1018,8 +1028,8 @@ export function DragDropGameBoard() {
 
       {/* Game UI Elements - Outside DndContext to avoid interference */}
       
-      {/* Opponent's wallet displays (upper right) - read-only */}
-      <div className="fixed top-4 right-4 z-10 flex flex-col gap-3">
+      {/* Opponent's wallet displays (upper left) - read-only */}
+      <div className="fixed top-4 left-4 z-10 flex flex-col gap-3">
         {/* Opponent Hot Wallet */}
         <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 w-48 opacity-75">
           <div className="flex items-center justify-between mb-3">
@@ -1077,14 +1087,14 @@ export function DragDropGameBoard() {
         </div>
       </div>
 
-      {/* Player's wallet controls (lower left) */}
-      <div className="fixed bottom-4 left-4 z-10 flex flex-col gap-3">
+      {/* Player's wallet controls (lower right) */}
+      <div className="fixed bottom-4 right-4 z-10 flex flex-col gap-3">
         <HotWallet playerId={currentViewingPlayer} />
         <ColdStorage playerId={currentViewingPlayer} />
       </div>
 
       {/* Combined Turn Action button - Draw Card or End Turn */}
-      <div className="fixed bottom-40 right-4 z-20">
+      <div className="fixed bottom-40 left-4 z-20">
         {needsToDraw ? (
           <button
             onClick={handleDrawToStartTurn}
@@ -1094,10 +1104,13 @@ export function DragDropGameBoard() {
                      transform transition-all duration-300
                      flex items-center justify-center gap-3
                      shadow-lg
-                     ${canPlayCards && !isDrawing
-                       ? 'bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 hover:scale-110 glow-pulse-blue cursor-pointer'
-                       : 'bg-gray-700 opacity-60 cursor-not-allowed'
-                     }`}
+                     ${shouldWiggleDrawButton 
+                       ? 'bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 scale-110 shadow-2xl'
+                       : canPlayCards && !isDrawing
+                         ? 'bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 hover:scale-110 glow-pulse-blue cursor-pointer'
+                         : 'bg-gray-700 opacity-60 cursor-not-allowed'
+                     }
+                     ${shouldWiggleDrawButton ? 'animate-bounce animate-pulse' : ''}`}
           >
             {isDrawing ? (
               <>
