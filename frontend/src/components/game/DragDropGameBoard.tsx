@@ -1224,8 +1224,8 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
 
       {/* Game UI Elements - Outside DndContext to avoid interference */}
       
-      {/* Opponent's wallet displays (upper left) - read-only */}
-      <div className="fixed top-4 left-4 z-10 flex flex-col gap-3">
+      {/* Opponent's wallet displays (upper left, below logo) - read-only */}
+      <div className="fixed top-40 left-4 z-10 flex flex-col gap-3">
         {/* Opponent Hot Wallet */}
         <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 w-48 opacity-75">
           <div className="flex items-center justify-between mb-3">

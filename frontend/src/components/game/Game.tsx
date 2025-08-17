@@ -361,40 +361,41 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
   return (
     <div className="min-h-screen bg-eth-dark flex flex-col">
       {/* Header */}
-      <header className="bg-gray-900 border-b border-gray-700 p-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <a href="#/" className="flex items-center hover:opacity-80 transition-opacity">
-              <img 
-                src="/token-tycoon-title.png" 
-                alt="Token Tycoon" 
-                className="h-8 w-auto cursor-pointer"
-              />
-            </a>
-            <span className="text-sm text-gray-400">
-              Welcome, {user?.email?.address || user?.wallet?.address?.slice(0, 8)}...
-            </span>
-          </div>
+      {/* Floating logo in upper left */}
+      <div className="fixed top-4 left-4 z-50">
+        <a href="#/" className="flex items-center hover:opacity-80 transition-opacity">
+          <img 
+            src="/token-tycoon-title.png" 
+            alt="Token Tycoon" 
+            className="h-32 w-auto cursor-pointer"
+          />
+        </a>
+      </div>
+      
+      {/* Floating controls in upper right */}
+      <div className="fixed top-4 right-4 z-50">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-gray-300 bg-black/50 rounded px-2 py-1">
+            {user?.email?.address || user?.wallet?.address?.slice(0, 8)}...
+          </span>
           
-          <div className="flex items-center gap-3">
-            {!isGameActive ? (
-              <button
-                onClick={() => setShowPlayPage(true)}
-                className="btn-primary"
-              >
-                🎮 Play
-              </button>
-            ) : null}
-            
+          {!isGameActive ? (
             <button
-              onClick={handleLogout}
-              className="text-gray-400 hover:text-white transition-colors"
+              onClick={() => setShowPlayPage(true)}
+              className="btn-primary text-sm px-4 py-2"
             >
-              Logout
+              🎮 Play
             </button>
-          </div>
+          ) : null}
+          
+          <button
+            onClick={handleLogout}
+            className="text-gray-300 hover:text-white transition-colors bg-black/50 rounded px-2 py-1 text-sm"
+          >
+            Logout
+          </button>
         </div>
-      </header>
+      </div>
 
 
       {/* Game Content */}
