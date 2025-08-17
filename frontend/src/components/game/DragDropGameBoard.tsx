@@ -867,22 +867,12 @@ export function DragDropGameBoard() {
                       key={`opponent-hand-${index}`}
                       className="w-24 h-32 flex-shrink-0 card transition-all duration-200 border-red-500/50 transform rotate-180 cursor-not-allowed opacity-75"
                     >
-                      {/* Card Back Design */}
-                      <div className="h-full bg-gradient-to-br from-gray-700 via-gray-800 to-gray-900 rounded flex items-center justify-center relative overflow-hidden">
-                        {/* Card back pattern */}
-                        <div className="absolute inset-2 border-2 border-gray-600 rounded opacity-50"></div>
-                        <div className="absolute inset-4 border border-gray-500 rounded opacity-30"></div>
-                        
-                        {/* Ethereum logo/symbol */}
-                        <div className="text-4xl text-gray-600 opacity-60 transform rotate-180">
-                          ⟐
-                        </div>
-                        
-                        {/* Game branding */}
-                        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-gray-500 font-bold transform rotate-180">
-                          TT
-                        </div>
-                      </div>
+                      {/* Card Back using SVG */}
+                      <img 
+                        src="/v2/token-tycoon-card-back.svg" 
+                        alt="Token Tycoon Card Back" 
+                        className="w-full h-full object-cover rounded"
+                      />
                     </div>
                   ))}
                   
