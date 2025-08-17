@@ -79,7 +79,6 @@ function DeFiCardFooter({ card, playerId, playerETH, isActivePlayer, gameId }: D
         const cardInstanceId = parseInt(card.id.split('-').pop() || '0')
         
         await stakeETH(gameId, cardInstanceId, stakeAmount)
-        console.log(`Successfully staked ${stakeAmount} ETH on DeFi card ${card.name}`)
         setShowStakeModal(false)
       } catch (error) {
         console.error('Failed to stake ETH:', error)
@@ -218,14 +217,6 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
   
   // Debug logging for cursor troubleshooting
   if (source === 'hand') {
-    // console.log('🎯 DragDropGameBoard Card State Debug:', {
-    //   cardName: card.name,
-    //   cardCost: card.cost,
-    //   playerETH: playerETH,
-    //   isActivePlayer,
-    //   canAfford,
-    //   cardState,
-    //   resultingCursor: cardState === 'playable' ? 'cursor-grab' : 'cursor-not-allowed'
     // })
   }
 
@@ -511,7 +502,6 @@ function DropZone({ id, children, label, isEmpty, canDrop, isOver: isOverProp = 
     disabled: !canDrop
   })
   
-  console.log(`🎯 DropZone ${id}: canDrop=${canDrop}, disabled=${!canDrop}`)
 
 
   return (
@@ -571,7 +561,6 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
   
   // Debug gameId
   useEffect(() => {
-    console.log('🎮 DragDropGameBoard gameId changed:', gameId)
   }, [gameId])
   
   const { wallets, ready: walletsReady } = useWallets()
@@ -591,35 +580,14 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
   const privyWallet = wallets.find(w => w.walletClientType === 'privy')
   const userAddress = privyWallet?.address
   
-  useEffect(() => {
-    console.log('🔑 Wallet info:', {
-      walletsReady,
-      walletsCount: wallets.length,
-      wallets: wallets.map(w => ({ type: w.walletClientType, address: w.address })),
-      privyWallet: privyWallet?.address,
-      userAddress,
-      player1Id: player1.id,
-      player2Id: player2.id
-    })
-  }, [wallets, walletsReady])
   
   // Determine which player we're viewing based on wallet address
   const isViewingPlayer1 = userAddress?.toLowerCase() === player1.id?.toLowerCase()
   const currentViewingPlayer = isViewingPlayer1 ? 'player1' : 'player2'
   
-  console.log('🎯 PLAYER TARGETING DEBUG:', {
-    userAddress: userAddress?.toLowerCase(),
-    player1Id: player1.id?.toLowerCase(), 
-    player2Id: player2.id?.toLowerCase(),
-    isViewingPlayer1,
-    currentViewingPlayer,
-    activePlayer: activePlayer?.toLowerCase(),
-    expectedBoard: `${currentViewingPlayer}-board`
-  })
   
   // DISABLED polling to stop request spam
   useEffect(() => {
-    console.log('🎮 DragDropGameBoard: gameId is', gameId, 'but polling is DISABLED')
     // Polling disabled due to request spam
     return
   }, [gameId]) // Only depend on gameId
@@ -629,39 +597,11 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
   // Wait for wallets to be ready before checking
   const canPlayCards = walletsReady && Boolean(activePlayer && userAddress && activePlayer.toLowerCase() === userAddress.toLowerCase())
   
-  console.log('🎯 canPlayCards DEBUG:', {
-    walletsReady,
-    activePlayer,
-    userAddress,
-    canPlayCards,
-    isMatch: activePlayer?.toLowerCase() === userAddress?.toLowerCase()
-  })
   
   // Turn state tracking (debug logging removed)
   
   
-  // Force log on every meaningful state change
-  useEffect(() => {
-    console.log('🔄 Component re-rendered with state:', {
-      activePlayer,
-      userAddress,
-      canPlayCards,
-      currentTurn,
-      needsToDraw,
-      walletsReady
-    })
-  }, [activePlayer, userAddress, canPlayCards, currentTurn, needsToDraw, walletsReady])
   
-  // Debug: Log only significant state changes
-  useEffect(() => {
-    console.log('Game state changed:', {
-      activePlayer,
-      canPlayCards,
-      needsToDraw,
-      currentTurn,
-      gameId
-    })
-  }, [activePlayer, canPlayCards, needsToDraw, currentTurn])
   
   
   // Determine which player's perspective we're showing
@@ -684,14 +624,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
     setActiveId(null)
     setDraggedCard(null)
 
-    console.log('🎯 DRAG END DEBUG:', {
-      active: active?.id,
-      over: over?.id,
-      activeData: active?.data?.current
-    })
-
     if (!over) {
-      console.log('❌ No drop target found')
       return
     }
 
@@ -699,20 +632,11 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
     const overId = over.id as string
 
     if (!activeData) {
-      console.log('❌ No active data found')
       return
     }
 
     const { card, playerId, source, handIndex } = activeData
     
-    console.log('🎯 Drag data:', {
-      card: card?.name,
-      playerId,
-      source,
-      handIndex,
-      overId,
-      targetBoard: `${currentViewingPlayer}-board`
-    })
 
     // Handle card play from hand to board
     const targetBoard = `${currentViewingPlayer}-board`
@@ -722,52 +646,23 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
         // Trigger wiggle animation on draw button
         setShouldWiggleDrawButton(true)
         setTimeout(() => setShouldWiggleDrawButton(false), 1000) // Reset after animation
-        console.log('Player must draw cards first!')
         return
       }
       
       if (!canPlayCards) {
-        console.log('❌ Cannot play cards - not your turn or wallet not ready')
         return
       }
       
       if (playerHand.eth < card.cost) {
-        console.log(`❌ Insufficient ETH: need ${card.cost}, have ${playerHand.eth}`)
         return
       }
       
-      console.log('💰 ETH AFFORDABILITY CHECK:', {
-        canPlayCards,
-        playerETH: playerHand.eth,
-        cardCost: card.cost,
-        cardName: card.name,
-        canAfford: playerHand.eth >= card.cost,
-        cardData: card
-      })
       
       if (canPlayCards && playerHand.eth >= card.cost) {
         // Use the handIndex from drag data
         const cardIndex = handIndex
         
         if (cardIndex !== undefined && cardIndex !== null && cardIndex >= 0) {
-          // COMPREHENSIVE DEBUG LOGGING
-          console.log('🎯 CARD PLAYING DEBUG - START')
-          console.log('📋 Card being played:', {
-            name: card.name,
-            id: card.id,
-            originalCardId: card.originalCardId,
-            handIndex: handIndex,
-            cardIndexUsed: cardIndex
-          })
-          console.log('🖐️ Current hand before playing:', playerHand.hand.map((c, i) => ({
-            index: i,
-            name: c.name,
-            id: c.id,
-            originalCardId: c.originalCardId
-          })))
-          console.log('🔢 Card at index', cardIndex, 'is:', playerHand.hand[cardIndex]?.name)
-          console.log('📍 Sending to contract: gameId =', gameId, ', cardIndex =', cardIndex)
-          console.log('🎯 CARD PLAYING DEBUG - END')
           
           setIsPlayingCard(true)
           
@@ -824,7 +719,6 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
           console.error('Card index not found in drag data')
         }
       } else {
-        console.log('Cannot play card - insufficient ETH or not player\'s turn')
       }
     }
     
@@ -844,14 +738,6 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
     
     if (source === 'hand') {
       const canDrag = canPlayCards && playerHand.eth >= card.cost
-      console.log(`🎴 CAN DRAG CHECK for ${card.name}:`, {
-        card: card.name,
-        cost: card.cost,
-        playerETH: playerHand.eth,
-        canPlayCards,
-        canAfford: playerHand.eth >= card.cost,
-        finalCanDrag: canDrag
-      })
       return canDrag
     }
     return false // Board cards can't be moved yet
@@ -1064,11 +950,6 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
                     items={playerHand.hand.map(card => `hand-${card.id}`)}
                     strategy={verticalListSortingStrategy}
                   >
-                    {/* Debug: Log the hand being rendered */}
-                    {(() => {
-                      console.log('🌴 Rendering hand:', playerHand.hand.map((c, i) => `[${i}]: ${c.name}`))
-                      return null
-                    })()}
                     {playerHand.hand.map((card, index) => (
                       <DraggableCard
                         key={card.id}
