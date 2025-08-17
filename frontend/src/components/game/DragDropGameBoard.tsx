@@ -174,9 +174,10 @@ interface ExtendedDraggableCardProps extends DraggableCardProps {
   isActivePlayer: boolean
   gameId: number | null
   onCardClick: (card: Card) => void
+  handIndex?: number
 }
 
-function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, gameId, onCardClick }: ExtendedDraggableCardProps) {
+function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, gameId, handIndex, onCardClick }: ExtendedDraggableCardProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 })
   const cardRef = useRef<HTMLDivElement>(null)
@@ -189,7 +190,7 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
     isDragging,
   } = useSortable({
     id: `${source}-${card.id}`,
-    data: { card, playerId, source },
+    data: { card, playerId, source, handIndex },
     disabled: !canDrag,
   })
 
@@ -573,6 +574,7 @@ export function DragDropGameBoard() {
   const [draggedCard, setDraggedCard] = useState<Card | null>(null)
   const [isEndingTurn, setIsEndingTurn] = useState(false)
   const [isDrawing, setIsDrawing] = useState(false)
+  const [isPlayingCard, setIsPlayingCard] = useState(false)
   const [selectedCard, setSelectedCard] = useState<Card | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [shouldWiggleDrawButton, setShouldWiggleDrawButton] = useState(false)
@@ -611,29 +613,8 @@ export function DragDropGameBoard() {
   // Wait for wallets to be ready before checking
   const canPlayCards = walletsReady && Boolean(activePlayer && userAddress && activePlayer.toLowerCase() === userAddress.toLowerCase())
   
-  // Debug turn state for troubleshooting
-  console.log('🎯 Turn State Debug:', {
-    activePlayer,
-    userAddress,
-    currentViewingPlayer,
-    canPlayCards,
-    isActivePlayerMatch: activePlayer?.toLowerCase() === userAddress?.toLowerCase(),
-    walletsReady
-  })
+  // Turn state tracking (debug logging removed)
   
-  // Debug: Log when activePlayer changes
-  useEffect(() => {
-    console.log('🎯 Active player changed in DragDropGameBoard:', {
-      activePlayer,
-      activePlayerLower: activePlayer?.toLowerCase(),
-      userAddress,
-      userAddressLower: userAddress?.toLowerCase(),
-      matches: activePlayer?.toLowerCase() === userAddress?.toLowerCase(),
-      canPlayCards,
-      currentTurn,
-      needsToDraw
-    })
-  }, [activePlayer])
   
   // Force log on every meaningful state change
   useEffect(() => {
@@ -686,7 +667,7 @@ export function DragDropGameBoard() {
 
     if (!activeData) return
 
-    const { card, playerId, source } = activeData
+    const { card, playerId, source, handIndex } = activeData
 
     // Handle card play from hand to board
     const targetBoard = `${currentViewingPlayer}-board`
@@ -701,27 +682,82 @@ export function DragDropGameBoard() {
       }
       
       if (canPlayCards && playerHand.eth >= card.cost) {
-        // Use the handIndex property if available, otherwise fall back to finding by ID
-        let cardIndex = card.handIndex
-        
-        // If handIndex is not available, try to find it
-        if (cardIndex === undefined || cardIndex === null) {
-          cardIndex = playerHand.hand.findIndex(c => c.id === card.id)
-        }
+        // Use the handIndex from drag data
+        const cardIndex = handIndex
         
         if (cardIndex !== undefined && cardIndex !== null && cardIndex >= 0) {
-          // Call playCard directly from useGameEngine instead of through store
+          // COMPREHENSIVE DEBUG LOGGING
+          console.log('🎯 CARD PLAYING DEBUG - START')
+          console.log('📋 Card being played:', {
+            name: card.name,
+            id: card.id,
+            originalCardId: card.originalCardId,
+            handIndex: handIndex,
+            cardIndexUsed: cardIndex
+          })
+          console.log('🖐️ Current hand before playing:', playerHand.hand.map((c, i) => ({
+            index: i,
+            name: c.name,
+            id: c.id,
+            originalCardId: c.originalCardId
+          })))
+          console.log('🔢 Card at index', cardIndex, 'is:', playerHand.hand[cardIndex]?.name)
+          console.log('📍 Sending to contract: gameId =', gameId, ', cardIndex =', cardIndex)
+          console.log('🎯 CARD PLAYING DEBUG - END')
+          
+          setIsPlayingCard(true)
+          
+          // IMPORTANT: The contract reorders the hand after playing a card!
+          // It moves the last card to fill the gap of the played card.
+          // We need to update our local state immediately to match this.
+          const currentHand = [...playerHand.hand]
+          
+          // Simulate what the contract will do:
+          // 1. Remove the played card
+          // 2. Move the last card to fill the gap (if not playing the last card)
+          if (cardIndex < currentHand.length - 1) {
+            // Contract moves last card to fill the gap
+            currentHand[cardIndex] = currentHand[currentHand.length - 1]
+          }
+          currentHand.pop() // Remove the last element
+          
+          // Update local state immediately to prevent index mismatch
+          // We need to update the handIndex for each card
+          const updatedHand = currentHand.map((card, index) => ({
+            ...card,
+            handIndex: index
+          }))
+          
+          // Update the store properly
+          useGameStore.setState(state => ({
+            players: {
+              ...state.players,
+              [currentViewingPlayer]: {
+                ...state.players[currentViewingPlayer as keyof typeof state.players],
+                hand: updatedHand
+              }
+            }
+          }))
+          
           try {
+            if (gameId === null || gameId === undefined) {
+              console.error('No gameId available')
+              return
+            }
             await playCard(gameId, cardIndex)
-            // Fetch updated game state after playing card
-            setTimeout(async () => {
-              await getFullGameState(gameId)
-            }, 1000)
+            // Fetch updated game state immediately (no delay)
+            await getFullGameState(gameId)
           } catch (error) {
             console.error('Failed to play card:', error)
+            // Revert local state on error
+            if (gameId !== null && gameId !== undefined) {
+              await getFullGameState(gameId)
+            }
+          } finally {
+            setIsPlayingCard(false)
           }
         } else {
-          console.error('Card not found in hand')
+          console.error('Card index not found in drag data')
         }
       } else {
         console.log('Cannot play card - insufficient ETH or not player\'s turn')
@@ -738,6 +774,9 @@ export function DragDropGameBoard() {
   const canDragCard = (card: Card, source: 'hand' | 'board', playerId: string) => {
     // Only allow the current player to drag their cards
     if (playerId !== currentViewingPlayer) return false
+    
+    // Don't allow dragging while a card is being played
+    if (isPlayingCard) return false
     
     if (source === 'hand') {
       const canDrag = canPlayCards && playerHand.eth >= card.cost
@@ -978,7 +1017,12 @@ export function DragDropGameBoard() {
                     items={playerHand.hand.map(card => `hand-${card.id}`)}
                     strategy={verticalListSortingStrategy}
                   >
-                    {playerHand.hand.map((card) => (
+                    {/* Debug: Log the hand being rendered */}
+                    {(() => {
+                      console.log('🌴 Rendering hand:', playerHand.hand.map((c, i) => `[${i}]: ${c.name}`))
+                      return null
+                    })()}
+                    {playerHand.hand.map((card, index) => (
                       <DraggableCard
                         key={card.id}
                         card={card}
@@ -989,6 +1033,7 @@ export function DragDropGameBoard() {
                         isActivePlayer={activePlayer?.toLowerCase() === userAddress?.toLowerCase()}
                         gameId={gameId}
                         onCardClick={handleCardClick}
+                        handIndex={index}
                       />
                     ))}
                   </SortableContext>

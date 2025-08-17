@@ -270,8 +270,12 @@ export const useGameEngine = () => {
         throw new Error(`Invalid card index: ${cardIndex}`)
       }
       
-      console.log(`Playing card at index ${cardIndex} for game ${gameId}`)
+      console.log('🎯 CONTRACT CALL DEBUG - START')
+      console.log(`📍 Playing card at index ${cardIndex} for game ${gameId}`)
+      console.log(`🔢 Converting to BigInt: gameId=${gameId} -> ${BigInt(gameId)}, cardIndex=${cardIndex} -> ${BigInt(cardIndex)}`)
       const args = [BigInt(gameId), BigInt(cardIndex)]
+      console.log('📤 Sending to contract:', args)
+      console.log('🎯 CONTRACT CALL DEBUG - END')
       
       const result = await privyWriteContract({
         address: CONTRACT_ADDRESSES.GAME_ENGINE,
@@ -577,6 +581,7 @@ export const useGameEngine = () => {
       useGameStore.getState().updateGameFromContract(gameState)
       
       // Get player hands and update store
+      console.log('🔄 Fetching player hands from contract...')
       try {
         const player1Hand = await readContract(wagmiConfig, {
           address: CONTRACT_ADDRESSES.GAME_ENGINE,
@@ -588,6 +593,7 @@ export const useGameEngine = () => {
         if (player1Hand && Array.isArray(player1Hand)) {
           // Convert BigInt array to number array
           const cardIds = player1Hand.map(id => Number(id))
+          console.log('📥 Player1 hand from contract:', cardIds)
           useGameStore.getState().updatePlayerHandFromContract('player1', cardIds)
         }
         
@@ -601,6 +607,7 @@ export const useGameEngine = () => {
         if (player2Hand && Array.isArray(player2Hand)) {
           // Convert BigInt array to number array
           const cardIds = player2Hand.map(id => Number(id))
+          console.log('📥 Player2 hand from contract:', cardIds)
           useGameStore.getState().updatePlayerHandFromContract('player2', cardIds)
         }
       } catch (err) {
@@ -619,10 +626,27 @@ export const useGameEngine = () => {
         if (player1Battlefield && Array.isArray(player1Battlefield)) {
           // Convert BigInt array to number array
           const instanceIds = player1Battlefield.map(id => Number(id))
-          useGameStore.getState().updatePlayerBattlefieldFromContract('player1', instanceIds)
           
-          // Get card instance details for battlefield cards
-          // Removed battlefield details logging for performance
+          // Get card instance details for each battlefield card
+          const cardInstances = await Promise.all(
+            instanceIds.map(async (instanceId) => {
+              try {
+                const instance = await readContract(wagmiConfig, {
+                  address: CONTRACT_ADDRESSES.GAME_ENGINE,
+                  abi: GameEngineABI,
+                  functionName: 'getCardInstance',
+                  args: [BigInt(instanceId)],
+                })
+                console.log(`🃏 Instance ${instanceId} data:`, instance)
+                return instance
+              } catch (err) {
+                console.error(`Failed to fetch instance ${instanceId}:`, err)
+                return null
+              }
+            })
+          )
+          
+          useGameStore.getState().updatePlayerBattlefieldFromContract('player1', instanceIds, cardInstances)
         }
         
         const player2Battlefield = await readContract(wagmiConfig, {
@@ -635,10 +659,26 @@ export const useGameEngine = () => {
         if (player2Battlefield && Array.isArray(player2Battlefield)) {
           // Convert BigInt array to number array
           const instanceIds = player2Battlefield.map(id => Number(id))
-          useGameStore.getState().updatePlayerBattlefieldFromContract('player2', instanceIds)
           
-          // Get card instance details for battlefield cards
-          // Removed battlefield details logging for performance
+          // Get card instance details for each battlefield card
+          const cardInstances = await Promise.all(
+            instanceIds.map(async (instanceId) => {
+              try {
+                const instance = await readContract(wagmiConfig, {
+                  address: CONTRACT_ADDRESSES.GAME_ENGINE,
+                  abi: GameEngineABI,
+                  functionName: 'getCardInstance',
+                  args: [BigInt(instanceId)],
+                })
+                return instance
+              } catch (err) {
+                console.error(`Failed to fetch instance ${instanceId}:`, err)
+                return null
+              }
+            })
+          )
+          
+          useGameStore.getState().updatePlayerBattlefieldFromContract('player2', instanceIds, cardInstances)
         }
       } catch (err) {
         console.error('Error fetching player battlefields:', err)

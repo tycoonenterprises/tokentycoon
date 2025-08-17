@@ -261,7 +261,7 @@ function GamePage({ gameId }: { gameId: number }) {
 }
 
 export function AppRouter() {
-  console.log('🌐 AppRouter: Current URL hash:', window.location.hash)
+  // Removed noisy AppRouter debug log
   return (
     <HashRouter>
       <Routes>
