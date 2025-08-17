@@ -754,6 +754,19 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
       over: over?.id,
       overData: over?.data?.current
     })
+    
+    // Debug the drop logic
+    const targetBoard = `${currentViewingPlayer}-board`
+    console.log('🎯 Drop logic debug:', {
+      source,
+      overId,
+      targetBoard,
+      isTargetBoard: overId === targetBoard,
+      isDropOnBoard: overId === targetBoard || (overId.startsWith('board-') && !overId.startsWith('chain-') && source === 'hand'),
+      playerId,
+      currentViewingPlayer,
+      playerIdMatch: playerId === currentViewingPlayer
+    })
 
     if (!over) {
       console.log('❌ No drop target found')
@@ -820,7 +833,17 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
 
     // Handle standard card play from hand to board (L1)
     const targetBoard = `${currentViewingPlayer}-board`
-    if (source === 'hand' && overId === targetBoard && playerId === currentViewingPlayer) {
+    
+    // Also accept drops on individual board cards as dropping "on the board"
+    const isDropOnBoard = overId === targetBoard || (
+      overId.startsWith('board-') && 
+      !overId.startsWith('chain-') && 
+      source === 'hand'
+    )
+    
+    if (source === 'hand' && isDropOnBoard && playerId === currentViewingPlayer) {
+      console.log('🏟️ Playing card to L1 board:', { card: card.name, overId })
+      
       // Check if player needs to draw cards first
       if (needsToDraw && canPlayCards) {
         setShouldWiggleDrawButton(true)
