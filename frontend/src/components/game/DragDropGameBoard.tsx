@@ -175,11 +175,12 @@ interface ExtendedDraggableCardProps extends DraggableCardProps {
   gameId: number | null
   onCardClick: (card: Card) => void
   handIndex?: number
+  currentViewingPlayer?: string
 }
 
-function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, gameId, handIndex, onCardClick }: ExtendedDraggableCardProps) {
+function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePlayer, gameId, handIndex, onCardClick, currentViewingPlayer }: ExtendedDraggableCardProps) {
   const [isHovered, setIsHovered] = useState(false)
-  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 })
+  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0, isOpponentCard: false })
   const cardRef = useRef<HTMLDivElement>(null)
   const {
     attributes,
@@ -294,6 +295,9 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
   const visualState = getCardVisualState()
   const cardSize = source === 'board' ? 'w-32 h-44' : 'w-24 h-32'
 
+  // Determine if this is an opponent card by checking if playerId doesn't match current viewing player
+  const isOpponentCard = playerId !== (currentViewingPlayer || 'player1')
+
   return (
     <div className="relative"
       onMouseEnter={(e) => {
@@ -301,7 +305,8 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
           const rect = e.currentTarget.getBoundingClientRect()
           setHoverPosition({
             x: rect.left + rect.width / 2,
-            y: rect.top
+            y: rect.top,
+            isOpponentCard // Add this info to position data
           })
           setIsHovered(true)
         }
@@ -432,7 +437,7 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
           className="fixed pointer-events-none z-[99999] transition-opacity duration-200"
           style={{
             left: hoverPosition.x - 200, // Center the 400px wide card
-            top: hoverPosition.y - 550,  // Position well above the card
+            top: hoverPosition.isOpponentCard ? hoverPosition.y + 50 : hoverPosition.y - 550, // Position below opponent cards, above player cards
           }}
         >
           <div className="w-96 h-[32rem] card border-eth-primary shadow-2xl shadow-eth-primary/50 brightness-110 animate-in zoom-in-95 duration-200">
@@ -911,6 +916,7 @@ export function DragDropGameBoard() {
                       isActivePlayer={false}
                       gameId={gameId}
                       onCardClick={handleCardClick}
+                      currentViewingPlayer={currentViewingPlayer}
                     />
                   </div>
                 ))}
@@ -951,6 +957,7 @@ export function DragDropGameBoard() {
                     isActivePlayer={activePlayer?.toLowerCase() === userAddress?.toLowerCase()}
                     gameId={gameId}
                     onCardClick={handleCardClick}
+                    currentViewingPlayer={currentViewingPlayer}
                   />
                 ))}
               </SortableContext>
@@ -999,6 +1006,7 @@ export function DragDropGameBoard() {
                         gameId={gameId}
                         onCardClick={handleCardClick}
                         handIndex={index}
+                        currentViewingPlayer={currentViewingPlayer}
                       />
                     ))}
                   </SortableContext>
