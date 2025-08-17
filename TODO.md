@@ -1,9 +1,9 @@
-* NFTs for cards and decks?
-* Staking to start match
-* Implementing winning/losing condition
-* Select where card goes 
+* URGENT Select where card goes 
   * DeFi on a specific chain
   * targets for abilities
+* URGENT Staking to start match
+* NFTs for cards and decks?
+* Implementing winning/losing condition
 * Leaderboard
 * Real time UI updates from on chain events
 * Optimize card loading
