@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import { DndContext, DragOverlay, closestCorners, useDroppable, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
+import { DndContext, DragOverlay, closestCorners, closestCenter, useDroppable, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
@@ -538,6 +538,13 @@ function DropZone({ id, children, label, isEmpty, canDrop, isOver: isOverProp = 
     disabled: !canDrop
   })
   
+  // Debug drop zone state
+  useEffect(() => {
+    if (isOver) {
+      console.log(`✨ DropZone ${id} is being hovered over! canDrop: ${canDrop}`)
+    }
+  }, [isOver, id, canDrop])
+  
   return (
     <div
       ref={setNodeRef}
@@ -754,6 +761,22 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
       over: over?.id,
       overData: over?.data?.current
     })
+
+    if (!over) {
+      console.log('❌ No drop target found')
+      return
+    }
+
+    const activeData = active.data.current
+    const overData = over.data.current
+    const overId = over.id as string
+
+    if (!activeData) {
+      console.log('❌ No active data found')
+      return
+    }
+
+    const { card, playerId, source, handIndex } = activeData
     
     // Debug the drop logic
     const targetBoard = `${currentViewingPlayer}-board`
@@ -775,22 +798,6 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
       currentViewingPlayer,
       playerIdMatch: playerId === currentViewingPlayer
     })
-
-    if (!over) {
-      console.log('❌ No drop target found')
-      return
-    }
-
-    const activeData = active.data.current
-    const overData = over.data.current
-    const overId = over.id as string
-
-    if (!activeData) {
-      console.log('❌ No active data found')
-      return
-    }
-
-    const { card, playerId, source, handIndex } = activeData
 
     // Handle DeFi card attachment to Chain cards
     if (source === 'hand' && card.type.toLowerCase() === 'defi' && overId.startsWith('chain-') && overData?.type === 'chain-target') {
@@ -967,9 +974,16 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
   return (
     <div className="relative">
       <DndContext
-        collisionDetection={closestCorners}
+        collisionDetection={closestCenter}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
+        onDragOver={(event) => {
+          console.log('🔄 Dragging over:', {
+            active: event.active.id,
+            over: event.over?.id,
+            overData: event.over?.data?.current
+          })
+        }}
       >
         <div className="flex-1 p-6 bg-gradient-to-b from-gray-800 to-eth-dark">
           <div className="max-w-6xl mx-auto h-full">
