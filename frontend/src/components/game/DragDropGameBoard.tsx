@@ -872,9 +872,9 @@ export function DragDropGameBoard() {
                       key={`opponent-hand-${index}`}
                       className="w-24 h-32 flex-shrink-0 card transition-all duration-200 border-red-500/50 cursor-not-allowed opacity-75"
                     >
-                      {/* Card Back using SVG */}
+                      {/* Card Back using PNG */}
                       <img 
-                        src="/v2/token-tycoon-card-back.svg" 
+                        src="/token-tycoon-card-back.png" 
                         alt="Token Tycoon Card Back" 
                         className="w-full h-full object-cover rounded"
                       />
