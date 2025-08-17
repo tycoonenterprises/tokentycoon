@@ -334,52 +334,14 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
           </div>
           
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => setShowCardsPage(true)}
-              className="btn-secondary text-sm"
-            >
-              🃏 Cards
-            </button>
-
-            <button
-              onClick={() => setShowDecksPage(true)}
-              className="btn-secondary text-sm"
-            >
-              📚 Decks
-            </button>
-            
-            <button
-              onClick={() => setShowWeb3Panel(!showWeb3Panel)}
-              className="btn-secondary text-sm"
-            >
-              {showWeb3Panel ? 'Hide' : 'Show'} Web3 Panel
-            </button>
-            
             {!isGameActive ? (
-              <>
-                <button
-                  onClick={() => setShowPlayPage(true)}
-                  className="btn-primary"
-                >
-                  🎮 Play
-                </button>
-              </>
-            ) : (
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleGetGameState}
-                  className="btn-secondary text-sm"
-                >
-                  Get Game State
-                </button>
-                <button
-                  onClick={resetGame}
-                  className="btn-secondary text-sm"
-                >
-                  Reset Game
-                </button>
-              </div>
-            )}
+              <button
+                onClick={() => setShowPlayPage(true)}
+                className="btn-primary"
+              >
+                🎮 Play
+              </button>
+            ) : null}
             
             <button
               onClick={handleLogout}
@@ -417,19 +379,36 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
                 <p className="text-gray-400 mb-8 max-w-lg">
                   Join an onchain game to play against other players with real blockchain transactions.
                 </p>
-                <div className="flex gap-4 justify-center">
-                  <button
-                    onClick={() => setShowPlayPage(true)}
-                    className="btn-primary text-lg px-8 py-3"
-                  >
-                    🎮 Start Playing
-                  </button>
-                  <button
-                    onClick={handleStartWithCustomDeck}
-                    className="btn-secondary text-lg px-8 py-3"
-                  >
-                    🃏 Custom Deck
-                  </button>
+                <div className="flex flex-col gap-4 items-center">
+                  <div className="flex gap-4 justify-center">
+                    <button
+                      onClick={() => setShowPlayPage(true)}
+                      className="btn-primary text-lg px-8 py-3"
+                    >
+                      🎮 Start Playing
+                    </button>
+                    <button
+                      onClick={handleStartWithCustomDeck}
+                      className="btn-secondary text-lg px-8 py-3"
+                    >
+                      🃏 Custom Deck
+                    </button>
+                  </div>
+                  
+                  <div className="flex gap-4 justify-center">
+                    <button
+                      onClick={() => setShowCardsPage(true)}
+                      className="btn-secondary text-sm px-6 py-2"
+                    >
+                      🃏 Cards
+                    </button>
+                    <button
+                      onClick={() => setShowDecksPage(true)}
+                      className="btn-secondary text-sm px-6 py-2"
+                    >
+                      📚 Decks
+                    </button>
+                  </div>
                 </div>
                 {customDeck && (
                   <p className="text-sm text-eth-success mt-4">
@@ -471,7 +450,36 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
             </div>
           ) : isGameActive ? (
             // Active Game
-            <DragDropGameBoard gameId={gameId} />
+            <>
+              <DragDropGameBoard gameId={gameId} />
+              
+              {/* Debug Panel - Bottom */}
+              <div className="fixed bottom-16 right-4 flex gap-2 z-10">
+                <div className="bg-gray-900 border border-gray-700 rounded-lg p-3">
+                  <div className="text-xs text-gray-400 mb-2">Game Debug</div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setShowWeb3Panel(!showWeb3Panel)}
+                      className="btn-secondary text-xs px-3 py-1"
+                    >
+                      {showWeb3Panel ? 'Hide' : 'Show'} Web3 Portal
+                    </button>
+                    <button
+                      onClick={handleGetGameState}
+                      className="btn-secondary text-xs px-3 py-1"
+                    >
+                      Get Game State
+                    </button>
+                    <button
+                      onClick={resetGame}
+                      className="btn-secondary text-xs px-3 py-1"
+                    >
+                      Reset Game
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </>
           ) : (
             // Fallback - this shouldn't happen
             <div className="flex-1 flex items-center justify-center">
