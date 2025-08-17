@@ -346,31 +346,14 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
           ⛓️
         </div>
       )}
-      {/* Card Header - Only show full header for hand cards */}
-      {source === 'hand' && (
-        <div className="p-2 border-b border-gray-600">
-          <div className="flex items-center justify-between">
-            <div className="text-xs text-gray-400 flex items-center">
-              <span className="mr-1">{getTypeIcon(card.type)}</span>
-              {card.type.toUpperCase()}
-            </div>
-            {card.cost > 0 && (
-              <div className={`text-xs px-2 py-1 rounded-full font-bold ${
-                cardState === 'cant-afford' 
-                  ? 'bg-red-600 text-red-200 border border-red-400' 
-                  : 'bg-eth-secondary text-white'
-              }`}>
-                {card.cost} ETH
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      
-      {/* Cost overlay for board cards */}
-      {source === 'board' && card.cost > 0 && (
+      {/* Cost overlay for both hand and board cards */}
+      {card.cost > 0 && (
         <div className="absolute top-1 right-1 z-10">
-          <div className="bg-eth-secondary text-white text-xs px-1.5 py-0.5 rounded-full font-bold shadow-lg">
+          <div className={`text-white text-xs px-1.5 py-0.5 rounded-full font-bold shadow-lg ${
+            source === 'hand' && cardState === 'cant-afford' 
+              ? 'bg-red-600 border border-red-400' 
+              : 'bg-eth-secondary'
+          }`}>
             {card.cost}
           </div>
         </div>
@@ -378,57 +361,12 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
 
       {/* Card Body */}
       <div className="flex-1 relative">
-        {source === 'hand' ? (
-          // Full card view for hand
-          <div className="h-full flex flex-col">
-            {/* Card Image */}
-            <div className="flex-1 p-2">
-              <CardImage 
-                card={card} 
-                className="w-full h-full rounded"
-                fallbackIcon={getTypeIcon(card.type)}
-              />
-            </div>
-            
-            {/* Card Name Overlay */}
-            <div className="absolute bottom-1 left-1 right-1">
-              <div className="bg-black/80 rounded px-2 py-1 space-y-1">
-                <h4 className="text-xs font-bold text-white leading-tight">
-                  {card.name}
-                </h4>
-                
-                {/* Status message for unplayable cards */}
-                {cardState === 'cant-afford' && (
-                  <div className="text-xs text-red-400 font-semibold leading-tight">
-                    💸 Need {card.cost - playerETH} more
-                  </div>
-                )}
-                {cardState === 'wrong-phase' && (
-                  <div className="text-xs text-yellow-400 font-semibold leading-tight">
-                    🕐 Wrong phase
-                  </div>
-                )}
-                {cardState === 'not-your-turn' && (
-                  <div className="text-xs text-gray-400 font-semibold leading-tight">
-                    ⏳ Not your turn
-                  </div>
-                )}
-                {hasChainTargets && cardState === 'playable' && (
-                  <div className="text-xs text-purple-400 font-semibold leading-tight">
-                    🔗 Can attach to Chains
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        ) : (
-          // Compact view for board - CardImage fills the entire container
-          <CardImage 
-            card={card} 
-            className="w-full h-full rounded"
-            fallbackIcon={getTypeIcon(card.type)}
-          />
-        )}
+        {/* Clean card image view for both hand and board */}
+        <CardImage 
+          card={card} 
+          className="w-full h-full rounded"
+          fallbackIcon={getTypeIcon(card.type)}
+        />
       </div>
 
       {/* Card Footer - Power/Toughness for units, ETH balance for wallet cards, or staking for DeFi cards */}
@@ -439,13 +377,6 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
             <span className="text-eth-success">{card.toughness}</span>
           </div>
         </div>
-      ) : (card.type === 'EOA' || card.name.toLowerCase().includes('wallet')) && source === 'board' ? (
-        <WalletCardFooter 
-          card={card}
-          playerId={playerId}
-          playerETH={playerETH}
-          isActivePlayer={isActivePlayer}
-        />
       ) : card.type === 'DeFi' && source === 'board' ? (
         <DeFiCardFooter 
           card={card}
