@@ -30,12 +30,11 @@ const baseSepoliaChain = {
 
 // Determine which chain to use based on environment
 const isProduction = import.meta.env.PROD
-const chains = isProduction ? [baseSepoliaChain] : [localChain, baseSepoliaChain]
 
 // Wagmi configuration using @privy-io/wagmi's createConfig
 // This ensures proper integration with Privy's embedded wallets
 export const wagmiConfig = createConfig({
-  chains,
+  chains: isProduction ? [baseSepoliaChain] as const : [localChain, baseSepoliaChain] as const,
   transports: {
     [localChain.id]: http('http://localhost:8545'),
     [baseSepoliaChain.id]: http('https://sepolia.base.org'),
