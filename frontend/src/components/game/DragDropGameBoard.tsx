@@ -352,25 +352,25 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
             </div>
             
             {/* Card Name Overlay */}
-            <div className="absolute bottom-2 left-2 right-2">
-              <div className="bg-black/70 rounded px-2 py-1">
+            <div className="absolute bottom-1 left-1 right-1">
+              <div className="bg-black/80 rounded px-2 py-1 space-y-1">
                 <h4 className="text-xs font-bold text-white leading-tight">
                   {card.name}
                 </h4>
                 
                 {/* Status message for unplayable cards */}
                 {cardState === 'cant-afford' && (
-                  <div className="text-xs text-red-400 font-semibold">
-                    💸 Need {card.cost - playerETH} more ETH
+                  <div className="text-xs text-red-400 font-semibold leading-tight">
+                    💸 Need {card.cost - playerETH} more
                   </div>
                 )}
                 {cardState === 'wrong-phase' && (
-                  <div className="text-xs text-yellow-400 font-semibold">
+                  <div className="text-xs text-yellow-400 font-semibold leading-tight">
                     🕐 Wrong phase
                   </div>
                 )}
                 {cardState === 'not-your-turn' && (
-                  <div className="text-xs text-gray-400 font-semibold">
+                  <div className="text-xs text-gray-400 font-semibold leading-tight">
                     ⏳ Not your turn
                   </div>
                 )}
