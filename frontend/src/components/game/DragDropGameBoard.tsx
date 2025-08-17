@@ -914,10 +914,12 @@ export function DragDropGameBoard() {
                   <div key={card.id} className="transform rotate-180">
                     <DraggableCard
                       card={card}
+                      playerId={currentViewingPlayer === 'player1' ? 'player2' : 'player1'}
                       source="board"
-                      gameState={gameState}
-                      cardState="normal"
                       canDrag={false}
+                      playerETH={opponentBoard.eth}
+                      isActivePlayer={false}
+                      gameId={gameId}
                       onCardClick={handleCardClick}
                     />
                   </div>
