@@ -306,6 +306,29 @@ export const useGameEngine = () => {
 
   const depositToColdStorage = async (gameId: number, amount: number) => {
     try {
+      // Safety check: verify game is active before attempting transaction
+      const gameState = await getDetailedGameState(gameId)
+      if (!gameState.isStarted || gameState.isFinished) {
+        throw new Error('Game is not active - cannot transfer to cold storage')
+      }
+      
+      // Check if current user is in the game
+      if (address !== gameState.player1 && address !== gameState.player2) {
+        throw new Error('You are not a player in this game')
+      }
+      
+      // Check if it's the user's turn
+      const currentPlayer = gameState.currentTurn === 0n ? gameState.player1 : gameState.player2
+      if (address !== currentPlayer) {
+        throw new Error('Not your turn - cannot transfer to cold storage')
+      }
+      
+      // Check if user has enough ETH
+      const playerETH = address === gameState.player1 ? gameState.player1ETH : gameState.player2ETH
+      if (playerETH < BigInt(amount)) {
+        throw new Error(`Insufficient ETH: need ${amount}, have ${playerETH.toString()}`)
+      }
+      
       const args = [BigInt(gameId), BigInt(amount)]
       
       const result = await privyWriteContract({

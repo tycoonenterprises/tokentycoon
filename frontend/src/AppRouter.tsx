@@ -135,7 +135,6 @@ function GamePage({ gameId }: { gameId: number }) {
           
           // Load full game state including hands
           await getFullGameState(gameId)
-          console.log('GamePage: Full game state loaded')
         } else {
           // Check if we were just redirected from starting the game
           const urlParams = new URLSearchParams(window.location.search)
@@ -195,7 +194,6 @@ function GamePage({ gameId }: { gameId: number }) {
         }
         
         setLoading(false)
-        console.log('GamePage: Loading complete')
       } catch (err: any) {
         console.error('GamePage: Error loading game:', err)
         
@@ -356,7 +354,6 @@ function GameLobbyWrapper() {
       // Wait a moment for transaction to be mined
       await new Promise(resolve => setTimeout(resolve, 3000))
       // Manually redirect to game page
-      console.log('Redirecting to game page')
       window.location.hash = `#/game/${gameId}`
     } catch (err) {
       console.error('Error starting game:', err)

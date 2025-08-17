@@ -64,7 +64,6 @@ export const contractCardToGameCard = (contractCard: ContractCard, instanceId?: 
     toughness: cardType === 'eoa' ? 2 : undefined,
   } as Card
   
-  console.log(`🔄 Converted card: ID ${cardId} -> "${safeName}" (type: ${cardType})`)
   return result
 }
 
@@ -203,7 +202,6 @@ const getMockCards = (): Card[] => [
 const getRandomCards = (availableCards: Card[], count: number): Card[] => {
   if (availableCards.length === 0) {
     // Fallback: use mock cards for testing
-    console.log('🎭 Using mock cards for demo')
     availableCards = getMockCards()
   }
   
@@ -462,11 +460,6 @@ export const useGameStore = create<GameState & GameActions>()(
         const { players, availableCards } = get()
         const player = players[playerId as keyof typeof players]
         
-        console.log('🎴 HAND UPDATE DEBUG - START')
-        console.log('👤 Player:', playerId)
-        console.log('🌐 Card IDs from contract:', cardIds)
-        console.log('📋 Available cards in registry:', availableCards.length, 'cards')
-        console.log('🗺️ Available cards mapping:', availableCards.map((c, i) => `[${i}]: ${c.name} (id: ${c.id})`).slice(0, 10))
         
         // Convert contract card IDs to game cards
         const handCards = cardIds.map((cardId, index) => {
@@ -478,22 +471,14 @@ export const useGameStore = create<GameState & GameActions>()(
           // CardRegistry IDs are 0-based, so cardId 0 = index 0
           if (cardId >= 0 && cardId < availableCards.length) {
             availableCard = availableCards[cardId]
-            console.log(`🎯 Mapped: Contract cardId ${cardId} -> Array index ${cardId} -> Card: ${availableCard?.name}`)
           }
           
           // Fallback: try to match by parsing the ID string
           if (!availableCard) {
-            console.log(`🔍 Trying fallback match for cardId ${cardId}`)
             availableCard = availableCards.find(card => {
               const cardIdNum = parseInt(card.id.split('-').pop() || '0')
-              console.log(`  Checking ${card.id} -> parsed as ${cardIdNum} === ${cardId}? ${cardIdNum === cardId}`)
               return cardIdNum === cardId
             })
-            if (availableCard) {
-              console.log(`✅ Found card by ID parsing: ${availableCard.name}`)
-            } else {
-              console.log(`❌ No match found for cardId ${cardId}`)
-            }
           }
           
           if (availableCard) {
@@ -549,8 +534,6 @@ export const useGameStore = create<GameState & GameActions>()(
           }
         })
         
-        console.log('🎴 Final hand:', handCards.map((c, i) => `[${i}]: ${c.name} (originalId: ${c.originalCardId})`))
-        console.log('🎴 HAND UPDATE DEBUG - END')
         
         set({
           players: {
@@ -568,9 +551,6 @@ export const useGameStore = create<GameState & GameActions>()(
         const { players, availableCards } = get()
         const player = players[playerId as keyof typeof players]
         
-        console.log('🏟️ BATTLEFIELD UPDATE DEBUG - START')
-        console.log('🆔 Instance IDs:', instanceIds)
-        console.log('🃏 Card instances data:', cardInstances)
         
         // Convert contract instance IDs to game cards
         const battlefieldCards = instanceIds.map((instanceId, index) => {
@@ -578,7 +558,6 @@ export const useGameStore = create<GameState & GameActions>()(
           if (cardInstances && cardInstances[index]) {
             const instance = cardInstances[index]
             const cardId = Number(instance.cardId)
-            console.log(`🎯 Instance ${instanceId} has cardId ${cardId}`)
             
             // Find the card in available cards by its ID
             let availableCard = null
@@ -609,8 +588,6 @@ export const useGameStore = create<GameState & GameActions>()(
           }
         })
         
-        console.log('🏟️ Final battlefield:', battlefieldCards.map(c => c.name))
-        console.log('🏟️ BATTLEFIELD UPDATE DEBUG - END')
         
         set({
           players: {
