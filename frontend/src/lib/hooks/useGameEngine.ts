@@ -458,6 +458,14 @@ export const useGameEngine = () => {
         args: [BigInt(gameId)],
       })
       
+      console.log('🔍 getDetailedGameState result:', {
+        gameId,
+        isStarted: gameStateView.isStarted,
+        isFinished: gameStateView.isFinished,
+        caller: new Error().stack?.split('\n')[1]?.trim() || 'unknown',
+        timestamp: new Date().toISOString()
+      })
+      
       return gameStateView
     } catch (error: any) {
       // Silently fail to avoid console spam

@@ -223,6 +223,12 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
           if (currentGameId !== null) {
             const state = await currentGetDetailedGameState(currentGameId)
             if (state) {
+              console.log('🔄 POLLING: Got game state:', {
+                gameId: currentGameId,
+                isStarted: state.isStarted,
+                isFinished: state.isFinished,
+                timestamp: new Date().toISOString()
+              })
               const store = useGameStore.getState()
               const oldActivePlayer = store.activePlayer
               store.updateGameFromContract(state)
