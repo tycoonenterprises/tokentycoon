@@ -308,7 +308,23 @@ export const useGameEngine = () => {
     try {
       // Safety check: verify game is active before attempting transaction
       const gameState = await getDetailedGameState(gameId)
+      console.log('🔍 COLD STORAGE SAFETY CHECK:', {
+        gameId,
+        isStarted: gameState.isStarted,
+        isFinished: gameState.isFinished,
+        isActive: gameState.isStarted && !gameState.isFinished,
+        currentTurn: gameState.currentTurn,
+        player1: gameState.player1,
+        player2: gameState.player2,
+        currentPlayer: gameState.currentTurn === 0n ? gameState.player1 : gameState.player2
+      })
+      
       if (!gameState.isStarted || gameState.isFinished) {
+        console.error('❌ SAFETY CHECK FAILED:', {
+          isStarted: gameState.isStarted,
+          isFinished: gameState.isFinished,
+          reason: !gameState.isStarted ? 'Game not started' : 'Game is finished'
+        })
         throw new Error('Game is not active - cannot transfer to cold storage')
       }
       
