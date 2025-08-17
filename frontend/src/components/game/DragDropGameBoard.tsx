@@ -431,29 +431,29 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
         <div 
           className="fixed pointer-events-none z-[99999] transition-opacity duration-200"
           style={{
-            left: hoverPosition.x - 140, // Center the 280px wide card
-            top: hoverPosition.y - 420,  // Position well above the card
+            left: hoverPosition.x - 200, // Center the 400px wide card
+            top: hoverPosition.y - 550,  // Position well above the card
           }}
         >
-          <div className="w-70 h-96 card border-eth-primary shadow-2xl shadow-eth-primary/50 brightness-110 animate-in zoom-in-95 duration-200">
+          <div className="w-96 h-[32rem] card border-eth-primary shadow-2xl shadow-eth-primary/50 brightness-110 animate-in zoom-in-95 duration-200">
             {/* Hover Card Header */}
-            <div className="p-3 border-b border-gray-600">
+            <div className="p-4 border-b border-gray-600">
               <div className="flex items-center justify-between mb-1">
-                <div className="text-xs text-gray-400 flex items-center">
-                  <span className="mr-1 text-sm">{getTypeIcon(card.type)}</span>
+                <div className="text-sm text-gray-400 flex items-center">
+                  <span className="mr-2 text-lg">{getTypeIcon(card.type)}</span>
                   {card.type.toUpperCase()}
                 </div>
                 {card.cost > 0 && (
-                  <div className="bg-eth-secondary text-white text-xs px-2 py-1 rounded-full font-bold">
+                  <div className="bg-eth-secondary text-white text-sm px-3 py-1.5 rounded-full font-bold">
                     {card.cost} ETH
                   </div>
                 )}
               </div>
-              <h3 className="text-base font-bold text-white leading-tight">{card.name}</h3>
+              <h3 className="text-xl font-bold text-white leading-tight">{card.name}</h3>
             </div>
 
             {/* Hover Card Image */}
-            <div className="flex-1 p-3">
+            <div className="flex-1 p-4">
               <CardImage 
                 card={card} 
                 className="w-full h-full rounded object-cover"
@@ -462,16 +462,16 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
             </div>
 
             {/* Hover Card Footer */}
-            <div className="p-3 border-t border-gray-600 space-y-1">
+            <div className="p-4 border-t border-gray-600 space-y-2">
               {card.text && (
-                <p className="text-xs text-gray-200 leading-relaxed">{card.text}</p>
+                <p className="text-sm text-gray-200 leading-relaxed">{card.text}</p>
               )}
               {card.abilities && (
-                <div className="text-xs">
+                <div className="text-sm">
                   <span className="text-eth-primary font-medium">{card.abilities}</span>
                 </div>
               )}
-              <div className="flex justify-between items-center text-xs">
+              <div className="flex justify-between items-center text-sm">
                 {card.type === 'unit' && card.power !== undefined && card.toughness !== undefined && (
                   <div className="flex gap-2">
                     <span className="text-eth-danger font-bold">{card.power} ATK</span>
@@ -911,34 +911,15 @@ export function DragDropGameBoard() {
                 strategy={verticalListSortingStrategy}
               >
                 {opponentBoard.board.map((card) => (
-                  <div
-                    key={card.id}
-                    className="w-32 h-44 card border-red-500/50 transform rotate-180 cursor-pointer hover:scale-105 transition-transform"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleCardClick(card)
-                    }}
-                  >
-                    <div className="p-1 border-b border-gray-600">
-                      <div className="text-xs text-center text-gray-300">
-                        {card.name}
-                      </div>
-                    </div>
-                    <div className="p-1 flex-1">
-                      <CardImage 
-                        card={card} 
-                        className="w-full h-full rounded"
-                        fallbackIcon="🃏"
-                      />
-                    </div>
-                    {card.type === 'unit' && (
-                      <div className="p-1 border-t border-gray-600">
-                        <div className="flex justify-between text-xs font-bold">
-                          <span className="text-eth-danger">{card.power}</span>
-                          <span className="text-eth-success">{card.toughness}</span>
-                        </div>
-                      </div>
-                    )}
+                  <div key={card.id} className="transform rotate-180">
+                    <DraggableCard
+                      card={card}
+                      source="board"
+                      gameState={gameState}
+                      cardState="normal"
+                      canDrag={false}
+                      onCardClick={handleCardClick}
+                    />
                   </div>
                 ))}
               </SortableContext>
