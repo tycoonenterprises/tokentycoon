@@ -212,6 +212,9 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
     if (!canAfford) return 'cant-afford'
     return 'playable'
   }
+  
+  // Check if this DeFi card has chain attachment opportunities
+  const hasChainTargets = card.type === 'DeFi' && source === 'hand' && isActivePlayer && canAfford
 
   const cardState = getCardState()
   
@@ -315,8 +318,15 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
         {...attributes}
         {...(canDrag ? listeners : {})}
         onClick={() => onCardClick && onCardClick(card, source, playerId)}
-        className={`${cardSize} flex-shrink-0 card transition-all duration-200 ${getTypeColor(card.type)} ${visualState.className} ${isDragging ? 'z-50' : ''} cursor-pointer hover:shadow-xl`}
+        className={`${cardSize} flex-shrink-0 card transition-all duration-200 ${getTypeColor(card.type)} ${visualState.className} ${isDragging ? 'z-50' : ''} ${hasChainTargets ? 'ring-1 ring-purple-400/50' : ''} cursor-pointer hover:shadow-xl`}
       >
+      
+      {/* Chain attachment indicator for DeFi cards */}
+      {hasChainTargets && (
+        <div className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold z-10">
+          🔗
+        </div>
+      )}
       {/* Card Header - Only show full header for hand cards */}
       {source === 'hand' && (
         <div className="p-2 border-b border-gray-600">
@@ -382,6 +392,11 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
                 {cardState === 'not-your-turn' && (
                   <div className="text-xs text-gray-400 font-semibold leading-tight">
                     ⏳ Not your turn
+                  </div>
+                )}
+                {hasChainTargets && cardState === 'playable' && (
+                  <div className="text-xs text-purple-400 font-semibold leading-tight">
+                    🔗 Can attach to Chains
                   </div>
                 )}
               </div>
@@ -495,25 +510,30 @@ interface DropZoneProps {
   isEmpty: boolean
   canDrop: boolean
   isOver?: boolean
+  isChainTarget?: boolean
 }
 
-function DropZone({ id, children, label, isEmpty, canDrop, isOver: isOverProp = false }: DropZoneProps) {
+function DropZone({ id, children, label, isEmpty, canDrop, isOver: isOverProp = false, isChainTarget = false }: DropZoneProps) {
   const { isOver, setNodeRef } = useDroppable({
     id,
     disabled: !canDrop
   })
   
-
-
   return (
     <div
       ref={setNodeRef}
-      className={`min-h-36 p-4 border-2 border-dashed rounded-lg transition-all duration-200 ${
-        canDrop
-          ? isOver
-            ? 'border-eth-primary/70 bg-eth-primary/20'
-            : 'border-blue-500/30 bg-blue-500/5'
-          : 'border-gray-500/30 bg-gray-500/5'
+      className={`min-h-36 p-4 border-2 rounded-lg transition-all duration-200 ${
+        isChainTarget 
+          ? canDrop
+            ? isOver
+              ? 'border-purple-400/70 bg-purple-400/20 border-solid' 
+              : 'border-purple-500/50 bg-purple-500/10 border-dashed'
+            : 'border-gray-500/30 bg-gray-500/5 border-dashed'
+          : canDrop
+            ? isOver
+              ? 'border-eth-primary/70 bg-eth-primary/20 border-solid'
+              : 'border-blue-500/30 bg-blue-500/5 border-dashed'
+            : 'border-gray-500/30 bg-gray-500/5 border-dashed'
       }`}
     >
       <div className="flex items-center justify-between mb-2">
@@ -527,16 +547,72 @@ function DropZone({ id, children, label, isEmpty, canDrop, isOver: isOverProp = 
         <div className="flex-1 flex items-center justify-center text-gray-500 min-h-24">
           <div className="text-center">
             <div className="text-2xl mb-1">
-              {id.includes('board') ? '🏟️' : '🃏'}
+              {id.includes('board') ? '🏟️' : isChainTarget ? '🔗' : '🃏'}
             </div>
             <div className="text-xs">
-              {id.includes('board') ? 'Drop units here' : 'No cards in hand'}
+              {id.includes('board') 
+                ? 'Drop cards to play (L1)' 
+                : isChainTarget 
+                  ? 'Drop DeFi cards here'
+                  : 'No cards in hand'
+              }
             </div>
           </div>
         </div>
       ) : (
         <div className="flex gap-2 flex-wrap">
           {children}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// New component for individual Chain card drop targets
+interface ChainDropTargetProps {
+  chainCard: Card
+  playerId: string
+  canDrop: boolean
+  children?: React.ReactNode
+}
+
+function ChainDropTarget({ chainCard, playerId, canDrop, children }: ChainDropTargetProps) {
+  const dropId = `chain-${chainCard.id}`
+  const { isOver, setNodeRef } = useDroppable({
+    id: dropId,
+    disabled: !canDrop,
+    data: { chainCard, playerId, type: 'chain-target' }
+  })
+
+  return (
+    <div 
+      ref={setNodeRef}
+      className={`relative ${
+        canDrop && isOver 
+          ? 'ring-2 ring-purple-400 ring-offset-2 ring-offset-gray-900' 
+          : canDrop 
+            ? 'ring-1 ring-purple-500/30' 
+            : ''
+      } transition-all duration-200 rounded`}
+    >
+      {/* Chain card */}
+      {children}
+      
+      {/* Visual indicator for Chain target when dragging DeFi cards */}
+      {canDrop && (
+        <div className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200 ${
+          isOver ? 'opacity-100' : 'opacity-0'
+        }`}>
+          <div className="bg-purple-600/90 text-white text-xs px-2 py-1 rounded font-bold">
+            🔗 Attach to Chain
+          </div>
+        </div>
+      )}
+      
+      {/* Attached DeFi cards indicator */}
+      {chainCard.attachedCards && chainCard.attachedCards.length > 0 && (
+        <div className="absolute -bottom-2 -right-2 bg-purple-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold">
+          {chainCard.attachedCards.length}
         </div>
       )}
     </div>
@@ -641,6 +717,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
     }
 
     const activeData = active.data.current
+    const overData = over.data.current
     const overId = over.id as string
 
     if (!activeData) {
@@ -648,16 +725,61 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
     }
 
     const { card, playerId, source, handIndex } = activeData
-    
 
-    // Handle card play from hand to board
+    // Handle DeFi card attachment to Chain cards
+    if (source === 'hand' && card.type === 'DeFi' && overId.startsWith('chain-') && overData?.type === 'chain-target') {
+      console.log('🔗 Attempting to attach DeFi card to Chain:', { card: card.name, chain: overData.chainCard.name })
+      
+      // Check prerequisites for playing to Chain
+      if (needsToDraw && canPlayCards) {
+        setShouldWiggleDrawButton(true)
+        setTimeout(() => setShouldWiggleDrawButton(false), 1000)
+        return
+      }
+      
+      if (!canPlayCards || playerHand.eth < card.cost) {
+        return
+      }
+
+      if (handIndex !== undefined && handIndex !== null && handIndex >= 0) {
+        setIsPlayingCard(true)
+        
+        try {
+          if (gameId === null || gameId === undefined) {
+            console.error('No gameId available')
+            return
+          }
+          
+          // TODO: Add contract support for Chain attachments
+          // For now, play the card normally and simulate Chain attachment in UI
+          // In a full implementation, this would be: await playCardToChain(gameId, handIndex, overData.chainCard.instanceId)
+          await playCard(gameId, handIndex)
+          
+          console.log(`📎 DeFi card ${card.name} would be attached to Chain ${overData.chainCard.name} (UI simulation)`)
+          
+          await new Promise(resolve => setTimeout(resolve, 1000))
+          await getFullGameState(gameId)
+          await new Promise(resolve => setTimeout(resolve, 500))
+          await getFullGameState(gameId)
+        } catch (error) {
+          console.error('Failed to attach card to Chain:', error)
+          if (gameId !== null && gameId !== undefined) {
+            await getFullGameState(gameId)
+          }
+        } finally {
+          setIsPlayingCard(false)
+        }
+      }
+      return
+    }
+
+    // Handle standard card play from hand to board (L1)
     const targetBoard = `${currentViewingPlayer}-board`
     if (source === 'hand' && overId === targetBoard && playerId === currentViewingPlayer) {
       // Check if player needs to draw cards first
       if (needsToDraw && canPlayCards) {
-        // Trigger wiggle animation on draw button
         setShouldWiggleDrawButton(true)
-        setTimeout(() => setShouldWiggleDrawButton(false), 1000) // Reset after animation
+        setTimeout(() => setShouldWiggleDrawButton(false), 1000)
         return
       }
       
@@ -669,39 +791,27 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
         return
       }
       
-      
       if (canPlayCards && playerHand.eth >= card.cost) {
-        // Use the handIndex from drag data
         const cardIndex = handIndex
         
         if (cardIndex !== undefined && cardIndex !== null && cardIndex >= 0) {
-          
           setIsPlayingCard(true)
-          
-          // Don't update local state - let the contract be the source of truth
-          // The contract will handle:
-          // 1. Removing the played card
-          // 2. Processing any immediate abilities (like draw)
-          // 3. Reordering the hand
           
           try {
             if (gameId === null || gameId === undefined) {
               console.error('No gameId available')
               return
             }
+            
+            console.log(`🏟️ Playing ${card.name} to L1 (main board)`)
             await playCard(gameId, cardIndex)
             
-            // Add a small delay to ensure the transaction is fully processed
             await new Promise(resolve => setTimeout(resolve, 1000))
-            
             await getFullGameState(gameId)
-            
-            // Fetch again after another short delay to catch any late updates
             await new Promise(resolve => setTimeout(resolve, 500))
             await getFullGameState(gameId)
           } catch (error) {
-            console.error('Failed to play card:', error)
-            // Revert local state on error
+            console.error('Failed to play card to board:', error)
             if (gameId !== null && gameId !== undefined) {
               await getFullGameState(gameId)
             }
@@ -711,14 +821,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
         } else {
           console.error('Card index not found in drag data')
         }
-      } else {
       }
-    }
-    
-    // Handle moving cards between zones (for future features)
-    if (active.id !== over.id && source !== 'hand') {
-      // This would handle board-to-board moves, board-to-hand returns, etc.
-      // For now, we'll keep it simple
     }
   }
 
@@ -884,33 +987,72 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
               </div>
             </div>
 
-            {/* Player Board - Droppable */}
-            <DropZone
-              id={`${currentViewingPlayer}-board`}
-              label={`Your Board (Player ${currentViewingPlayer === 'player1' ? '1' : '2'})`}
-              isEmpty={playerBoard.board.length === 0}
-              canDrop={canPlayCards}
-            >
-              <SortableContext 
-                items={playerBoard.board.map(card => `board-${card.id}`)}
-                strategy={verticalListSortingStrategy}
+            {/* Player Board - Two-layer system: L1 board + Chain targets */}
+            <div className="space-y-4">
+              {/* L1 Board Drop Zone - More precise */}
+              <DropZone
+                id={`${currentViewingPlayer}-board`}
+                label={`Your Board (Player ${currentViewingPlayer === 'player1' ? '1' : '2'}) - L1 Layer`}
+                isEmpty={playerBoard.board.length === 0}
+                canDrop={canPlayCards}
               >
-                {playerBoard.board.map((card) => (
-                  <DraggableCard
-                    key={card.id}
-                    card={card}
-                    playerId={currentViewingPlayer}
-                    source="board"
-                    canDrag={canDragCard(card, 'board', currentViewingPlayer)}
-                    playerETH={playerHand.eth}
-                    isActivePlayer={activePlayer?.toLowerCase() === userAddress?.toLowerCase()}
-                    gameId={gameId}
-                    onCardClick={handleCardClick}
-                    currentViewingPlayer={currentViewingPlayer}
-                  />
-                ))}
-              </SortableContext>
-            </DropZone>
+                <SortableContext 
+                  items={playerBoard.board.map(card => `board-${card.id}`)}
+                  strategy={verticalListSortingStrategy}
+                >
+                  <div className="flex gap-3 flex-wrap">
+                    {playerBoard.board.map((card) => {
+                      const isDraggingDeFi = draggedCard?.type === 'DeFi'
+                      const isChain = card.type === 'Chain'
+                      const canDropOnChain = canPlayCards && isDraggingDeFi && isChain
+                      
+                      return isChain ? (
+                        <div key={card.id} className="relative">
+                          <ChainDropTarget
+                            chainCard={card}
+                            playerId={currentViewingPlayer}
+                            canDrop={canDropOnChain}
+                          >
+                            <DraggableCard
+                              card={card}
+                              playerId={currentViewingPlayer}
+                              source="board"
+                              canDrag={canDragCard(card, 'board', currentViewingPlayer)}
+                              playerETH={playerHand.eth}
+                              isActivePlayer={activePlayer?.toLowerCase() === userAddress?.toLowerCase()}
+                              gameId={gameId}
+                              onCardClick={handleCardClick}
+                              currentViewingPlayer={currentViewingPlayer}
+                            />
+                          </ChainDropTarget>
+                        </div>
+                      ) : (
+                        <DraggableCard
+                          key={card.id}
+                          card={card}
+                          playerId={currentViewingPlayer}
+                          source="board"
+                          canDrag={canDragCard(card, 'board', currentViewingPlayer)}
+                          playerETH={playerHand.eth}
+                          isActivePlayer={activePlayer?.toLowerCase() === userAddress?.toLowerCase()}
+                          gameId={gameId}
+                          onCardClick={handleCardClick}
+                          currentViewingPlayer={currentViewingPlayer}
+                        />
+                      )
+                    })}
+                  </div>
+                </SortableContext>
+              </DropZone>
+              
+              {/* Legend for drop targets */}
+              {canPlayCards && (
+                <div className="text-xs text-center text-gray-400 space-x-4">
+                  <span>🏟️ <strong>L1:</strong> Drop cards in the main board area above</span>
+                  <span>🔗 <strong>Chain:</strong> Drop DeFi cards directly onto Chain cards</span>
+                </div>
+              )}
+            </div>
 
             {/* Player Hand */}
             <div className="p-4 bg-gray-900 border-t border-gray-700">
@@ -922,7 +1064,8 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
                   <div className="text-sm">
                     {canPlayCards ? (
                       <>
-                        <span className="text-eth-success">⚡ Drag cards to board to play</span>
+                        <span className="text-eth-success">⚡ Drag cards to board (L1) to play</span>
+                        <span className="text-purple-400 ml-4">🔗 Drag DeFi cards to Chains for attachment</span>
                         <span className="text-gray-400 ml-4">💰 {playerHand.eth} ETH available</span>
                       </>
                     ) : !walletsReady ? (
@@ -957,8 +1100,10 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
                 </div>
                 
                 {canPlayCards && (
-                  <div className="mt-3 text-xs text-gray-400">
-                    💡 Drag cards from hand to board to play them. ETH available: {playerHand.eth}
+                  <div className="mt-3 text-xs text-gray-400 space-y-1">
+                    <div>💡 <strong>Basic Play:</strong> Drag cards to board (L1) to play them directly</div>
+                    <div>🔗 <strong>Chain Play:</strong> Drag DeFi cards onto Chain cards to attach them</div>
+                    <div>💰 <strong>Resources:</strong> {playerHand.eth} ETH available</div>
                   </div>
                 )}
                 </div>

@@ -19,6 +19,7 @@ export interface Card {
   instanceId?: number // Instance ID for cards on battlefield
   source?: 'hand' | 'board' // Where the card is located
   playerId?: string // Which player owns the card
+  attachedCards?: Card[] // For Chain cards - DeFi cards attached to them
 }
 
 // Convert contract enum to string
