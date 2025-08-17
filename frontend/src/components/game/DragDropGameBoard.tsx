@@ -716,6 +716,25 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
         return
       }
       
+      if (!canPlayCards) {
+        console.log('❌ Cannot play cards - not your turn or wallet not ready')
+        return
+      }
+      
+      if (playerHand.eth < card.cost) {
+        console.log(`❌ Insufficient ETH: need ${card.cost}, have ${playerHand.eth}`)
+        return
+      }
+      
+      console.log('💰 ETH AFFORDABILITY CHECK:', {
+        canPlayCards,
+        playerETH: playerHand.eth,
+        cardCost: card.cost,
+        cardName: card.name,
+        canAfford: playerHand.eth >= card.cost,
+        cardData: card
+      })
+      
       if (canPlayCards && playerHand.eth >= card.cost) {
         // Use the handIndex from drag data
         const cardIndex = handIndex
@@ -815,6 +834,14 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
     
     if (source === 'hand') {
       const canDrag = canPlayCards && playerHand.eth >= card.cost
+      console.log(`🎴 CAN DRAG CHECK for ${card.name}:`, {
+        card: card.name,
+        cost: card.cost,
+        playerETH: playerHand.eth,
+        canPlayCards,
+        canAfford: playerHand.eth >= card.cost,
+        finalCanDrag: canDrag
+      })
       return canDrag
     }
     return false // Board cards can't be moved yet
