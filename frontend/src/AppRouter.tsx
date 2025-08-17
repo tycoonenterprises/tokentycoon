@@ -3,6 +3,7 @@ import { Game } from './components/game/Game'
 import { PlayPage } from './components/game/PlayPage'
 import { GameLobby } from './components/game/GameLobby'
 import { CardsPage } from './components/game/CardsPage'
+import { MatchHistoryPage } from './components/game/MatchHistoryPage'
 import { useGameEngine } from './lib/hooks/useGameEngine'
 import { useGameStore } from './stores/gameStore'
 import { useEffect, useState } from 'react'
@@ -18,10 +19,13 @@ function HomePage() {
   return (
     <div className="min-h-screen bg-eth-dark flex items-center justify-center">
       <div className="text-center">
-        <div className="text-6xl mb-6">🃏</div>
-        <h2 className="text-3xl font-bold text-white mb-4">
-          Ethereum Trading Card Game
-        </h2>
+        <div className="mb-6">
+          <img 
+            src="/Cover_TokenTycoon.png" 
+            alt="Token Tycoon Cover" 
+            className="mx-auto max-w-md w-full h-auto rounded-lg shadow-2xl"
+          />
+        </div>
         <p className="text-gray-400 mb-8 max-w-lg">
           Start Demo Mode to control both players and fully test all game mechanics, 
           card interactions, and onchain functionality.
@@ -279,6 +283,9 @@ export function AppRouter() {
         
         {/* Cards collection */}
         <Route path="/cards" element={<CardsPage />} />
+        
+        {/* Match history */}
+        <Route path="/history" element={<MatchHistoryPage onClose={() => window.location.hash = '#/'} />} />
         
         {/* Demo mode game */}
         <Route path="/demo" element={<Game />} />

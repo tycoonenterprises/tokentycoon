@@ -10,7 +10,8 @@ function getDeckImagePath(deckName: string): string {
   // Convert deck name to filename format (lowercase, replace spaces with hyphens, add -deck suffix)
   const filename = deckName
     .toLowerCase()
-    .replace(/\s+/g, '-')
+    .replace(/\s*&\s*/g, '---') // Replace " & " with triple dashes
+    .replace(/\s+/g, '-') // Replace spaces with single dashes
     .replace(/[^\w-]/g, '') // Remove special characters except hyphens
   
   return `/v2/decks/${filename}-deck.svg`

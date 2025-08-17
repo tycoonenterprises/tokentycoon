@@ -9,6 +9,7 @@ import { DeckBuilder } from './DeckBuilder'
 import { CardsPage } from './CardsPage'
 import { DecksPage } from './DecksPage'
 import { PlayPage } from './PlayPage'
+import { MatchHistoryPage } from './MatchHistoryPage'
 import { ContractDebugPanel } from '@/components/debug/ContractDebugPanel'
 import { PrivyDebugInfo } from '@/components/debug/PrivyDebugInfo'
 import { GameDebugPanel } from '@/components/debug/GameDebugPanel'
@@ -65,6 +66,7 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
   const [showCardsPage, setShowCardsPage] = useState(false)
   const [showDecksPage, setShowDecksPage] = useState(false)
   const [showPlayPage, setShowPlayPage] = useState(false)
+  const [showMatchHistory, setShowMatchHistory] = useState(false)
   const [currentGameId, setCurrentGameId] = useState<number | null>(null)
   const [customDeck, setCustomDeck] = useState<Card[] | null>(null)
   
@@ -457,6 +459,12 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
                     >
                       📚 Decks
                     </button>
+                    <button
+                      onClick={() => setShowMatchHistory(true)}
+                      className="btn-secondary text-sm px-6 py-2"
+                    >
+                      🏆 History
+                    </button>
                   </div>
                 </div>
                 {customDeck && (
@@ -599,6 +607,11 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
           onClose={() => setShowPlayPage(false)} 
           onGameStart={handleOnchainGameStart}
         />
+      )}
+
+      {/* Match History Modal */}
+      {showMatchHistory && (
+        <MatchHistoryPage onClose={() => setShowMatchHistory(false)} />
       )}
 
       {/* Debug Panels */}
