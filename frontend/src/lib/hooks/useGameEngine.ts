@@ -6,9 +6,19 @@ import { usePrivySmartContract } from './usePrivySmartContract'
 import type { GameSession, PlayerHand } from '@/lib/types/contracts'
 import { useCallback } from 'react'
 import { useTransactionStore, type TransactionRecord } from '@/stores/transactionStore'
+import { useWallets } from '@privy-io/react-auth'
 
 export const useGameEngine = () => {
-  const { address } = useAccount()
+  const { address: wagmiAddress } = useAccount()
+  const { wallets } = useWallets()
+  
+  // Get the Privy embedded wallet address (the one used for transactions)
+  const getPrivyAddress = () => {
+    const embeddedWallet = wallets.find(w => w.walletClientType === 'privy')
+    return embeddedWallet?.address || wallets[0]?.address || wagmiAddress
+  }
+  
+  const address = getPrivyAddress()
   
   // Use Privy's smart contract hook for write operations
   const { writeContract: privyWriteContract, isPending: isPrivyPending } = usePrivySmartContract()
@@ -308,6 +318,22 @@ export const useGameEngine = () => {
     try {
       // Safety check: verify game is active before attempting transaction
       const gameState = await getDetailedGameState(gameId)
+      
+      console.log('🔍 COLD STORAGE DEBUG:', {
+        gameId,
+        amount,
+        privyAddress: address,
+        wagmiAddress: wagmiAddress,
+        player1: gameState.player1,
+        player2: gameState.player2,
+        isStarted: gameState.isStarted,
+        isFinished: gameState.isFinished,
+        privyMatchesP1: address === gameState.player1,
+        privyMatchesP2: address === gameState.player2,
+        wagmiMatchesP1: wagmiAddress === gameState.player1,
+        wagmiMatchesP2: wagmiAddress === gameState.player2
+      })
+      
       if (!gameState.isStarted || gameState.isFinished) {
         console.error('Safety check failed: Game is not active')
         throw new Error('Game is not active - cannot transfer to cold storage')
@@ -315,6 +341,11 @@ export const useGameEngine = () => {
       
       // Check if current user is in the game
       if (address !== gameState.player1 && address !== gameState.player2) {
+        console.error('❌ Player validation failed:', {
+          currentAddress: address,
+          player1: gameState.player1,
+          player2: gameState.player2
+        })
         throw new Error('You are not a player in this game')
       }
       
@@ -685,7 +716,16 @@ export const useGameSession = (gameId: number) => {
 }
 
 export const usePlayerHand = (gameId: number, playerAddress?: string) => {
-  const { address } = useAccount()
+  const { address: wagmiAddress } = useAccount()
+  const { wallets } = useWallets()
+  
+  // Get the Privy embedded wallet address (the one used for transactions)
+  const getPrivyAddress = () => {
+    const embeddedWallet = wallets.find(w => w.walletClientType === 'privy')
+    return embeddedWallet?.address || wallets[0]?.address || wagmiAddress
+  }
+  
+  const address = getPrivyAddress()
   const player = playerAddress || address
 
   const { data: hand, refetch: refetchHand } = useReadContract({
