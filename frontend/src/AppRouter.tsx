@@ -23,20 +23,14 @@ function HomePage() {
           <img 
             src="/Cover_TokenTycoon.png" 
             alt="Token Tycoon Cover" 
-            className="mx-auto max-w-md w-full h-auto rounded-lg shadow-2xl"
+            className="mx-auto max-w-2xl w-full h-auto rounded-lg shadow-2xl"
           />
         </div>
-        <p className="text-gray-400 mb-8 max-w-lg">
-          Start Demo Mode to control both players and fully test all game mechanics, 
-          card interactions, and onchain functionality.
+        <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
+          Play onchain games against other players or explore the card collection 
+          in this fully decentralized trading card game.
         </p>
         <div className="flex gap-4 justify-center">
-          <button
-            onClick={() => startDemoMode(user?.id || 'player1', 'player2')}
-            className="btn-primary text-lg px-8 py-3"
-          >
-            🔄 Start Demo Mode
-          </button>
           <a
             href="#/play"
             className="btn-primary text-lg px-8 py-3"
