@@ -305,72 +305,7 @@ export const useGameEngine = () => {
   }
 
   const depositToColdStorage = async (gameId: number, amount: number) => {
-    try {
-      console.log(`🏦 COLD STORAGE DEBUG: Attempting to deposit ${amount} ETH to cold storage for game ${gameId}`)
-      
-      // First, let's check the game state before attempting the transaction
-      try {
-        const gameState = await getDetailedGameState(gameId)
-        console.log('🔍 Game state before deposit:', {
-          gameId,
-          isStarted: gameState.isStarted,
-          isFinished: gameState.isFinished,
-          currentTurn: gameState.currentTurn,
-          player1: gameState.player1,
-          player2: gameState.player2,
-          player1ETH: gameState.player1ETH.toString(),
-          player2ETH: gameState.player2ETH.toString(),
-          currentPlayer: gameState.currentTurn === 0n ? gameState.player1 : gameState.player2,
-          needsToDraw: gameState.needsToDraw
-        })
-        
-        // Check current user
-        console.log('🔍 Current user address:', address)
-        
-        // Check conditions that could cause revert
-        const isGameActive = gameState.isStarted && !gameState.isFinished
-        const currentPlayer = gameState.currentTurn === 0n ? gameState.player1 : gameState.player2
-        const isInGame = address === gameState.player1 || address === gameState.player2
-        const isMyTurn = address === currentPlayer
-        const playerETH = address === gameState.player1 ? gameState.player1ETH : gameState.player2ETH
-        const hasEnoughETH = playerETH >= BigInt(amount)
-        
-        console.log('🚨 REVERT CONDITIONS CHECK:', {
-          isGameActive,
-          isInGame, 
-          isMyTurn,
-          hasEnoughETH: `${playerETH.toString()} >= ${amount} = ${hasEnoughETH}`,
-          gameNotActive: !isGameActive,
-          notInGame: !isInGame,
-          notYourTurn: !isMyTurn,
-          insufficientETH: !hasEnoughETH
-        })
-        
-        if (!isGameActive) {
-          console.error('❌ WILL REVERT: GameNotActive')
-          throw new Error('Game is not active - cannot transfer to cold storage')
-        }
-        
-        if (!isInGame) {
-          console.error('❌ WILL REVERT: NotInGame')  
-          throw new Error('You are not in this game')
-        }
-        
-        if (!isMyTurn) {
-          console.error('❌ WILL REVERT: NotYourTurn')
-          throw new Error('Not your turn - cannot transfer to cold storage')
-        }
-        
-        if (!hasEnoughETH) {
-          console.error('❌ WILL REVERT: InsufficientETH')
-          throw new Error(`Insufficient ETH: need ${amount}, have ${playerETH.toString()}`)
-        }
-        
-        console.log('✅ All conditions passed, proceeding with transaction...')
-        
-      } catch (debugError) {
-        console.warn('Could not fetch game state for debugging:', debugError)
-      }
+    try
       
       const args = [BigInt(gameId), BigInt(amount)]
       

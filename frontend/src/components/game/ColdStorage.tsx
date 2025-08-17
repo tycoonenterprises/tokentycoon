@@ -11,7 +11,9 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
   const { 
     players, 
     activePlayer, 
-    gameId
+    gameId,
+    isGameActive,
+    winner
   } = useGameStore()
   const { depositToColdStorage, withdrawFromColdStorage, getFullGameState } = useGameEngine()
   const [transferAmount, setTransferAmount] = useState(1)
@@ -27,7 +29,7 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
   
   // Check if the current user's address matches the activePlayer
   const isCurrentPlayer = Boolean(activePlayer && userAddress && activePlayer.toLowerCase() === userAddress.toLowerCase())
-  const canTransfer = isCurrentPlayer
+  const canTransfer = isCurrentPlayer && isGameActive && !winner
   
   const coldStorageBalance = Number(player?.coldStorage || 0)
   const hotWalletBalance = Number(player?.eth || 0)
@@ -203,23 +205,52 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
                 Total Available: {totalAvailableETH} ETH in hot wallet
               </div>
 
-              {/* Transfer Amount */}
-              <div>
-                <label className="block text-sm text-gray-300 mb-2">
-                  Transfer Amount (ETH)
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  max={Math.max(getSelectedSourceBalance(), Math.min(coldStorageBalance, remainingWithdrawal))}
-                  value={transferAmount}
-                  onChange={(e) => setTransferAmount(Number(e.target.value))}
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
-                />
-              </div>
+              {/* Transfer Amount - only show when transfers are allowed */}
+              {canTransfer && (
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2">
+                    Transfer Amount (ETH)
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max={Math.max(getSelectedSourceBalance(), Math.min(coldStorageBalance, remainingWithdrawal))}
+                    value={transferAmount}
+                    onChange={(e) => setTransferAmount(Number(e.target.value))}
+                    className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white"
+                  />
+                </div>
+              )}
+
+              {/* Game Status Warning */}
+              {(!isGameActive || winner) && (
+                <div className="bg-red-900/30 border border-red-600 rounded p-3 text-center">
+                  <div className="text-red-400 text-sm font-semibold mb-1">
+                    {winner ? '🏆 Game Finished' : '⏸️ Game Not Active'}
+                  </div>
+                  <div className="text-red-300 text-xs">
+                    {winner 
+                      ? `${winner} has won! Cold storage transfers are disabled.`
+                      : 'Cold storage transfers are only available during active games.'
+                    }
+                  </div>
+                </div>
+              )}
+
+              {!isCurrentPlayer && isGameActive && !winner && (
+                <div className="bg-yellow-900/30 border border-yellow-600 rounded p-3 text-center">
+                  <div className="text-yellow-400 text-sm font-semibold mb-1">
+                    ⏳ Not Your Turn
+                  </div>
+                  <div className="text-yellow-300 text-xs">
+                    Wait for your turn to transfer ETH to/from cold storage.
+                  </div>
+                </div>
+              )}
 
               {/* Transfer Buttons */}
-              <div className="flex gap-3">
+              {canTransfer && (
+                <div className="flex gap-3">
                 <button
                   onClick={handleTransferToColdStorage}
                   disabled={isTransferring || getSelectedSourceBalance() < transferAmount}
@@ -237,7 +268,8 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
                     <div className="text-xs mt-1">Limit: {remainingWithdrawal} ETH</div>
                   )}
                 </button>
-              </div>
+                </div>
+              )}
 
               {/* Cancel */}
               <button
