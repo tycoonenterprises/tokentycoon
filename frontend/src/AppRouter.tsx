@@ -8,6 +8,7 @@ import { useGameEngine } from './lib/hooks/useGameEngine'
 import { useGameStore } from './stores/gameStore'
 import { useEffect, useState } from 'react'
 import { usePrivy, useWallets } from '@privy-io/react-auth'
+import { getAssetUrl } from './lib/utils/assets'
 import { CONTRACT_ADDRESSES } from './lib/web3/config'
 import { GameEngineABI } from './lib/contracts/GameEngineABI'
 
@@ -21,7 +22,7 @@ function HomePage() {
       <div className="text-center">
         <div className="mb-6">
           <img 
-            src="/Cover_TokenTycoon.png" 
+            src={getAssetUrl('Cover_TokenTycoon.png')} 
             alt="Token Tycoon Cover" 
             className="mx-auto max-w-2xl w-full h-auto rounded-lg shadow-2xl"
           />

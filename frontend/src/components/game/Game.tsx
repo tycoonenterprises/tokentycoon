@@ -19,6 +19,7 @@ import { wagmiConfig } from '@/lib/web3/wagmiConfig'
 import { CONTRACT_ADDRESSES } from '@/lib/web3/config'
 import { GameEngineABI } from '@/lib/contracts/GameEngineABI'
 import { AutoApprovalSetup } from '@/components/AutoApprovalSetup'
+import { getAssetUrl } from '@/lib/utils/assets'
 
 interface GameProps {
   isRouted?: boolean;
@@ -372,7 +373,7 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
       <div className="fixed top-4 left-4 z-50">
         <a href="#/" className="flex items-center hover:opacity-80 transition-opacity">
           <img 
-            src="/token-tycoon-title.png" 
+            src={getAssetUrl('token-tycoon-title.png')} 
             alt="Token Tycoon" 
             className="h-32 w-auto cursor-pointer"
           />

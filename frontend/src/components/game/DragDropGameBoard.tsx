@@ -13,6 +13,7 @@ import { CardDetailModal } from '@/components/ui/CardDetailModal'
 import { useGameEngine } from '@/lib/hooks/useGameEngine'
 import { useWallets } from '@privy-io/react-auth'
 import { usePrivy } from '@privy-io/react-auth'
+import { getAssetUrl } from '@/lib/utils/assets'
 
 interface WalletCardFooterProps {
   card: Card
@@ -895,7 +896,7 @@ export function DragDropGameBoard({ gameId: propGameId }: DragDropGameBoardProps
                     >
                       {/* Card Back using PNG */}
                       <img 
-                        src="/token-tycoon-card-back.png" 
+                        src={getAssetUrl('token-tycoon-card-back.png')} 
                         alt="Token Tycoon Card Back" 
                         className="w-full h-full object-cover rounded"
                       />

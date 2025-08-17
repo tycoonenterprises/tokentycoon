@@ -1,5 +1,6 @@
 import React from 'react'
 import type { Card } from '@/stores/gameStore'
+import { getAssetUrl } from '@/lib/utils/assets'
 
 interface CardImageProps {
   card: Card
@@ -14,7 +15,7 @@ function getCardImagePath(cardName: string): string {
     .replace(/\s+/g, '-')
     .replace(/[^\w-]/g, '') // Remove special characters except hyphens
   
-  return `/v2/cards/${filename}-literal.svg`
+  return getAssetUrl(`v2/cards/${filename}-literal.svg`)
 }
 
 export function CardImage({ card, className = '', fallbackIcon = '🃏' }: CardImageProps) {
