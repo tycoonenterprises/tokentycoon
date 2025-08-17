@@ -17,7 +17,6 @@ export function usePrivySmartContract() {
   const [isPending, setIsPending] = useState(false)
 
   const getPrivyWallet = async (): Promise<WalletWithMetadata | null> => {
-    console.log('Available wallets:', wallets.map(w => ({ address: w.address, type: w.walletClientType })))
     
     // Get the embedded wallet (Privy wallet)
     const embeddedWallet = wallets.find(
@@ -31,11 +30,9 @@ export function usePrivySmartContract() {
         console.error('No wallet found. Please create a wallet first.')
         return null
       }
-      console.log('Using fallback wallet:', { address: anyWallet.address, type: anyWallet.walletClientType })
       return anyWallet
     }
     
-    console.log('Using Privy embedded wallet:', { address: embeddedWallet.address, type: embeddedWallet.walletClientType })
     return embeddedWallet
   }
 
@@ -48,9 +45,6 @@ export function usePrivySmartContract() {
       })
       
       const balanceBigInt = BigInt(balance)
-      console.log('Checking balance for wallet:', wallet.address)
-      console.log('Wallet balance:', balanceBigInt.toString(), 'Required:', requiredAmount.toString())
-      console.log('Has sufficient funds:', balanceBigInt >= requiredAmount)
       return balanceBigInt >= requiredAmount
     } catch (error) {
       console.error('Error checking balance for wallet:', wallet.address, error)

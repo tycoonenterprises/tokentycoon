@@ -39,35 +39,18 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
   const totalAvailableETH = hotWalletBalance
   
   const handleTransferToColdStorage = async () => {
-    console.log('🏦 Cold Storage Transfer Debug:', {
-      canTransfer,
-      gameId,
-      isTransferring,
-      hotWalletBalance,
-      transferAmount,
-      hasEnoughBalance: hotWalletBalance >= transferAmount,
-      activePlayer,
-      userAddress,
-      isCurrentPlayer,
-      playerId,
-      players
-    })
     
     if (!canTransfer || gameId === null || gameId === undefined || isTransferring) {
-      console.log('❌ Transfer blocked:', { canTransfer, gameId: gameId === null ? 'null' : gameId === undefined ? 'undefined' : gameId, isTransferring })
       return
     }
     
     if (hotWalletBalance >= transferAmount) {
       try {
-        console.log(`🚀 Starting transfer of ${transferAmount} ETH to cold storage`)
         setIsTransferring(true)
         const result = await depositToColdStorage(gameId, transferAmount)
-        console.log('✅ Cold storage deposit successful:', result)
         
         // Refresh game state after transaction
         setTimeout(async () => {
-          console.log('🔄 Refreshing game state after cold storage deposit')
           await getFullGameState(gameId)
         }, 3000)
         
@@ -79,7 +62,6 @@ export function ColdStorage({ playerId }: ColdStorageProps) {
         setIsTransferring(false)
       }
     } else {
-      console.log('❌ Insufficient balance for transfer')
     }
   }
 

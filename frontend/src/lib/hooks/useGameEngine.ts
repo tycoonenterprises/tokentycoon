@@ -122,7 +122,6 @@ export const useGameEngine = () => {
         args,
       })
       
-      console.log('Game creation transaction sent with Privy:', txHash)
       
       // Track the transaction (async, don't wait for it)
       trackTransaction('createGame', args, txHash)
@@ -142,7 +141,6 @@ export const useGameEngine = () => {
         
         // nextGameId is the next game ID, so the game we just created is nextGameId - 1
         const gameId = Number(nextGameId) - 1
-        console.log('Created game with ID:', gameId)
         return gameId
       } catch (readError) {
         console.error('Error reading nextGameId:', readError)
@@ -219,7 +217,6 @@ export const useGameEngine = () => {
 
   const drawToStartTurn = async (gameId: number) => {
     try {
-      console.log(`Drawing to start turn for game ${gameId}`)
       const args = [BigInt(gameId)]
       
       const result = await privyWriteContract({
@@ -232,7 +229,6 @@ export const useGameEngine = () => {
       // Track the transaction
       trackTransaction('drawToStartTurn', args, result)
       
-      console.log('Draw to start turn successful:', result)
       return result
     } catch (error) {
       console.error('Error drawing to start turn:', error)
@@ -242,7 +238,6 @@ export const useGameEngine = () => {
 
   const endTurn = async (gameId: number) => {
     try {
-      console.log(`Ending turn for game ${gameId}`)
       const args = [BigInt(gameId)]
       
       const result = await privyWriteContract({
@@ -255,7 +250,6 @@ export const useGameEngine = () => {
       // Track the transaction
       trackTransaction('endTurn', args, result)
       
-      console.log('Turn ended successfully:', result)
       return result
     } catch (error) {
       console.error('Error ending turn:', error)
@@ -270,12 +264,7 @@ export const useGameEngine = () => {
         throw new Error(`Invalid card index: ${cardIndex}`)
       }
       
-      console.log('🎯 CONTRACT CALL DEBUG - START')
-      console.log(`📍 Playing card at index ${cardIndex} for game ${gameId}`)
-      console.log(`🔢 Converting to BigInt: gameId=${gameId} -> ${BigInt(gameId)}, cardIndex=${cardIndex} -> ${BigInt(cardIndex)}`)
       const args = [BigInt(gameId), BigInt(cardIndex)]
-      console.log('📤 Sending to contract:', args)
-      console.log('🎯 CONTRACT CALL DEBUG - END')
       
       const result = await privyWriteContract({
         address: CONTRACT_ADDRESSES.GAME_ENGINE,
@@ -287,7 +276,6 @@ export const useGameEngine = () => {
       // Track the transaction
       trackTransaction('playCard', args, result)
       
-      console.log('Card played successfully:', result)
       return result
     } catch (error) {
       console.error('Error playing card:', error)
@@ -297,7 +285,6 @@ export const useGameEngine = () => {
 
   const stakeETH = async (gameId: number, instanceId: number, amount: number) => {
     try {
-      console.log(`Staking ${amount} ETH on instance ${instanceId} for game ${gameId}`)
       const args = [BigInt(gameId), BigInt(instanceId), BigInt(amount)]
       
       const result = await privyWriteContract({
@@ -310,7 +297,6 @@ export const useGameEngine = () => {
       // Track the transaction
       trackTransaction('stakeETH', args, result)
       
-      console.log('ETH staked successfully:', result)
       return result
     } catch (error) {
       console.error('Error staking ETH:', error)
@@ -320,26 +306,10 @@ export const useGameEngine = () => {
 
   const depositToColdStorage = async (gameId: number, amount: number) => {
     try {
-      console.log(`Depositing ${amount} ETH to cold storage for game ${gameId}`)
       
       // First, let's check the game state before attempting the transaction
       try {
         const gameState = await getDetailedGameState(gameId)
-        console.log('🔍 Game state before cold storage deposit:', gameState)
-        console.log('🔍 Current user address (wagmi):', address)
-        console.log('🔍 Game analysis:', {
-          gameId,
-          isStarted: gameState.isStarted,
-          isFinished: gameState.isFinished,
-          currentTurn: gameState.currentTurn,
-          player1: gameState.player1,
-          player2: gameState.player2,
-          player1ETH: gameState.player1ETH.toString(),
-          player2ETH: gameState.player2ETH.toString(),
-          currentPlayer: gameState.currentTurn === 0n ? gameState.player1 : gameState.player2,
-          transactionFrom: '0xeDd0a97Ae0524F50dE414c8805779d478E1a7C9c',
-          needsToDraw: gameState.needsToDraw
-        })
         
         // Check all the conditions that could cause revert
         const conditions = {
@@ -348,13 +318,8 @@ export const useGameEngine = () => {
           notYourTurn: '0xeDd0a97Ae0524F50dE414c8805779d478E1a7C9c' !== (gameState.currentTurn === 0n ? gameState.player1 : gameState.player2),
           insufficientETH: gameState.player1ETH < BigInt(amount)
         }
-        console.log('🚨 Potential revert conditions:', conditions)
         
         // Check if any condition would cause a revert
-        if (conditions.gameNotActive) console.error('❌ REVERT: GameNotActive')
-        if (conditions.notInGame) console.error('❌ REVERT: NotInGame')
-        if (conditions.notYourTurn) console.error('❌ REVERT: NotYourTurn')
-        if (conditions.insufficientETH) console.error('❌ REVERT: InsufficientETH')
         
         // Since all conditions are false, let's test if the contract exists by calling a simple view function
         try {
@@ -365,7 +330,6 @@ export const useGameEngine = () => {
             functionName: 'nextGameId',
             args: [],
           })
-          console.log('✅ Contract exists, nextGameId:', nextGameIdTest)
         } catch (contractError) {
           console.error('❌ Contract does not exist or is not responding:', contractError)
         }
@@ -386,7 +350,6 @@ export const useGameEngine = () => {
       // Track the transaction
       trackTransaction('depositToColdStorage', args, result)
       
-      console.log('ETH deposited to cold storage successfully:', result)
       return result
     } catch (error) {
       console.error('Error depositing to cold storage:', error)
@@ -396,7 +359,6 @@ export const useGameEngine = () => {
 
   const withdrawFromColdStorage = async (gameId: number, amount: number) => {
     try {
-      console.log(`Withdrawing ${amount} ETH from cold storage for game ${gameId}`)
       const args = [BigInt(gameId), BigInt(amount)]
       
       const result = await privyWriteContract({
@@ -409,7 +371,6 @@ export const useGameEngine = () => {
       // Track the transaction
       trackTransaction('withdrawFromColdStorage', args, result)
       
-      console.log('ETH withdrawn from cold storage successfully:', result)
       return result
     } catch (error) {
       console.error('Error withdrawing from cold storage:', error)
@@ -429,10 +390,8 @@ export const useGameEngine = () => {
         args: [],
       })
       
-      console.log('Next game ID from contract:', nextGameId)
       
       if (!nextGameId || Number(nextGameId) === 0) {
-        console.log('No games exist yet')
         return []
       }
       
@@ -441,7 +400,6 @@ export const useGameEngine = () => {
       const gamesToFetch = Math.min(totalGames, 10)
       const games = []
       
-      console.log(`Fetching ${gamesToFetch} games, total games: ${totalGames}`)
       
       // Games are 0-indexed, so if nextGameId is 3, we have games 0, 1, 2
       for (let i = totalGames - 1; i >= Math.max(0, totalGames - gamesToFetch); i--) {
@@ -453,12 +411,10 @@ export const useGameEngine = () => {
             args: [BigInt(i)],
           })
           
-          console.log(`Game ${i} data:`, gameView)
           
           // Only show games that are waiting for players (not started and no player2)
           const hasPlayer2 = gameView.player2 && gameView.player2 !== '0x0000000000000000000000000000000000000000'
           if (gameView && !gameView.isStarted && !hasPlayer2) {
-            console.log(`Game ${i} is available for joining`)
             games.push({
               gameId: i,
               creator: gameView.player1,
@@ -471,14 +427,12 @@ export const useGameEngine = () => {
               }
             })
           } else {
-            console.log(`Game ${i} is not available: isStarted=${gameView.isStarted}, hasPlayer2=${hasPlayer2}`)
           }
         } catch (err) {
           console.warn(`Error fetching game ${i}:`, err)
         }
       }
       
-      console.log('Returning games:', games)
       return games
     } catch (error) {
       console.error('Error fetching active games:', error)
@@ -520,7 +474,6 @@ export const useGameEngine = () => {
         return null
       }
       
-      console.log('🎮 Game State from getGameState:', gameView)
       
       // GameView struct has named fields, much cleaner!
       const hasPlayer2 = gameView.player2 && gameView.player2 !== '0x0000000000000000000000000000000000000000'
@@ -581,7 +534,6 @@ export const useGameEngine = () => {
       useGameStore.getState().updateGameFromContract(gameState)
       
       // Get player hands and update store
-      console.log('🔄 Fetching player hands from contract...')
       try {
         const player1Hand = await readContract(wagmiConfig, {
           address: CONTRACT_ADDRESSES.GAME_ENGINE,
@@ -593,7 +545,6 @@ export const useGameEngine = () => {
         if (player1Hand && Array.isArray(player1Hand)) {
           // Convert BigInt array to number array
           const cardIds = player1Hand.map(id => Number(id))
-          console.log('📥 Player1 hand from contract:', cardIds, '(', cardIds.length, 'cards)')
           useGameStore.getState().updatePlayerHandFromContract('player1', cardIds)
         }
         
@@ -607,7 +558,6 @@ export const useGameEngine = () => {
         if (player2Hand && Array.isArray(player2Hand)) {
           // Convert BigInt array to number array
           const cardIds = player2Hand.map(id => Number(id))
-          console.log('📥 Player2 hand from contract:', cardIds, '(', cardIds.length, 'cards)')
           useGameStore.getState().updatePlayerHandFromContract('player2', cardIds)
         }
       } catch (err) {
@@ -637,7 +587,6 @@ export const useGameEngine = () => {
                   functionName: 'getCardInstance',
                   args: [BigInt(instanceId)],
                 })
-                console.log(`🃏 Instance ${instanceId} data:`, instance)
                 return instance
               } catch (err) {
                 console.error(`Failed to fetch instance ${instanceId}:`, err)
