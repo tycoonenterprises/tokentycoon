@@ -422,7 +422,16 @@ export const useGameStore = create<GameState & GameActions>()(
         const activePlayer = currentTurnNumber === 0 ? player1Id : player2Id
         
         const previousState = get()
-        // Removed noisy update game from contract log
+        const newIsActive = gameView.isStarted && !gameView.isFinished
+        
+        console.log('📋 GAME STATE UPDATE:', {
+          gameId: convertBigInt(gameView.gameId),
+          previousIsActive: previousState.isGameActive,
+          newIsActive,
+          isStarted: gameView.isStarted,
+          isFinished: gameView.isFinished,
+          stateChanged: previousState.isGameActive !== newIsActive
+        })
         
         set({
           gameId: convertBigInt(gameView.gameId),
@@ -431,7 +440,7 @@ export const useGameStore = create<GameState & GameActions>()(
           activePlayer,
           needsToDraw: gameView.needsToDraw || false,
           isGameStarted: gameView.isStarted,
-          isGameActive: gameView.isStarted && !gameView.isFinished,
+          isGameActive: newIsActive,
           players: {
             player1: {
               ...get().players.player1,
