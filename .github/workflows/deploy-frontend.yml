@@ -39,7 +39,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: frontend
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: Update contract addresses and configs
         working-directory: frontend
@@ -71,14 +71,14 @@ jobs:
       - name: Create .env file
         working-directory: frontend
         run: |
-          cat > .env << 'EOF'
-          VITE_PRIVY_APP_ID=${{ secrets.VITE_PRIVY_APP_ID || 'default-app-id' }}
-          VITE_CHAIN_ID=84532
-          VITE_RPC_URL=https://sepolia.base.org
-          VITE_CARD_REGISTRY_ADDRESS=${{ steps.addresses.outputs.CARD_REGISTRY }}
-          VITE_DECK_REGISTRY_ADDRESS=${{ steps.addresses.outputs.DECK_REGISTRY }}
-          VITE_GAME_ENGINE_ADDRESS=${{ steps.addresses.outputs.GAME_ENGINE }}
-          EOF
+          echo "VITE_PRIVY_APP_ID=${PRIVY_APP_ID:-default-app-id}" > .env
+          echo "VITE_CHAIN_ID=84532" >> .env
+          echo "VITE_RPC_URL=https://sepolia.base.org" >> .env
+          echo "VITE_CARD_REGISTRY_ADDRESS=${{ steps.addresses.outputs.CARD_REGISTRY }}" >> .env
+          echo "VITE_DECK_REGISTRY_ADDRESS=${{ steps.addresses.outputs.DECK_REGISTRY }}" >> .env
+          echo "VITE_GAME_ENGINE_ADDRESS=${{ steps.addresses.outputs.GAME_ENGINE }}" >> .env
+        env:
+          PRIVY_APP_ID: ${{ secrets.VITE_PRIVY_APP_ID }}
 
       - name: Build frontend
         working-directory: frontend
