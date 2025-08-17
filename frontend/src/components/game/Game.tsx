@@ -458,17 +458,40 @@ export function Game({ isRouted = false, routedGameId }: GameProps) {
             // Game Over Screen
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center">
-                <div className="text-6xl mb-6">
-                  {winner === 'player1' ? '🏆' : '💀'}
-                </div>
-                <h2 className="text-3xl font-bold text-white mb-4">
-                  {winner === 'player1' ? 'Victory!' : 'Defeat!'}
-                </h2>
-                <p className="text-gray-400 mb-8">
-                  {winner === 'player1' 
-                    ? 'Congratulations! You defeated your opponent!' 
-                    : 'Better luck next time. Your opponent emerged victorious.'}
-                </p>
+                {(() => {
+                  // Determine if current user won or lost
+                  const { players } = useGameStore.getState()
+                  const privyWallet = wallets.find(w => w.walletClientType === 'privy')
+                  const userAddress = privyWallet?.address?.toLowerCase()
+                  const player1Address = players.player1.id?.toLowerCase()
+                  const isCurrentUserPlayer1 = userAddress === player1Address
+                  const didCurrentUserWin = (winner === 'player1' && isCurrentUserPlayer1) || (winner === 'player2' && !isCurrentUserPlayer1)
+                  
+                  console.log('🏁 Winner screen logic:', {
+                    winner,
+                    userAddress,
+                    player1Address,
+                    player2Address: players.player2.id?.toLowerCase(),
+                    isCurrentUserPlayer1,
+                    didCurrentUserWin
+                  })
+                  
+                  return (
+                    <>
+                      <div className="text-6xl mb-6">
+                        {didCurrentUserWin ? '🏆' : '💀'}
+                      </div>
+                      <h2 className="text-3xl font-bold text-white mb-4">
+                        {didCurrentUserWin ? 'Victory!' : 'Defeat!'}
+                      </h2>
+                      <p className="text-gray-400 mb-8">
+                        {didCurrentUserWin
+                          ? 'Congratulations! You reached 20 ETH in cold storage and won the game!'
+                          : 'Your opponent reached 20 ETH in cold storage first. Better luck next time!'}
+                      </p>
+                    </>
+                  )
+                })()}
                 <div className="flex gap-4 justify-center">
                   <button
                     onClick={() => setShowPlayPage(true)}

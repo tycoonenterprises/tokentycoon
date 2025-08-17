@@ -498,6 +498,28 @@ export const useGameStore = create<GameState & GameActions>()(
         const previousState = get()
         const newIsActive = gameView.isStarted && !gameView.isFinished
         
+        // Determine winner if game is finished
+        let winner = null
+        if (gameView.isFinished) {
+          const player1ColdStorage = convertBigInt(gameView.player1ColdStorage || 0)
+          const player2ColdStorage = convertBigInt(gameView.player2ColdStorage || 0)
+          
+          console.log('🏁 Game finished! Cold storage amounts:', {
+            player1: player1ColdStorage,
+            player2: player2ColdStorage,
+            winCondition: 20
+          })
+          
+          // Winner is the player who reached 20 ETH in cold storage
+          if (player1ColdStorage >= 20) {
+            winner = 'player1'
+            console.log('🏆 Player 1 wins with', player1ColdStorage, 'ETH in cold storage')
+          } else if (player2ColdStorage >= 20) {
+            winner = 'player2' 
+            console.log('🏆 Player 2 wins with', player2ColdStorage, 'ETH in cold storage')
+          }
+        }
+        
         set({
           gameId: convertBigInt(gameView.gameId),
           currentTurn: currentTurnNumber,
@@ -506,6 +528,7 @@ export const useGameStore = create<GameState & GameActions>()(
           needsToDraw: gameView.needsToDraw || false,
           isGameStarted: gameView.isStarted,
           isGameActive: newIsActive,
+          winner,
           players: {
             player1: {
               ...get().players.player1,
