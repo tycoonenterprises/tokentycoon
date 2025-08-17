@@ -297,7 +297,7 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
   return (
     <div className="relative"
       onMouseEnter={(e) => {
-        if (source === 'hand' && !isDragging) {
+        if (!isDragging) {
           const rect = e.currentTarget.getBoundingClientRect()
           setHoverPosition({
             x: rect.left + rect.width / 2,
@@ -307,9 +307,7 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
         }
       }}
       onMouseLeave={() => {
-        if (source === 'hand') {
-          setIsHovered(false)
-        }
+        setIsHovered(false)
       }}
     >
       <div
@@ -320,12 +318,6 @@ function DraggableCard({ card, playerId, source, canDrag, playerETH, isActivePla
         }}
         {...attributes}
         {...(canDrag ? listeners : {})}
-        onClick={(e) => {
-          if (!isDragging) {
-            e.stopPropagation()
-            onCardClick(card)
-          }
-        }}
         className={`${cardSize} flex-shrink-0 card transition-all duration-200 ${getTypeColor(card.type)} ${visualState.className} ${isDragging ? 'z-50' : ''}`}
       >
       {/* Card Header - Only show full header for hand cards */}
