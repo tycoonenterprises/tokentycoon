@@ -28,6 +28,12 @@ forge test --match-contract ContractName  # Run tests for specific contract
 # Deployment
 make deploy-all        # Deploy contracts and initialize cards/decks
 node scripts/deployAll.js  # Alternative deployment command
+
+# NFT System
+node scripts/nft/preprocessSVGs.js     # Optimize SVGs for deployment
+forge script script/DeployNFT.s.sol --broadcast   # Deploy NFT contracts
+forge script script/InitializeCards.s.sol --broadcast  # Load cards onchain  
+forge script script/InitializeDecks.s.sol --broadcast  # Initialize decks
 ```
 
 ## Architecture
@@ -49,6 +55,32 @@ node scripts/deployAll.js  # Alternative deployment command
 **DeckRegistry.sol** - Pre-configured deck management:
 - Links to CardRegistry for validation
 - Expands deck definitions into full card arrays
+
+### NFT System (`src/nft/`)
+
+**TokenTycoonCards.sol** - ERC1155 NFT contract for trading cards:
+- Onchain metadata and SVG artwork using SSTORE2 storage
+- Role-based access control (MINTER, ADMIN, GAME)
+- Metadata finalization for immutability
+- ERC2981 royalty support (2.5% for marketplace trades)
+- Card locking mechanism for gameplay integration
+
+**TokenTycoonDecks.sol** - ERC1155 NFT contract for 60-card decks:
+- Sealed deck trading with crack-to-open mechanics
+- Deck composition validation and storage
+- Preconstructed and custom deck support
+- Automatic card minting when decks are opened
+
+**TokenTycoonPacks.sol** - ERC1155 NFT contract for randomized packs:
+- Multiple pack types (Common, Rare, Legendary)
+- Weighted random distribution system
+- Pack purchasing with ETH
+- Deterministic randomness for fair distribution
+
+**SSTORE2.sol** - Gas-optimized storage library:
+- Stores large data (SVGs, metadata) in contract bytecode
+- 10-15x gas savings vs direct SSTORE
+- Content hash verification for data integrity
 
 ### Game Phases
 
@@ -72,12 +104,23 @@ Each player's turn automatically executes:
 
 - `cards.json`: Card definitions (DO NOT MODIFY without explicit request)
 - `decks.json`: Pre-built deck configurations (DO NOT MODIFY without explicit request)
+- `data/nft/cardSVGMapping.json`: Processed card artwork and metadata
+- `data/nft/preprocessSummary.json`: SVG optimization statistics
 
 ### Deployment Scripts (`scripts/`)
 
+**Game System:**
 - `deployAll.js`: Main deployment script for all contracts and data
 - `deployCards.js`: Initialize cards from JSON
 - `deployDecks.js`: Initialize decks from JSON
+
+**NFT System:**
+- `script/DeployNFT.s.sol`: Deploy all NFT contracts with proper roles
+- `script/InitializeCards.s.sol`: Load all 91 cards with artwork onchain
+- `script/InitializeDecks.s.sol`: Initialize 6 preconstructed decks
+- `scripts/nft/preprocessSVGs.js`: Optimize SVG artwork for onchain storage
+- `scripts/nft/initializeCards.js`: Generate card initialization scripts
+- `scripts/nft/initializeDecks.js`: Generate deck initialization scripts
 
 ## Testing Approach
 

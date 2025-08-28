@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, Search, Filter } from 'lucide-react';
+import { X, Search, Filter, Database, Zap, AlertCircle } from 'lucide-react';
 import { CardImage } from '@/components/ui/CardImage';
-import { useCardRegistry } from '@/lib/hooks/useCardRegistry';
-import type { ContractCard } from '@/lib/types/contracts';
+import { OnChainCardImage } from '@/components/ui/OnChainCardImage';
+import { useAllNFTCards } from '@/lib/hooks/useNFTCardsContract';
+import type { OnChainCardMetadata } from '@/lib/hooks/useNFTCardsContract';
 import type { Card } from '@/stores/gameStore';
 
 interface CardsPageProps {
@@ -12,26 +13,27 @@ interface CardsPageProps {
 type CardType = 'Chain' | 'DeFi' | 'EOA' | 'Action';
 
 export const CardsPage: React.FC<CardsPageProps> = ({ onClose = () => window.location.hash = '#/' }) => {
-  const { cards: contractCards, isLoadingCards, refetchCards } = useCardRegistry();
+  const { cards: nftCards, isLoading: isLoadingCards, cacheStats } = useAllNFTCards();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<CardType | 'All'>('All');
-  const [selectedCard, setSelectedCard] = useState<ContractCard | null>(null);
+  const [selectedCard, setSelectedCard] = useState<OnChainCardMetadata | null>(null);
+  const [useOnChainImages, setUseOnChainImages] = useState(true);
 
-  // Helper to convert ContractCard to Card format
-  const convertContractCardToCard = (contractCard: ContractCard): Card => {
+  // Helper to convert OnChainCardMetadata to Card format
+  const convertNFTCardToCard = (nftCard: OnChainCardMetadata): Card => {
     const cardTypes = ['Chain', 'DeFi', 'EOA', 'Action'] as const;
     return {
-      id: contractCard.id.toString(),
-      name: contractCard.name,
-      type: cardTypes[contractCard.cardType] || 'unit',
-      cost: contractCard.cost,
-      text: contractCard.description,
-      abilities: contractCard.abilities?.length > 0 ? JSON.stringify(contractCard.abilities) : undefined
+      id: nftCard.cardId.toString(),
+      name: nftCard.name,
+      type: cardTypes[nftCard.cardType] || 'unit',
+      cost: nftCard.cost,
+      text: nftCard.description,
+      abilities: nftCard.abilities?.length > 0 ? JSON.stringify(nftCard.abilities) : undefined
     };
   };
 
-  // Convert contract cards to display format
-  const cards = contractCards || [];
+  // Use NFT cards as primary data source
+  const cards = nftCards || [];
 
 
   const enumToCardType = (enumValue: number): CardType => {
@@ -68,13 +70,37 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose = () => window.loc
         {/* Header */}
         <div className="p-4 border-b border-gray-700">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-white">All Cards</h2>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
-            >
-              <X className="w-6 h-6 text-gray-400" />
-            </button>
+            <div className="flex items-center gap-3">
+              <h2 className="text-2xl font-bold text-white">All Cards</h2>
+              <div className="flex items-center gap-2">
+                <Database className="w-5 h-5 text-cyan-400" />
+                <span className="text-sm text-gray-400">On-Chain</span>
+                {cacheStats.size > 0 && (
+                  <span className="text-xs bg-cyan-900/30 text-cyan-400 px-2 py-1 rounded">
+                    {cacheStats.size} cached
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setUseOnChainImages(!useOnChainImages)}
+                className={`p-2 rounded-lg transition-colors ${
+                  useOnChainImages 
+                    ? 'bg-cyan-600 text-white' 
+                    : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                }`}
+                title={useOnChainImages ? 'Using on-chain SVG' : 'Using static images'}
+              >
+                <Zap className="w-4 h-4" />
+              </button>
+              <button
+                onClick={onClose}
+                className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6 text-gray-400" />
+              </button>
+            </div>
           </div>
 
           {/* Filters */}
@@ -109,16 +135,35 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose = () => window.loc
             </div>
           </div>
 
-          <div className="mt-2 text-sm text-gray-400">
-            Showing {filteredCards.length} of {cards.length} cards
+          <div className="mt-2 flex items-center justify-between text-sm text-gray-400">
+            <span>Showing {filteredCards.length} of {cards.length} cards</span>
+            <div className="flex items-center gap-3">
+              <span>Source: On-Chain NFT Metadata</span>
+              {isLoadingCards && (
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 border border-cyan-500 border-t-transparent rounded-full animate-spin" />
+                  <span>Loading...</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Cards Grid */}
         <div className="flex-1 overflow-y-auto p-4">
-          {isLoadingCards ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-white">Loading cards from contract...</div>
+          {isLoadingCards && cards.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full gap-4">
+              <div className="w-12 h-12 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+              <div className="text-white">Loading cards from blockchain...</div>
+              <div className="text-sm text-gray-400">Fetching on-chain metadata and SVG artwork</div>
+            </div>
+          ) : cards.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full gap-4">
+              <AlertCircle className="w-16 h-16 text-gray-500" />
+              <div className="text-white">No cards found</div>
+              <div className="text-sm text-gray-400">
+                Make sure the cards are properly initialized on the blockchain
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -126,18 +171,26 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose = () => window.loc
                 const cardType = enumToCardType(card.cardType);
                 return (
                   <div
-                    key={card.id}
+                    key={card.cardId}
                     className="cursor-pointer hover:scale-105 transition-transform"
                     onClick={() => setSelectedCard(card)}
                   >
                     <div className="bg-gray-800 rounded-lg p-2 border border-gray-700 hover:border-cyan-500">
                       {/* Card Image */}
                       <div className="aspect-[3/4] bg-gray-900 rounded mb-2 overflow-hidden">
-                        <CardImage 
-                          card={convertContractCardToCard(card)} 
-                          className="w-full h-full"
-                          fallbackIcon="🃏"
-                        />
+                        {useOnChainImages ? (
+                          <OnChainCardImage 
+                            card={card}
+                            className="w-full h-full"
+                            fallbackIcon="🃏"
+                          />
+                        ) : (
+                          <CardImage 
+                            card={convertNFTCardToCard(card)} 
+                            className="w-full h-full"
+                            fallbackIcon="🃏"
+                          />
+                        )}
                       </div>
                       
                       {/* Card Info */}
@@ -173,11 +226,19 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose = () => window.loc
               {/* Card Image */}
               <div className="w-64 flex-shrink-0">
                 <div className="aspect-[3/4] bg-gray-800 rounded-lg overflow-hidden">
-                  <CardImage 
-                    card={convertContractCardToCard(selectedCard)} 
-                    className="w-full h-full"
-                    fallbackIcon="🃏"
-                  />
+                  {useOnChainImages ? (
+                    <OnChainCardImage 
+                      card={selectedCard}
+                      className="w-full h-full"
+                      fallbackIcon="🃏"
+                    />
+                  ) : (
+                    <CardImage 
+                      card={convertNFTCardToCard(selectedCard)} 
+                      className="w-full h-full"
+                      fallbackIcon="🃏"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -212,15 +273,13 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose = () => window.loc
                   <div>
                     <h4 className="text-lg font-semibold text-white mb-2">Abilities</h4>
                     <div className="space-y-2">
-                      {selectedCard.abilities.map((ability: any, index: number) => (
+                      {selectedCard.abilities.map((ability, index) => (
                         <div key={index} className="bg-gray-800 rounded p-3">
-                          <div className="font-medium text-cyan-400 mb-1">{ability.name}</div>
+                          <div className="font-medium text-cyan-400 mb-1 capitalize">
+                            {ability.abilityType}
+                          </div>
                           <div className="text-sm text-gray-400">
-                            {ability.options && ability.options.map((option: any, i: number) => (
-                              <div key={i}>
-                                <span className="text-gray-500">{option.key}:</span> {option.value}
-                              </div>
-                            ))}
+                            Amount: {ability.amount}
                           </div>
                         </div>
                       ))}
@@ -228,8 +287,29 @@ export const CardsPage: React.FC<CardsPageProps> = ({ onClose = () => window.loc
                   </div>
                 )}
 
-                <div className="mt-4 text-xs text-gray-500">
-                  Card ID: #{selectedCard.id}
+                {/* On-chain Metadata */}
+                <div className="mt-4 pt-4 border-t border-gray-700">
+                  <div className="text-xs text-gray-500 space-y-1">
+                    <div>Card ID: #{selectedCard.cardId}</div>
+                    <div>Max Supply: {selectedCard.maxSupply === 0 ? 'Unlimited' : selectedCard.maxSupply.toLocaleString()}</div>
+                    <div>Total Minted: {selectedCard.totalMinted.toLocaleString()}</div>
+                    <div className="flex items-center gap-2">
+                      <span>Status:</span>
+                      {selectedCard.finalized ? (
+                        <span className="text-green-400">Finalized</span>
+                      ) : (
+                        <span className="text-yellow-400">Draft</span>
+                      )}
+                      {selectedCard.tradeable && (
+                        <span className="text-blue-400">• Tradeable</span>
+                      )}
+                    </div>
+                    {selectedCard.contentHash !== '0x0000000000000000000000000000000000000000000000000000000000000000' && (
+                      <div className="text-cyan-400">
+                        Content Hash: {selectedCard.contentHash.substring(0, 10)}...
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

@@ -86,9 +86,15 @@ export const privyConfig = {
   },
 }
 
-// Contract addresses - will be replaced by GitHub Actions
+// Contract addresses on Base Sepolia
 export const CONTRACT_ADDRESSES = {
-  CARD_REGISTRY: 'REPLACE_CARD_REGISTRY' as `0x${string}`,
-  DECK_REGISTRY: 'REPLACE_DECK_REGISTRY' as `0x${string}`,
-  GAME_ENGINE: 'REPLACE_GAME_ENGINE' as `0x${string}`,
+  // Legacy contracts (game engine)
+  CARD_REGISTRY: '0x8f0c54b31077a505A98fCE72FBc2eeF247F40550' as `0x${string}`,
+  DECK_REGISTRY: '0x464636fAC3b95EB37B9C5e1CFDa13A1d5E382D64' as `0x${string}`,
+  GAME_ENGINE: '0x947F43184d438d7C4D0ceBD9D28751e7C5296891' as `0x${string}`,
+  
+  // NFT contracts (ERC1155)
+  NFT_CARDS: '0x6e887D54A2cd242cF0abcf16679eC1BEcF2D8c16' as `0x${string}`,
+  NFT_DECKS: '0x75a850EF4fB0B4665430d7Dc4ccfA510C6498308' as `0x${string}`,
+  NFT_PACKS: '0x99B22E8FfA132C7F6D57Ef3de97Dc143FE7AeC8F' as `0x${string}`,
 } as const
