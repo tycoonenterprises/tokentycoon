@@ -93,8 +93,15 @@ export const CONTRACT_ADDRESSES = {
   DECK_REGISTRY: '0x464636fAC3b95EB37B9C5e1CFDa13A1d5E382D64' as `0x${string}`,
   GAME_ENGINE: '0x947F43184d438d7C4D0ceBD9D28751e7C5296891' as `0x${string}`,
   
-  // NFT contracts (ERC1155)
-  NFT_CARDS: '0x6e887D54A2cd242cF0abcf16679eC1BEcF2D8c16' as `0x${string}`,
-  NFT_DECKS: '0x75a850EF4fB0B4665430d7Dc4ccfA510C6498308' as `0x${string}`,
-  NFT_PACKS: '0x99B22E8FfA132C7F6D57Ef3de97Dc143FE7AeC8F' as `0x${string}`,
+  // NFT contracts (ERC1155) - Updated with fixed SSTORE2
+  NFT_CARDS: '0x80E2bF1733e92718E95d21235594FCcD2931fD9a' as `0x${string}`,
+  NFT_DECKS: '0xb2d7d608B6DF78a321Ac76435A51BB1653f59dD4' as `0x${string}`,
+  NFT_PACKS: '0xf45d07063CA4e1AdFB47c010Bc4e1F53aF4d57d8' as `0x${string}`,
 } as const
+
+// Helper function to get contract addresses based on chain
+export function getContractAddresses(chainId?: number) {
+  // For now, return Base Sepolia addresses
+  // In the future, this could return different addresses per chain
+  return CONTRACT_ADDRESSES
+}

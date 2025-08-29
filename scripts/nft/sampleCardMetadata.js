@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { ethers } from 'ethers';
+import path from 'path';
 
 // Load deployed contracts
 const deployedContracts = JSON.parse(fs.readFileSync('./data/nft/deployed-contracts.json', 'utf8'));
@@ -24,39 +25,80 @@ async function decodePointer(provider, pointer, label = "data") {
         
         // SSTORE2 stores data as contract bytecode
         const bytecode = await provider.getCode(pointer);
+        console.log(`    📊 Bytecode length: ${bytecode.length} chars (raw: "${bytecode.substring(0, 20)}...")`);
+        
         if (bytecode === '0x' || bytecode.length <= 2) {
             return `No data stored at ${label} pointer`;
         }
         
+        // For debugging: show the actual bytecode structure
+        console.log(`    🔍 First 10 bytes: ${bytecode.substring(0, 22)}`);
+        
         // SSTORE2 format: first byte is STOP opcode (0x00), rest is data
-        // But some implementations may vary, so we try multiple approaches
         let decodedData = null;
         let approach = '';
+        let success = false;
         
-        // Approach 1: Skip first byte (standard SSTORE2)
-        try {
-            const dataHex = bytecode.slice(4); // Remove '0x00'
-            decodedData = ethers.toUtf8String('0x' + dataHex);
-            approach = 'standard SSTORE2';
-        } catch (e1) {
-            // Approach 2: Try without skipping first byte
+        // Approach 1: Standard SSTORE2 (skip 0x00 prefix)
+        if (bytecode.length > 4) {
             try {
-                decodedData = ethers.toUtf8String(bytecode);
-                approach = 'direct decode';
-            } catch (e2) {
-                // Approach 3: Try skipping different amounts
-                try {
-                    const dataHex = bytecode.slice(6); // Skip more bytes
+                const dataHex = bytecode.slice(4); // Remove '0x00'
+                if (dataHex.length > 0) {
                     decodedData = ethers.toUtf8String('0x' + dataHex);
-                    approach = 'skip 3 bytes';
-                } catch (e3) {
-                    return `Unable to decode ${label}: ${e1.message}`;
+                    approach = 'standard SSTORE2 (skip 0x00)';
+                    success = true;
                 }
+            } catch (e1) {
+                console.log(`    ⚠️  Standard SSTORE2 decode failed: ${e1.message.substring(0, 50)}`);
             }
         }
         
-        console.log(`    ✅ Decoded ${label} using ${approach} (${decodedData.length} chars)`);
-        return decodedData;
+        // Approach 2: Direct decode (no prefix skip)
+        if (!success) {
+            try {
+                decodedData = ethers.toUtf8String(bytecode);
+                approach = 'direct decode (no skip)';
+                success = true;
+            } catch (e2) {
+                console.log(`    ⚠️  Direct decode failed: ${e2.message.substring(0, 50)}`);
+            }
+        }
+        
+        // Approach 3: Skip different amounts (some implementations vary)
+        if (!success && bytecode.length > 6) {
+            try {
+                const dataHex = bytecode.slice(6); // Skip 0x000
+                if (dataHex.length > 0) {
+                    decodedData = ethers.toUtf8String('0x' + dataHex);
+                    approach = 'skip 3 bytes';
+                    success = true;
+                }
+            } catch (e3) {
+                console.log(`    ⚠️  Skip 3 bytes failed: ${e3.message.substring(0, 50)}`);
+            }
+        }
+        
+        // Approach 4: Try to decode as raw hex without UTF-8 conversion
+        if (!success) {
+            try {
+                // Just return the hex data for analysis
+                const dataHex = bytecode.slice(4);
+                if (dataHex.length > 0) {
+                    decodedData = `Raw hex data (${dataHex.length / 2} bytes): ${dataHex.substring(0, 100)}${dataHex.length > 100 ? '...' : ''}`;
+                    approach = 'raw hex';
+                    success = true;
+                }
+            } catch (e4) {
+                console.log(`    ⚠️  Raw hex failed: ${e4.message.substring(0, 50)}`);
+            }
+        }
+        
+        if (success) {
+            console.log(`    ✅ Decoded ${label} using ${approach} (${decodedData.length} chars)`);
+            return decodedData;
+        } else {
+            return `Unable to decode ${label} from ${bytecode.length} bytes of bytecode`;
+        }
         
     } catch (error) {
         return `Error following ${label} pointer: ${error.message}`;
@@ -99,6 +141,65 @@ async function getTokenURI(contract, cardId) {
     } catch (error) {
         console.log(`    ❌ URI error: ${error.message.substring(0, 100)}`);
         return `URI Error: ${error.message}`;
+    }
+}
+
+// Save downloaded data to files for inspection
+function saveDataToFiles(cardId, svgData, jsonData, tokenURI) {
+    try {
+        // Create output directory
+        const outputDir = './temp/card-downloads';
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir, { recursive: true });
+        }
+        
+        const baseFilename = `card-${cardId}`;
+        
+        // Save SVG data if it exists and is valid
+        if (svgData && typeof svgData === 'string' && svgData.includes('<svg')) {
+            const svgPath = path.join(outputDir, `${baseFilename}.svg`);
+            fs.writeFileSync(svgPath, svgData, 'utf8');
+            console.log(`    💾 Saved SVG to: ${svgPath}`);
+        }
+        
+        // Save JSON data if it exists
+        if (jsonData && typeof jsonData === 'string') {
+            try {
+                // Try to parse and pretty-format the JSON
+                const parsed = JSON.parse(jsonData);
+                const jsonPath = path.join(outputDir, `${baseFilename}-metadata.json`);
+                fs.writeFileSync(jsonPath, JSON.stringify(parsed, null, 2), 'utf8');
+                console.log(`    💾 Saved JSON metadata to: ${jsonPath}`);
+            } catch {
+                // Save as raw text if not valid JSON
+                const textPath = path.join(outputDir, `${baseFilename}-metadata.txt`);
+                fs.writeFileSync(textPath, jsonData, 'utf8');
+                console.log(`    💾 Saved raw metadata to: ${textPath}`);
+            }
+        }
+        
+        // Save token URI data (the working URI)
+        if (tokenURI && typeof tokenURI === 'object') {
+            const uriPath = path.join(outputDir, `${baseFilename}-uri.json`);
+            fs.writeFileSync(uriPath, JSON.stringify(tokenURI, null, 2), 'utf8');
+            console.log(`    💾 Saved token URI to: ${uriPath}`);
+            
+            // If the URI contains an SVG image, extract and save it
+            if (tokenURI.image && tokenURI.image.startsWith('data:image/svg+xml;base64,')) {
+                try {
+                    const base64Data = tokenURI.image.replace('data:image/svg+xml;base64,', '');
+                    const svgContent = Buffer.from(base64Data, 'base64').toString('utf8');
+                    const uriSvgPath = path.join(outputDir, `${baseFilename}-uri.svg`);
+                    fs.writeFileSync(uriSvgPath, svgContent, 'utf8');
+                    console.log(`    💾 Saved URI SVG to: ${uriSvgPath}`);
+                } catch (e) {
+                    console.log(`    ⚠️  Could not extract URI SVG: ${e.message}`);
+                }
+            }
+        }
+        
+    } catch (error) {
+        console.log(`    ⚠️  Error saving files: ${error.message}`);
     }
 }
 
@@ -192,6 +293,7 @@ async function main() {
     const args = process.argv.slice(2);
     let cardIds = [];
     let count = 5; // Default sample size
+    let saveFiles = args.includes('--save');
     
     if (args.length === 0) {
         // Generate random card IDs
@@ -254,6 +356,11 @@ async function main() {
                 getTokenURI(cardsContract, cardId)
             ]);
             
+            // Save downloaded data to files for inspection (if requested)
+            if (saveFiles) {
+                saveDataToFiles(cardId, svgData, jsonData, tokenURI);
+            }
+            
             // Format and display
             console.log(formatMetadata(cardId, metadata, abilities, svgData, jsonData, tokenURI));
             
@@ -275,6 +382,7 @@ async function main() {
     console.log(`   node scripts/nft/sampleCardMetadata.js 1 25 50 91        # specific cards`);
     console.log(`   node scripts/nft/sampleCardMetadata.js --cards 1 5 10    # specific cards`);
     console.log(`   node scripts/nft/sampleCardMetadata.js --range 1 10      # card range 1-10`);
+    console.log(`   node scripts/nft/sampleCardMetadata.js --range 1 5 --save # save downloaded files`);
 }
 
 // Handle errors

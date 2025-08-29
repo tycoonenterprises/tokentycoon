@@ -56,16 +56,8 @@ contract DeployNFT is Script {
         console.log("TokenTycoonDecks:", address(decks));
         console.log("TokenTycoonPacks:", address(packs));
         
-        // Write to file for easy reference
-        string memory contractsJson = string.concat(
-            '{\n',
-            '  "TokenTycoonCards": "', vm.toString(address(cards)), '",\n',
-            '  "TokenTycoonDecks": "', vm.toString(address(decks)), '",\n',
-            '  "TokenTycoonPacks": "', vm.toString(address(packs)), '"\n',
-            '}'
-        );
-        
-        vm.writeFile("./data/nft/deployed-contracts.json", contractsJson);
-        console.log("Contract addresses saved to data/nft/deployed-contracts.json");
+        // Note: Manual update needed for deployed-contracts.json
+        console.log("");
+        console.log("Update data/nft/deployed-contracts.json with above addresses");
     }
 }

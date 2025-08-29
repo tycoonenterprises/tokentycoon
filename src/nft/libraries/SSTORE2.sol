@@ -22,13 +22,22 @@ library SSTORE2 {
         // Ensure data is not too large for a contract
         if (data.length > 24575) revert DataTooLarge(); // Max contract size - 1KB margin
         
-        bytes memory code = abi.encodePacked(
+        // Build runtime bytecode (what the deployed contract will contain)
+        bytes memory runtimeCode = abi.encodePacked(
             hex"00", // STOP opcode - contract does nothing when called
             data
         );
         
+        // Build initialization bytecode that deploys the runtime code
+        // Format: PUSH2 <length> PUSH1 0x80 PUSH1 0x0E PUSH1 0x00 CODECOPY PUSH1 0x00 RETURN
+        bytes memory initCode = abi.encodePacked(
+            hex"61", uint16(runtimeCode.length),  // PUSH2 runtimeCode.length
+            hex"80600E6000396000F3",              // Init opcodes: DUP1 PUSH1 0x0E PUSH1 0x00 CODECOPY PUSH1 0x00 RETURN
+            runtimeCode                          // The actual runtime code to deploy
+        );
+        
         assembly {
-            pointer := create(0, add(code, 0x20), mload(code))
+            pointer := create(0, add(initCode, 0x20), mload(initCode))
             if iszero(pointer) {
                 // Deployment failed
                 let size := mload(0x40)
@@ -50,13 +59,21 @@ library SSTORE2 {
     function writeDeterministic(bytes memory data, bytes32 salt) internal returns (address pointer) {
         if (data.length > 24575) revert DataTooLarge();
         
-        bytes memory code = abi.encodePacked(
+        // Build runtime bytecode (what the deployed contract will contain)
+        bytes memory runtimeCode = abi.encodePacked(
             hex"00", // STOP opcode
             data
         );
         
+        // Build initialization bytecode that deploys the runtime code
+        bytes memory initCode = abi.encodePacked(
+            hex"61", uint16(runtimeCode.length),  // PUSH2 runtimeCode.length
+            hex"80600E6000396000F3",              // Init opcodes: DUP1 PUSH1 0x0E PUSH1 0x00 CODECOPY PUSH1 0x00 RETURN
+            runtimeCode                          // The actual runtime code to deploy
+        );
+        
         assembly {
-            pointer := create2(0, add(code, 0x20), mload(code), salt)
+            pointer := create2(0, add(initCode, 0x20), mload(initCode), salt)
             if iszero(pointer) {
                 // Deployment failed
                 let size := mload(0x40)
@@ -67,6 +84,18 @@ library SSTORE2 {
                 revert(size, 0x64)
             }
         }
+    }
+    
+    /**
+     * @notice Alternative write using CREATE2 for better reliability
+     * @dev Uses data hash as salt for deterministic deployment
+     * @param data The data to store
+     * @return pointer The address of the deployed contract containing the data
+     */
+    function writeWithCreate2(bytes memory data) internal returns (address pointer) {
+        // Generate unique salt from data hash and block timestamp
+        bytes32 salt = keccak256(abi.encodePacked(data, block.timestamp, msg.sender));
+        return writeDeterministic(data, salt);
     }
     
     /**
