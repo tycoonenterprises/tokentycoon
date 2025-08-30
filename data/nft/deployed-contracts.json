@@ -1,0 +1,11 @@
+{
+  "deployedAt": "1756487700",
+  "deployer": "0xBAdAd51de865b9d880b184f3cba6f7240e284506",
+  "network": "Base Sepolia",
+  "TokenTycoonCards": "0x80E2bF1733e92718E95d21235594FCcD2931fD9a",
+  "TokenTycoonDecks": "0xb2d7d608B6DF78a321Ac76435A51BB1653f59dD4",
+  "TokenTycoonPacks": "0xf45d07063CA4e1AdFB47c010Bc4e1F53aF4d57d8",
+  "TokenTycoonCards_OLD_BROKEN_SSTORE2": "0x34ad54eAfa6C350B92e7AD49f1B74Df08d44f603",
+  "TokenTycoonCards_OLD2": "0x30Ee1dE2BD30DCE23B00Fd1eF2d0f9F35A612102",
+  "TokenTycoonCards_OLDEST": "0x6e887D54A2cd242cF0abcf16679eC1BEcF2D8c16"
+}

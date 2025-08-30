@@ -86,9 +86,22 @@ export const privyConfig = {
   },
 }
 
-// Contract addresses - will be replaced by GitHub Actions
+// Contract addresses on Base Sepolia
 export const CONTRACT_ADDRESSES = {
-  CARD_REGISTRY: 'REPLACE_CARD_REGISTRY' as `0x${string}`,
-  DECK_REGISTRY: 'REPLACE_DECK_REGISTRY' as `0x${string}`,
-  GAME_ENGINE: 'REPLACE_GAME_ENGINE' as `0x${string}`,
+  // Legacy contracts (game engine)
+  CARD_REGISTRY: '0x8f0c54b31077a505A98fCE72FBc2eeF247F40550' as `0x${string}`,
+  DECK_REGISTRY: '0x464636fAC3b95EB37B9C5e1CFDa13A1d5E382D64' as `0x${string}`,
+  GAME_ENGINE: '0x947F43184d438d7C4D0ceBD9D28751e7C5296891' as `0x${string}`,
+  
+  // NFT contracts (ERC1155) - Updated with fixed SSTORE2
+  NFT_CARDS: '0x80E2bF1733e92718E95d21235594FCcD2931fD9a' as `0x${string}`,
+  NFT_DECKS: '0xb2d7d608B6DF78a321Ac76435A51BB1653f59dD4' as `0x${string}`,
+  NFT_PACKS: '0xf45d07063CA4e1AdFB47c010Bc4e1F53aF4d57d8' as `0x${string}`,
 } as const
+
+// Helper function to get contract addresses based on chain
+export function getContractAddresses(chainId?: number) {
+  // For now, return Base Sepolia addresses
+  // In the future, this could return different addresses per chain
+  return CONTRACT_ADDRESSES
+}

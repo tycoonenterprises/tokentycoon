@@ -8,7 +8,8 @@
     "deploy:cards": "node scripts/deployCards.js"
   },
   "dependencies": {
-    "viem": "^2.7.1"
+    "ethers": "^6.15.0",
+    "viem": "^2.36.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.5"

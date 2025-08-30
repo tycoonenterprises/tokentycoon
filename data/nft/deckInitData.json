@@ -1,0 +1,296 @@
+[
+  {
+    "deckId": 1,
+    "name": "Starter Deck",
+    "description": "Simple test deck",
+    "strategy": "Simple test deck",
+    "composition": [
+      {
+        "cardId": 48,
+        "quantity": 35
+      },
+      {
+        "cardId": 49,
+        "quantity": 15
+      },
+      {
+        "cardId": 50,
+        "quantity": 5
+      },
+      {
+        "cardId": 51,
+        "quantity": 5
+      }
+    ],
+    "svgData": "<svg width=\"300\" height=\"420\" xmlns=\"http://www.w3.org/2000/svg\">\n    <rect width=\"100%\" height=\"100%\" fill=\"#1a1a2e\"/>\n    <rect x=\"10\" y=\"10\" width=\"280\" height=\"400\" rx=\"15\" fill=\"#16213e\" stroke=\"#0f3460\" stroke-width=\"2\"/>\n    <text x=\"150\" y=\"50\" text-anchor=\"middle\" fill=\"#e94560\" font-family=\"Arial, sans-serif\" font-size=\"18\" font-weight=\"bold\">Starter Deck</text>\n    <text x=\"150\" y=\"80\" text-anchor=\"middle\" fill=\"#f39c12\" font-family=\"Arial, sans-serif\" font-size=\"12\">Token Tycoon Deck</text>\n    <rect x=\"30\" y=\"100\" width=\"240\" height=\"160\" rx=\"10\" fill=\"#0f3460\" stroke=\"#e94560\" stroke-width=\"1\"/>\n    <text x=\"150\" y=\"130\" text-anchor=\"middle\" fill=\"#ffffff\" font-family=\"Arial, sans-serif\" font-size=\"10\">Strategy:</text>\n    <foreignObject x=\"40\" y=\"140\" width=\"220\" height=\"110\">\n        <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-family: Arial, sans-serif; font-size: 9px; color: #ffffff; text-align: center; padding: 5px;\">\n            Simple test deck\n        </div>\n    </foreignObject>\n    <rect x=\"30\" y=\"280\" width=\"240\" height=\"80\" rx=\"10\" fill=\"#16213e\" stroke=\"#f39c12\" stroke-width=\"1\"/>\n    <text x=\"150\" y=\"305\" text-anchor=\"middle\" fill=\"#f39c12\" font-family=\"Arial, sans-serif\" font-size=\"14\" font-weight=\"bold\">60 CARDS</text>\n    <text x=\"150\" y=\"325\" text-anchor=\"middle\" fill=\"#ffffff\" font-family=\"Arial, sans-serif\" font-size=\"10\">Ready to Play</text>\n    <text x=\"150\" y=\"345\" text-anchor=\"middle\" fill=\"#e94560\" font-family=\"Arial, sans-serif\" font-size=\"8\">Sealed Deck</text>\n    <text x=\"150\" y=\"400\" text-anchor=\"middle\" fill=\"#666\" font-family=\"Arial, sans-serif\" font-size=\"8\">tokentycoon.io</text>\n</svg>",
+    "maxSupply": 0,
+    "isPreconstructed": true
+  },
+  {
+    "deckId": 2,
+    "name": "All DeFi",
+    "description": "A balanced deck for beginners",
+    "strategy": "A balanced deck for beginners",
+    "composition": [
+      {
+        "cardId": 37,
+        "quantity": 35
+      },
+      {
+        "cardId": 36,
+        "quantity": 15
+      },
+      {
+        "cardId": 53,
+        "quantity": 5
+      },
+      {
+        "cardId": 47,
+        "quantity": 5
+      }
+    ],
+    "svgData": "<svg width=\"300\" height=\"420\" xmlns=\"http://www.w3.org/2000/svg\">\n    <rect width=\"100%\" height=\"100%\" fill=\"#1a1a2e\"/>\n    <rect x=\"10\" y=\"10\" width=\"280\" height=\"400\" rx=\"15\" fill=\"#16213e\" stroke=\"#0f3460\" stroke-width=\"2\"/>\n    <text x=\"150\" y=\"50\" text-anchor=\"middle\" fill=\"#e94560\" font-family=\"Arial, sans-serif\" font-size=\"18\" font-weight=\"bold\">All DeFi</text>\n    <text x=\"150\" y=\"80\" text-anchor=\"middle\" fill=\"#f39c12\" font-family=\"Arial, sans-serif\" font-size=\"12\">Token Tycoon Deck</text>\n    <rect x=\"30\" y=\"100\" width=\"240\" height=\"160\" rx=\"10\" fill=\"#0f3460\" stroke=\"#e94560\" stroke-width=\"1\"/>\n    <text x=\"150\" y=\"130\" text-anchor=\"middle\" fill=\"#ffffff\" font-family=\"Arial, sans-serif\" font-size=\"10\">Strategy:</text>\n    <foreignObject x=\"40\" y=\"140\" width=\"220\" height=\"110\">\n        <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-family: Arial, sans-serif; font-size: 9px; color: #ffffff; text-align: center; padding: 5px;\">\n            A balanced deck for beginners\n        </div>\n    </foreignObject>\n    <rect x=\"30\" y=\"280\" width=\"240\" height=\"80\" rx=\"10\" fill=\"#16213e\" stroke=\"#f39c12\" stroke-width=\"1\"/>\n    <text x=\"150\" y=\"305\" text-anchor=\"middle\" fill=\"#f39c12\" font-family=\"Arial, sans-serif\" font-size=\"14\" font-weight=\"bold\">60 CARDS</text>\n    <text x=\"150\" y=\"325\" text-anchor=\"middle\" fill=\"#ffffff\" font-family=\"Arial, sans-serif\" font-size=\"10\">Ready to Play</text>\n    <text x=\"150\" y=\"345\" text-anchor=\"middle\" fill=\"#e94560\" font-family=\"Arial, sans-serif\" font-size=\"8\">Sealed Deck</text>\n    <text x=\"150\" y=\"400\" text-anchor=\"middle\" fill=\"#666\" font-family=\"Arial, sans-serif\" font-size=\"8\">tokentycoon.io</text>\n</svg>",
+    "maxSupply": 0,
+    "isPreconstructed": true
+  },
+  {
+    "deckId": 3,
+    "name": "Control & Disruption",
+    "description": "A defensive strategy focused on stable ETH generation, protected storage, and disrupting opponents while building card advantage.",
+    "strategy": "A defensive strategy focused on stable ETH generation, protected storage, and disrupting opponents while building card advantage.",
+    "composition": [
+      {
+        "cardId": 38,
+        "quantity": 24
+      },
+      {
+        "cardId": 37,
+        "quantity": 4
+      },
+      {
+        "cardId": 87,
+        "quantity": 4
+      },
+      {
+        "cardId": 88,
+        "quantity": 3
+      },
+      {
+        "cardId": 1,
+        "quantity": 3
+      },
+      {
+        "cardId": 49,
+        "quantity": 4
+      },
+      {
+        "cardId": 33,
+        "quantity": 3
+      },
+      {
+        "cardId": 13,
+        "quantity": 4
+      },
+      {
+        "cardId": 44,
+        "quantity": 3
+      },
+      {
+        "cardId": 51,
+        "quantity": 2
+      },
+      {
+        "cardId": 20,
+        "quantity": 2
+      },
+      {
+        "cardId": 52,
+        "quantity": 2
+      },
+      {
+        "cardId": 28,
+        "quantity": 2
+      }
+    ],
+    "svgData": "<svg width=\"300\" height=\"420\" xmlns=\"http://www.w3.org/2000/svg\">\n    <rect width=\"100%\" height=\"100%\" fill=\"#1a1a2e\"/>\n    <rect x=\"10\" y=\"10\" width=\"280\" height=\"400\" rx=\"15\" fill=\"#16213e\" stroke=\"#0f3460\" stroke-width=\"2\"/>\n    <text x=\"150\" y=\"50\" text-anchor=\"middle\" fill=\"#e94560\" font-family=\"Arial, sans-serif\" font-size=\"18\" font-weight=\"bold\">Control & Disruption</text>\n    <text x=\"150\" y=\"80\" text-anchor=\"middle\" fill=\"#f39c12\" font-family=\"Arial, sans-serif\" font-size=\"12\">Token Tycoon Deck</text>\n    <rect x=\"30\" y=\"100\" width=\"240\" height=\"160\" rx=\"10\" fill=\"#0f3460\" stroke=\"#e94560\" stroke-width=\"1\"/>\n    <text x=\"150\" y=\"130\" text-anchor=\"middle\" fill=\"#ffffff\" font-family=\"Arial, sans-serif\" font-size=\"10\">Strategy:</text>\n    <foreignObject x=\"40\" y=\"140\" width=\"220\" height=\"110\">\n        <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-family: Arial, sans-serif; font-size: 9px; color: #ffffff; text-align: center; padding: 5px;\">\n            A defensive strategy focused on stable ETH generation, protected storage, and disrupting opponents while building card advantage.\n        </div>\n    </foreignObject>\n    <rect x=\"30\" y=\"280\" width=\"240\" height=\"80\" rx=\"10\" fill=\"#16213e\" stroke=\"#f39c12\" stroke-width=\"1\"/>\n    <text x=\"150\" y=\"305\" text-anchor=\"middle\" fill=\"#f39c12\" font-family=\"Arial, sans-serif\" font-size=\"14\" font-weight=\"bold\">60 CARDS</text>\n    <text x=\"150\" y=\"325\" text-anchor=\"middle\" fill=\"#ffffff\" font-family=\"Arial, sans-serif\" font-size=\"10\">Ready to Play</text>\n    <text x=\"150\" y=\"345\" text-anchor=\"middle\" fill=\"#e94560\" font-family=\"Arial, sans-serif\" font-size=\"8\">Sealed Deck</text>\n    <text x=\"150\" y=\"400\" text-anchor=\"middle\" fill=\"#666\" font-family=\"Arial, sans-serif\" font-size=\"8\">tokentycoon.io</text>\n</svg>",
+    "maxSupply": 0,
+    "isPreconstructed": true
+  },
+  {
+    "deckId": 4,
+    "name": "Aggressive DeFi",
+    "description": "A fast-paced strategy focused on explosive ETH generation through high-yield DeFi protocols and risky but rewarding plays.",
+    "strategy": "A fast-paced strategy focused on explosive ETH generation through high-yield DeFi protocols and risky but rewarding plays.",
+    "composition": [
+      {
+        "cardId": 6,
+        "quantity": 24
+      },
+      {
+        "cardId": 32,
+        "quantity": 4
+      },
+      {
+        "cardId": 10,
+        "quantity": 4
+      },
+      {
+        "cardId": 12,
+        "quantity": 4
+      },
+      {
+        "cardId": 48,
+        "quantity": 4
+      },
+      {
+        "cardId": 11,
+        "quantity": 2
+      },
+      {
+        "cardId": 46,
+        "quantity": 4
+      },
+      {
+        "cardId": 50,
+        "quantity": 2
+      },
+      {
+        "cardId": 14,
+        "quantity": 3
+      },
+      {
+        "cardId": 59,
+        "quantity": 3
+      },
+      {
+        "cardId": 56,
+        "quantity": 3
+      },
+      {
+        "cardId": 8,
+        "quantity": 3
+      }
+    ],
+    "svgData": "<svg width=\"300\" height=\"420\" xmlns=\"http://www.w3.org/2000/svg\">\n    <rect width=\"100%\" height=\"100%\" fill=\"#1a1a2e\"/>\n    <rect x=\"10\" y=\"10\" width=\"280\" height=\"400\" rx=\"15\" fill=\"#16213e\" stroke=\"#0f3460\" stroke-width=\"2\"/>\n    <text x=\"150\" y=\"50\" text-anchor=\"middle\" fill=\"#e94560\" font-family=\"Arial, sans-serif\" font-size=\"18\" font-weight=\"bold\">Aggressive DeFi</text>\n    <text x=\"150\" y=\"80\" text-anchor=\"middle\" fill=\"#f39c12\" font-family=\"Arial, sans-serif\" font-size=\"12\">Token Tycoon Deck</text>\n    <rect x=\"30\" y=\"100\" width=\"240\" height=\"160\" rx=\"10\" fill=\"#0f3460\" stroke=\"#e94560\" stroke-width=\"1\"/>\n    <text x=\"150\" y=\"130\" text-anchor=\"middle\" fill=\"#ffffff\" font-family=\"Arial, sans-serif\" font-size=\"10\">Strategy:</text>\n    <foreignObject x=\"40\" y=\"140\" width=\"220\" height=\"110\">\n        <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-family: Arial, sans-serif; font-size: 9px; color: #ffffff; text-align: center; padding: 5px;\">\n            A fast-paced strategy focused on explosive ETH generation through high-yield DeFi protocols and risky but rewarding plays.\n        </div>\n    </foreignObject>\n    <rect x=\"30\" y=\"280\" width=\"240\" height=\"80\" rx=\"10\" fill=\"#16213e\" stroke=\"#f39c12\" stroke-width=\"1\"/>\n    <text x=\"150\" y=\"305\" text-anchor=\"middle\" fill=\"#f39c12\" font-family=\"Arial, sans-serif\" font-size=\"14\" font-weight=\"bold\">60 CARDS</text>\n    <text x=\"150\" y=\"325\" text-anchor=\"middle\" fill=\"#ffffff\" font-family=\"Arial, sans-serif\" font-size=\"10\">Ready to Play</text>\n    <text x=\"150\" y=\"345\" text-anchor=\"middle\" fill=\"#e94560\" font-family=\"Arial, sans-serif\" font-size=\"8\">Sealed Deck</text>\n    <text x=\"150\" y=\"400\" text-anchor=\"middle\" fill=\"#666\" font-family=\"Arial, sans-serif\" font-size=\"8\">tokentycoon.io</text>\n</svg>",
+    "maxSupply": 0,
+    "isPreconstructed": true
+  },
+  {
+    "deckId": 5,
+    "name": "Time Bomb Casino",
+    "description": "A high-risk, high-reward strategy based on delayed effects, temporary gains, and explosive timing. Play with fire and profit from chaos.",
+    "strategy": "A high-risk, high-reward strategy based on delayed effects, temporary gains, and explosive timing. Play with fire and profit from chaos.",
+    "composition": [
+      {
+        "cardId": 76,
+        "quantity": 24
+      },
+      {
+        "cardId": 81,
+        "quantity": 4
+      },
+      {
+        "cardId": 59,
+        "quantity": 4
+      },
+      {
+        "cardId": 14,
+        "quantity": 4
+      },
+      {
+        "cardId": 89,
+        "quantity": 4
+      },
+      {
+        "cardId": 8,
+        "quantity": 4
+      },
+      {
+        "cardId": 66,
+        "quantity": 3
+      },
+      {
+        "cardId": 72,
+        "quantity": 3
+      },
+      {
+        "cardId": 64,
+        "quantity": 3
+      },
+      {
+        "cardId": 78,
+        "quantity": 3
+      },
+      {
+        "cardId": 84,
+        "quantity": 2
+      },
+      {
+        "cardId": 65,
+        "quantity": 2
+      }
+    ],
+    "svgData": "<svg width=\"300\" height=\"420\" xmlns=\"http://www.w3.org/2000/svg\">\n    <rect width=\"100%\" height=\"100%\" fill=\"#1a1a2e\"/>\n    <rect x=\"10\" y=\"10\" width=\"280\" height=\"400\" rx=\"15\" fill=\"#16213e\" stroke=\"#0f3460\" stroke-width=\"2\"/>\n    <text x=\"150\" y=\"50\" text-anchor=\"middle\" fill=\"#e94560\" font-family=\"Arial, sans-serif\" font-size=\"18\" font-weight=\"bold\">Time Bomb Casino</text>\n    <text x=\"150\" y=\"80\" text-anchor=\"middle\" fill=\"#f39c12\" font-family=\"Arial, sans-serif\" font-size=\"12\">Token Tycoon Deck</text>\n    <rect x=\"30\" y=\"100\" width=\"240\" height=\"160\" rx=\"10\" fill=\"#0f3460\" stroke=\"#e94560\" stroke-width=\"1\"/>\n    <text x=\"150\" y=\"130\" text-anchor=\"middle\" fill=\"#ffffff\" font-family=\"Arial, sans-serif\" font-size=\"10\">Strategy:</text>\n    <foreignObject x=\"40\" y=\"140\" width=\"220\" height=\"110\">\n        <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-family: Arial, sans-serif; font-size: 9px; color: #ffffff; text-align: center; padding: 5px;\">\n            A high-risk, high-reward strategy based on delayed effects, temporary gains, and explosive timing. Play with fire and profit from chaos.\n        </div>\n    </foreignObject>\n    <rect x=\"30\" y=\"280\" width=\"240\" height=\"80\" rx=\"10\" fill=\"#16213e\" stroke=\"#f39c12\" stroke-width=\"1\"/>\n    <text x=\"150\" y=\"305\" text-anchor=\"middle\" fill=\"#f39c12\" font-family=\"Arial, sans-serif\" font-size=\"14\" font-weight=\"bold\">60 CARDS</text>\n    <text x=\"150\" y=\"325\" text-anchor=\"middle\" fill=\"#ffffff\" font-family=\"Arial, sans-serif\" font-size=\"10\">Ready to Play</text>\n    <text x=\"150\" y=\"345\" text-anchor=\"middle\" fill=\"#e94560\" font-family=\"Arial, sans-serif\" font-size=\"8\">Sealed Deck</text>\n    <text x=\"150\" y=\"400\" text-anchor=\"middle\" fill=\"#666\" font-family=\"Arial, sans-serif\" font-size=\"8\">tokentycoon.io</text>\n</svg>",
+    "maxSupply": 0,
+    "isPreconstructed": true
+  },
+  {
+    "deckId": 6,
+    "name": "Reactive Parasite",
+    "description": "A cunning strategy that feeds off opponent actions through triggers, steals, and reactive effects. Profit from every move your opponent makes.",
+    "strategy": "A cunning strategy that feeds off opponent actions through triggers, steals, and reactive effects. Profit from every move your opponent makes.",
+    "composition": [
+      {
+        "cardId": 80,
+        "quantity": 24
+      },
+      {
+        "cardId": 61,
+        "quantity": 4
+      },
+      {
+        "cardId": 60,
+        "quantity": 4
+      },
+      {
+        "cardId": 75,
+        "quantity": 4
+      },
+      {
+        "cardId": 15,
+        "quantity": 4
+      },
+      {
+        "cardId": 74,
+        "quantity": 3
+      },
+      {
+        "cardId": 9,
+        "quantity": 3
+      },
+      {
+        "cardId": 22,
+        "quantity": 2
+      },
+      {
+        "cardId": 68,
+        "quantity": 3
+      },
+      {
+        "cardId": 86,
+        "quantity": 4
+      },
+      {
+        "cardId": 79,
+        "quantity": 3
+      },
+      {
+        "cardId": 71,
+        "quantity": 2
+      }
+    ],
+    "svgData": "<svg width=\"300\" height=\"420\" xmlns=\"http://www.w3.org/2000/svg\">\n    <rect width=\"100%\" height=\"100%\" fill=\"#1a1a2e\"/>\n    <rect x=\"10\" y=\"10\" width=\"280\" height=\"400\" rx=\"15\" fill=\"#16213e\" stroke=\"#0f3460\" stroke-width=\"2\"/>\n    <text x=\"150\" y=\"50\" text-anchor=\"middle\" fill=\"#e94560\" font-family=\"Arial, sans-serif\" font-size=\"18\" font-weight=\"bold\">Reactive Parasite</text>\n    <text x=\"150\" y=\"80\" text-anchor=\"middle\" fill=\"#f39c12\" font-family=\"Arial, sans-serif\" font-size=\"12\">Token Tycoon Deck</text>\n    <rect x=\"30\" y=\"100\" width=\"240\" height=\"160\" rx=\"10\" fill=\"#0f3460\" stroke=\"#e94560\" stroke-width=\"1\"/>\n    <text x=\"150\" y=\"130\" text-anchor=\"middle\" fill=\"#ffffff\" font-family=\"Arial, sans-serif\" font-size=\"10\">Strategy:</text>\n    <foreignObject x=\"40\" y=\"140\" width=\"220\" height=\"110\">\n        <div xmlns=\"http://www.w3.org/1999/xhtml\" style=\"font-family: Arial, sans-serif; font-size: 9px; color: #ffffff; text-align: center; padding: 5px;\">\n            A cunning strategy that feeds off opponent actions through triggers, steals, and reactive effects. Profit from every move your opponent makes.\n        </div>\n    </foreignObject>\n    <rect x=\"30\" y=\"280\" width=\"240\" height=\"80\" rx=\"10\" fill=\"#16213e\" stroke=\"#f39c12\" stroke-width=\"1\"/>\n    <text x=\"150\" y=\"305\" text-anchor=\"middle\" fill=\"#f39c12\" font-family=\"Arial, sans-serif\" font-size=\"14\" font-weight=\"bold\">60 CARDS</text>\n    <text x=\"150\" y=\"325\" text-anchor=\"middle\" fill=\"#ffffff\" font-family=\"Arial, sans-serif\" font-size=\"10\">Ready to Play</text>\n    <text x=\"150\" y=\"345\" text-anchor=\"middle\" fill=\"#e94560\" font-family=\"Arial, sans-serif\" font-size=\"8\">Sealed Deck</text>\n    <text x=\"150\" y=\"400\" text-anchor=\"middle\" fill=\"#666\" font-family=\"Arial, sans-serif\" font-size=\"8\">tokentycoon.io</text>\n</svg>",
+    "maxSupply": 0,
+    "isPreconstructed": true
+  }
+]

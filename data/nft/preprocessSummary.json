@@ -1,0 +1,11 @@
+{
+  "totalCards": 91,
+  "processedCards": 91,
+  "missingCards": 0,
+  "totalOriginalSize": 452545,
+  "totalOptimizedSize": 365495,
+  "compressionRatio": "19.24%",
+  "estimatedGas": 73099000,
+  "estimatedCostUSD": "4385.94",
+  "averageSVGSize": 4016
+}
